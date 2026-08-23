@@ -47,8 +47,25 @@ function short_civil(epoch_day,   parts) {
 	return parts[1] " " parts[2]
 }
 
-function hours(minutes) {
-	return sprintf("%.1f", minutes / 60)
+# Groups the whole part of a number in threes, so a count that has grown long
+# stays readable. The fraction is left alone: it never runs past one digit here.
+function grouped(number,   point, whole, rest, out) {
+	point = index(number, ".")
+	whole = (point > 0) ? substr(number, 1, point - 1) : number
+	rest = (point > 0) ? substr(number, point) : ""
+	while (length(whole) > 3) {
+		out = "," substr(whole, length(whole) - 2) out
+		whole = substr(whole, 1, length(whole) - 3)
+	}
+	return whole out rest
+}
+
+# A tenth of an hour is worth showing; a zero one is just a decimal point with
+# nothing behind it.
+function hours(minutes,   figure) {
+	figure = sprintf("%.1f", minutes / 60)
+	sub(/\.0$/, "", figure)
+	return figure
 }
 
 # Roughly how wide a string runs at a given font size in the card's font stack.
@@ -156,9 +173,9 @@ END {
 	last_played = short_civil(today)
 
 	headline = hours(total)
-	played = headline " hours"
-	summary = hours(recently) " hours in the last " recent " days   \302\267   " \
-			sittings " sittings   \302\267   " commits " commits"
+	played = grouped(headline) " hours"
+	summary = grouped(hours(recently)) " hours in the last " recent " days   \302\267   " \
+			grouped(sittings) " sittings   \302\267   " grouped(commits) " commits"
 
 	PAD = 24
 	LABEL_Y = 40
@@ -225,7 +242,7 @@ END {
 
 	svg("  <text class=\"axis\" x=\"" PAD "\" y=\"" AXIS_Y "\">" first_seen "</text>")
 	svg("  <text class=\"axis\" x=\"" (width / 2) "\" y=\"" AXIS_Y "\" text-anchor=\"middle\">" \
-			lived (lived == 1 ? " day" : " days") "</text>")
+			grouped(lived) (lived == 1 ? " day" : " days") "</text>")
 	svg("  <text class=\"axis\" x=\"" (width - PAD) "\" y=\"" AXIS_Y "\" text-anchor=\"end\">" last_seen "</text>")
 	svg("</svg>")
 	close(card)
