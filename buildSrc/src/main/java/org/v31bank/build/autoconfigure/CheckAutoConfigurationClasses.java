@@ -215,7 +215,7 @@ public abstract class CheckAutoConfigurationClasses extends AutoConfigurationImp
 		private final Map<String, List<String>> byClassName = new TreeMap<>();
 
 		private void add(String className, String problem) {
-			this.byClassName.computeIfAbsent(className, (name) -> new ArrayList<>()).add(problem);
+			this.byClassName.computeIfAbsent(className, (_) -> new ArrayList<>()).add(problem);
 		}
 
 		private boolean isEmpty() {
