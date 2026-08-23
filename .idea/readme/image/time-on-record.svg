@@ -1,69 +1,70 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="578" height="168" viewBox="0 0 578 168" role="img" aria-label="Time on record: 94.8 hours over 62 commits">
+<svg xmlns="http://www.w3.org/2000/svg" width="595" height="168" viewBox="0 0 595 168" role="img" aria-label="Play time: 98.8 hours over 64 commits, last played 23 Aug">
   <style>
     .card { fill: #0d1117; stroke: #30363d }
     text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif }
     .label { font-size: 11px; letter-spacing: 1.7px; fill: #8b949e }
-    .figure { font-size: 38px; font-weight: 600; fill: #e6edf3 }
-    .unit { font-size: 13px; fill: #8b949e }
+    .stat { font-size: 16px; font-weight: 600; letter-spacing: normal; fill: #e6edf3 }
     .note { font-size: 12px; fill: #8b949e }
     .axis { font-size: 10px; fill: #6e7681 }
     .bar { fill: #388bfd }
     .bar-quiet { fill: #21262d }
   </style>
-  <rect class="card" x="0.5" y="0.5" width="577" height="167" rx="8"/>
-  <text class="label" x="24" y="32">TIME ON RECORD</text>
-  <text class="figure" x="24" y="70">94.8<tspan class="unit" dx="7">hrs</tspan></text>
-  <text class="note" x="554" y="70" text-anchor="end">46.4 hrs in the last 14 days   ·   35 sittings   ·   62 commits</text>
+  <rect class="card" x="0.5" y="0.5" width="594" height="167" rx="8"/>
+  <text class="label" x="24" y="40">PLAY TIME</text>
+  <text class="stat" x="24" y="62">98.8 hours</text>
+  <text class="label" x="571" y="40" text-anchor="end">LAST PLAYED <tspan class="stat">23 Aug</tspan></text>
+  <text class="note" x="571" y="62" text-anchor="end">48.4 hours in the last 14 days   ·   37 sittings   ·   64 commits</text>
   <rect class="bar" x="24.0" y="126.5" width="7" height="7.5" rx="1.5"/>
-  <rect class="bar-quiet" x="34.8" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="45.6" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="56.4" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="67.3" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="78.1" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="88.9" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="99.7" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="110.5" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar" x="121.3" y="118.9" width="7" height="15.1" rx="1.5"/>
-  <rect class="bar" x="132.2" y="118.9" width="7" height="15.1" rx="1.5"/>
-  <rect class="bar" x="143.0" y="112.0" width="7" height="22.0" rx="1.5"/>
-  <rect class="bar" x="153.8" y="126.5" width="7" height="7.5" rx="1.5"/>
-  <rect class="bar-quiet" x="164.6" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="175.4" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="186.2" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="197.1" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="207.9" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="218.7" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="229.5" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="240.3" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="251.1" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="262.0" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar" x="272.8" y="114.4" width="7" height="19.6" rx="1.5"/>
-  <rect class="bar" x="283.6" y="126.5" width="7" height="7.5" rx="1.5"/>
-  <rect class="bar" x="294.4" y="126.5" width="7" height="7.5" rx="1.5"/>
-  <rect class="bar" x="305.2" y="118.7" width="7" height="15.3" rx="1.5"/>
-  <rect class="bar" x="316.0" y="126.5" width="7" height="7.5" rx="1.5"/>
-  <rect class="bar-quiet" x="326.9" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="337.7" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="348.5" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="359.3" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="370.1" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar" x="380.9" y="122.2" width="7" height="11.8" rx="1.5"/>
-  <rect class="bar" x="391.8" y="88.0" width="7" height="46.0" rx="1.5"/>
-  <rect class="bar" x="402.6" y="126.5" width="7" height="7.5" rx="1.5"/>
-  <rect class="bar" x="413.4" y="126.3" width="7" height="7.7" rx="1.5"/>
-  <rect class="bar" x="424.2" y="118.9" width="7" height="15.1" rx="1.5"/>
-  <rect class="bar" x="435.0" y="126.5" width="7" height="7.5" rx="1.5"/>
-  <rect class="bar-quiet" x="445.8" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="456.7" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar-quiet" x="467.5" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar" x="478.3" y="106.4" width="7" height="27.6" rx="1.5"/>
-  <rect class="bar" x="489.1" y="98.4" width="7" height="35.6" rx="1.5"/>
-  <rect class="bar" x="499.9" y="121.7" width="7" height="12.3" rx="1.5"/>
-  <rect class="bar" x="510.7" y="118.9" width="7" height="15.1" rx="1.5"/>
-  <rect class="bar-quiet" x="521.6" y="131.0" width="7" height="3.0" rx="1.5"/>
-  <rect class="bar" x="532.4" y="111.4" width="7" height="22.6" rx="1.5"/>
-  <rect class="bar" x="543.2" y="110.4" width="7" height="23.6" rx="1.5"/>
+  <rect class="bar-quiet" x="34.9" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="45.9" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="56.8" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="67.8" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="78.7" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="89.6" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="100.6" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="111.5" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar" x="122.5" y="118.9" width="7" height="15.1" rx="1.5"/>
+  <rect class="bar" x="133.4" y="118.9" width="7" height="15.1" rx="1.5"/>
+  <rect class="bar" x="144.3" y="112.0" width="7" height="22.0" rx="1.5"/>
+  <rect class="bar" x="155.3" y="126.5" width="7" height="7.5" rx="1.5"/>
+  <rect class="bar-quiet" x="166.2" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="177.2" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="188.1" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="199.0" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="210.0" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="220.9" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="231.9" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="242.8" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="253.7" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="264.7" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar" x="275.6" y="114.4" width="7" height="19.6" rx="1.5"/>
+  <rect class="bar" x="286.6" y="126.5" width="7" height="7.5" rx="1.5"/>
+  <rect class="bar" x="297.5" y="126.5" width="7" height="7.5" rx="1.5"/>
+  <rect class="bar" x="308.4" y="118.7" width="7" height="15.3" rx="1.5"/>
+  <rect class="bar" x="319.4" y="126.5" width="7" height="7.5" rx="1.5"/>
+  <rect class="bar-quiet" x="330.3" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="341.3" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="352.2" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="363.1" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="374.1" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar" x="385.0" y="122.2" width="7" height="11.8" rx="1.5"/>
+  <rect class="bar" x="396.0" y="88.0" width="7" height="46.0" rx="1.5"/>
+  <rect class="bar" x="406.9" y="126.5" width="7" height="7.5" rx="1.5"/>
+  <rect class="bar" x="417.8" y="126.3" width="7" height="7.7" rx="1.5"/>
+  <rect class="bar" x="428.8" y="118.9" width="7" height="15.1" rx="1.5"/>
+  <rect class="bar" x="439.7" y="126.5" width="7" height="7.5" rx="1.5"/>
+  <rect class="bar-quiet" x="450.7" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="461.6" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar-quiet" x="472.5" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar" x="483.5" y="106.4" width="7" height="27.6" rx="1.5"/>
+  <rect class="bar" x="494.4" y="98.4" width="7" height="35.6" rx="1.5"/>
+  <rect class="bar" x="505.4" y="121.7" width="7" height="12.3" rx="1.5"/>
+  <rect class="bar" x="516.3" y="118.9" width="7" height="15.1" rx="1.5"/>
+  <rect class="bar-quiet" x="527.2" y="131.0" width="7" height="3.0" rx="1.5"/>
+  <rect class="bar" x="538.2" y="111.4" width="7" height="22.6" rx="1.5"/>
+  <rect class="bar" x="549.1" y="110.4" width="7" height="23.6" rx="1.5"/>
+  <rect class="bar" x="560.1" y="118.9" width="7" height="15.1" rx="1.5"/>
   <text class="axis" x="24" y="152">5 Jul 2026</text>
-  <text class="axis" x="289" y="152" text-anchor="middle">49 days</text>
-  <text class="axis" x="554" y="152" text-anchor="end">22 Aug 2026</text>
+  <text class="axis" x="297.5" y="152" text-anchor="middle">50 days</text>
+  <text class="axis" x="571" y="152" text-anchor="end">23 Aug 2026</text>
 </svg>
