@@ -160,6 +160,10 @@ class AutoConfigurationPluginTests {
 		}
 	}
 
+	/**
+	 * Nothing is declared on it directly, so what the check counts as always there is
+	 * exactly what the module resolves.
+	 */
 	@Test
 	void takesTheRequiredClasspathFromEverythingTheModuleAlwaysResolves() {
 		Project project = project();
@@ -168,6 +172,8 @@ class AutoConfigurationPluginTests {
 			.getByName(AutoConfigurationPlugin.REQUIRED_CLASSPATH_CONFIGURATION_NAME);
 		assertThat(required.isCanBeResolved()).isTrue();
 		assertThat(required.isCanBeConsumed()).isFalse();
+		assertThat(required.isCanBeDeclared()).isFalse();
+		assertThat(required.getDependencies()).isEmpty();
 		assertThat(parentNames(required)).contains(main.getImplementationConfigurationName(),
 				main.getRuntimeOnlyConfigurationName());
 	}
@@ -280,18 +286,6 @@ class AutoConfigurationPluginTests {
 			.isEqualTo(Category.DOCUMENTATION);
 		assertThat(metadata.getAttributes().getAttribute(Usage.USAGE_ATTRIBUTE)).extracting(Usage::getName)
 			.isEqualTo("auto-configuration-metadata");
-	}
-
-	/**
-	 * Spring Boot's own auto-configurations are on the required classpath whether or not
-	 * a module named them, because they are what a module orders itself against most
-	 * often.
-	 */
-	@Test
-	void alwaysCountsSpringBootsOwnAutoConfigurationsAsRequired() {
-		Configuration required = project().getConfigurations()
-			.getByName(AutoConfigurationPlugin.REQUIRED_CLASSPATH_CONFIGURATION_NAME);
-		assertThat(required.getDependencies()).extracting(Dependency::getName).contains("spring-boot-autoconfigure");
 	}
 
 	private static Set<String> parentNames(Configuration configuration) {

@@ -80,8 +80,6 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 
 	private static final String METADATA_FILE = "auto-configuration-metadata.properties";
 
-	private static final String AUTOCONFIGURE = "org.springframework.boot:spring-boot-autoconfigure";
-
 	private static final String AUTO_CONFIGURATION_PROCESSOR = "org.springframework.boot:spring-boot-autoconfigure-processor";
 
 	@Override
@@ -160,14 +158,11 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 	 */
 	private Configuration requiredClasspath(Project project, SourceSet main) {
 		ConfigurationContainer configurations = project.getConfigurations();
-		Configuration required = configurations.create(REQUIRED_CLASSPATH_CONFIGURATION_NAME, (configuration) -> {
-			configuration.setCanBeConsumed(false);
-			configuration.setCanBeResolved(true);
-			configuration.extendsFrom(configurations.getByName(main.getImplementationConfigurationName()),
-					configurations.getByName(main.getRuntimeOnlyConfigurationName()));
-		});
-		required.getDependencies().add(project.getDependencies().create(AUTOCONFIGURE));
-		return required;
+		return configurations.resolvable(REQUIRED_CLASSPATH_CONFIGURATION_NAME,
+				(configuration) -> configuration.extendsFrom(
+						configurations.getByName(main.getImplementationConfigurationName()),
+						configurations.getByName(main.getRuntimeOnlyConfigurationName())))
+			.get();
 	}
 
 	/**

@@ -1,6 +1,6 @@
 <!-- CODING-TIME:START -->
 
-![Time on record](.idea/readme/image/time-on-record.svg)
+![Play time](.idea/readme/image/time-on-record.svg)
 
 <details>
 <summary>How this is counted</summary>

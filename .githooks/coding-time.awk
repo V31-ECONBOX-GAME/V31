@@ -40,6 +40,13 @@ function civil(epoch_day,   z, era, doe, yoe, doy, mp, year, month, day) {
 	return day " " MONTH[month] " " year
 }
 
+# The same date without its year, which is how a last-played date is usually
+# written and how this card writes one: the axis below already names the years.
+function short_civil(epoch_day,   parts) {
+	split(civil(epoch_day), parts, " ")
+	return parts[1] " " parts[2]
+}
+
 function hours(minutes) {
 	return sprintf("%.1f", minutes / 60)
 }
@@ -144,6 +151,9 @@ END {
 	# credited — the commit being made is one the card speaks for.
 	first_seen = civil(int(oldest / 86400))
 	last_seen = civil(today)
+	# The day the axis ends on: the card ships inside the commit being made, so the
+	# last day worked is today rather than the newest commit already in the log.
+	last_played = short_civil(today)
 
 	headline = hours(total)
 	summary = hours(recently) " hrs in the last " recent " days   \302\267   " \
@@ -152,16 +162,20 @@ END {
 	PAD = 24
 	LABEL_Y = 32
 	HEADLINE_Y = 70
+	STAT_Y = 40
+	NOTE_Y = 62
 	BASE = 134
 	AXIS_Y = 152
 	CEILING = 46
-	HEADLINE_SIZE = 38
+	HEADLINE_SIZE = 42
+	STAT_SIZE = 13
 	SUMMARY_SIZE = 12
 	HEIGHT = 168
 	MINIMUM_BAR = 3
 
 	# Width follows the text, and the chart is then stretched across whatever that
-	# leaves, so the card reads the same at any number of days.
+	# leaves, so the card reads the same at any number of days. The date sits above
+	# the summary and is much the shorter of the two, so the summary still sets this.
 	width = int(PAD + width_of(headline, HEADLINE_SIZE) + 46 + width_of(summary, SUMMARY_SIZE) + PAD)
 	span = width - PAD * 2
 	# A bar per day, each taking about two thirds of its slot: thin enough to read
@@ -175,22 +189,27 @@ END {
 	printf "" > card
 	svg("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" width "\" height=\"" HEIGHT "\"" \
 			" viewBox=\"0 0 " width " " HEIGHT "\" role=\"img\"" \
-			" aria-label=\"Time on record: " headline " hours over " commits " commits\">")
+			" aria-label=\"Play time: " headline " hours over " commits " commits," \
+					" last played " last_played "\">")
 	svg("  <style>")
 	svg("    .card { fill: #0d1117; stroke: #30363d }")
 	svg("    text { font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Helvetica, Arial, sans-serif }")
 	svg("    .label { font-size: 11px; letter-spacing: 1.7px; fill: #8b949e }")
 	svg("    .figure { font-size: " HEADLINE_SIZE "px; font-weight: 600; fill: #e6edf3 }")
-	svg("    .unit { font-size: 13px; fill: #8b949e }")
+	# Sits inside a label, whose tracking would otherwise stretch the date too.
+	svg("    .stat { font-size: " STAT_SIZE "px; font-weight: 600; letter-spacing: normal; fill: #e6edf3 }")
+	svg("    .unit { font-size: 14px; fill: #8b949e }")
 	svg("    .note { font-size: " SUMMARY_SIZE "px; fill: #8b949e }")
 	svg("    .axis { font-size: 10px; fill: #6e7681 }")
 	svg("    .bar { fill: #388bfd }")
 	svg("    .bar-quiet { fill: #21262d }")
 	svg("  </style>")
 	svg("  <rect class=\"card\" x=\"0.5\" y=\"0.5\" width=\"" (width - 1) "\" height=\"" (HEIGHT - 1) "\" rx=\"8\"/>")
-	svg("  <text class=\"label\" x=\"" PAD "\" y=\"" LABEL_Y "\">TIME ON RECORD</text>")
+	svg("  <text class=\"label\" x=\"" PAD "\" y=\"" LABEL_Y "\">PLAY TIME</text>")
 	svg("  <text class=\"figure\" x=\"" PAD "\" y=\"" HEADLINE_Y "\">" headline "<tspan class=\"unit\" dx=\"7\">hrs</tspan></text>")
-	svg("  <text class=\"note\" x=\"" (width - PAD) "\" y=\"" HEADLINE_Y "\" text-anchor=\"end\">" summary "</text>")
+	svg("  <text class=\"label\" x=\"" (width - PAD) "\" y=\"" STAT_Y "\" text-anchor=\"end\">LAST PLAYED" \
+			" <tspan class=\"stat\">" last_played "</tspan></text>")
+	svg("  <text class=\"note\" x=\"" (width - PAD) "\" y=\"" NOTE_Y "\" text-anchor=\"end\">" summary "</text>")
 
 	for (i = 0; i < days; i++) {
 		minutes = by_day[days - 1 - i] + 0
@@ -218,7 +237,7 @@ END {
 
 	printf "" > block
 	markdown("")
-	markdown("![Time on record](.idea/readme/image/time-on-record.svg)")
+	markdown("![Play time](.idea/readme/image/time-on-record.svg)")
 	markdown("")
 	markdown("<details>")
 	markdown("<summary>How this is counted</summary>")
