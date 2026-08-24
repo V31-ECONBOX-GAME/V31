@@ -146,7 +146,7 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 	 * @param main the main source set
 	 */
 	private void readMainSourceSet(AutoConfigurationImportsTask task, SourceSet main) {
-		task.getResources().from(main.getResources());
+		task.getResources().from(SourceSets.of(main).resources().unwrap());
 		task.getClasspath().from(main.getOutput().getClassesDirs());
 	}
 

@@ -24,6 +24,7 @@ import java.util.function.Predicate;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.Directory;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.SourceDirectorySet;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
@@ -37,6 +38,7 @@ import org.gradle.api.tasks.SourceSetContainer;
  * <pre class="code">
  * SourceSets.of(project).main().java().directory()
  * SourceSets.of(project).named("intTest").resources().srcDirs()
+ * SourceSets.of(sourceSet).resources().relativeTo(project.getRootProject())
  * </pre>
  *
  * Every step answers {@code unwrap()} with the Gradle type it stands for, so anything not
@@ -66,6 +68,16 @@ public final class SourceSets {
 	 */
 	public static SourceSets of(Project project) {
 		return new SourceSets(project);
+	}
+
+	/**
+	 * Starts from a source set already in hand, which a project-wide lookup would only
+	 * find again.
+	 * @param sourceSet the source set to look at
+	 * @return the kinds of source it is made of
+	 */
+	public static Sources of(SourceSet sourceSet) {
+		return new Sources(sourceSet);
 	}
 
 	public SourceSetContainer unwrap() {
@@ -142,8 +154,30 @@ public final class SourceSets {
 			return this.sources;
 		}
 
+		/**
+		 * Where this kind of source is rooted.
+		 * @return the directories
+		 */
 		public Set<File> srcDirs() {
 			return this.sources.getSrcDirs();
+		}
+
+		/**
+		 * Where this kind of source is rooted, carrying whatever task builds it.
+		 * @return the directories as a file collection, for whoever has to wait on that
+		 * task
+		 */
+		public FileCollection sourceDirectories() {
+			return this.sources.getSourceDirectories();
+		}
+
+		/**
+		 * Where this kind of source is rooted, as paths rather than as files.
+		 * @param base what the paths are relative to, usually the root project
+		 * @return the directories in the order they were declared
+		 */
+		public List<String> relativeTo(Project base) {
+			return srcDirs().stream().map(base::relativePath).toList();
 		}
 
 		/**

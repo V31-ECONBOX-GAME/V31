@@ -16,8 +16,6 @@
 
 package org.v31bank.build.properties;
 
-import java.util.stream.Collectors;
-
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.attributes.Category;
@@ -108,32 +106,30 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 	}
 
 	/**
-	 * compileJava runs before processResources, so the processor is pointed at the
-	 * sources.
+	 * The processor is pointed at the source directory, and the compile waits for
+	 * processResources so that an edit to the hand-written metadata recompiles.
 	 * @param project the project to configure
 	 * @param main the main source set
 	 */
 	private void readAdditionalMetadata(Project project, SourceSet main) {
-		String locations = main.getResources()
-			.getSourceDirectories()
-			.getFiles()
-			.stream()
-			.map(project.getRootProject()::relativePath)
-			.collect(Collectors.joining(","));
 		project.getTasks().named(main.getCompileJavaTaskName(), JavaCompile.class).configure((compile) -> {
 			compile.getInputs()
 				.files(project.getTasks().named(main.getProcessResourcesTaskName()))
 				.withPathSensitivity(PathSensitivity.RELATIVE)
 				.withPropertyName("processed resources");
-			compile.getOptions().getCompilerArgs().add(ADDITIONAL_LOCATIONS_ARGUMENT + locations);
+			compile.getOptions().getCompilerArgs().add(ADDITIONAL_LOCATIONS_ARGUMENT + locations(project, main));
 		});
+	}
+
+	private String locations(Project project, SourceSet main) {
+		return String.join(",", SourceSets.of(main).resources().relativeTo(project.getRootProject()));
 	}
 
 	private void registerChecks(Project project, SourceSet main) {
 		TaskProvider<CheckAdditionalSpringConfigurationMetadata> checkAdditional = project.getTasks()
 			.register(CHECK_ADDITIONAL_METADATA_TASK_NAME, CheckAdditionalSpringConfigurationMetadata.class, (task) -> {
 				task.setDescription("Checks the hand-written configuration metadata of the main source set.");
-				task.setSource(main.getResources());
+				task.setSource(SourceSets.of(main).resources().unwrap());
 				task.include(ADDITIONAL_METADATA_FILE);
 				task.getReportLocation().set(report(project, "additional-spring-configuration-metadata"));
 			});

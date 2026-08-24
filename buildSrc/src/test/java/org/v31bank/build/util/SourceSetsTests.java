@@ -18,12 +18,16 @@ package org.v31bank.build.util;
 
 import java.io.File;
 
+import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
+import org.gradle.api.tasks.SourceSet;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+
+import org.v31bank.build.task.TaskDependencies;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -60,6 +64,12 @@ class SourceSetsTests {
 	}
 
 	@Test
+	void startsFromASourceSetAlreadyInHand() {
+		SourceSet main = SourceSets.of(this.project).main().unwrap();
+		assertThat(SourceSets.of(main).resources().srcDirs()).containsExactly(path("src/main/resources"));
+	}
+
+	@Test
 	void separatesJavaFromResources() {
 		assertThat(SourceSets.of(this.project).main().java().srcDirs()).containsExactly(path("src/main/java"));
 		assertThat(SourceSets.of(this.project).main().resources().srcDirs())
@@ -71,6 +81,24 @@ class SourceSetsTests {
 		assertThat(SourceSets.of(this.project).main().allSource().srcDirs()).contains(path("src/main/java"),
 				path("src/main/resources"));
 		assertThat(SourceSets.of(this.project).main().allJava().srcDirs()).contains(path("src/main/java"));
+	}
+
+	@Test
+	void saysWhereItIsRootedRelativeToWhateverIsAsked() {
+		mainJava().unwrap().srcDir(GENERATED);
+		assertThat(mainJava().relativeTo(this.project)).containsExactly("src/main/java", GENERATED);
+	}
+
+	@Test
+	void keepsHoldOfWhateverBuildsADirectoryItWasGiven() {
+		mainJava().unwrap()
+			.srcDir(this.project.getTasks()
+				.register("generateSources", DefaultTask.class,
+						(task) -> task.getOutputs().dir(this.project.getLayout().getBuildDirectory().dir(GENERATED))));
+		assertThat(mainJava().srcDirs()).contains(path("build/" + GENERATED));
+		assertThat(
+				TaskDependencies.namesOf(mainJava().sourceDirectories().getBuildDependencies().getDependencies(null)))
+			.containsExactly("generateSources");
 	}
 
 	@Test

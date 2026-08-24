@@ -84,8 +84,8 @@ public class IntegrationTestPlugin implements Plugin<Project> {
 	private void declareAsTestSources(Project project, SourceSet intTestSourceSet) {
 		project.getPluginManager().apply(IdeaPlugin.class);
 		IdeaModule module = project.getExtensions().getByType(IdeaModel.class).getModule();
-		module.getTestSources().from(intTestSourceSet.getJava().getSourceDirectories());
-		module.getTestResources().from(intTestSourceSet.getResources().getSourceDirectories());
+		module.getTestSources().from(SourceSets.of(intTestSourceSet).java().sourceDirectories());
+		module.getTestResources().from(SourceSets.of(intTestSourceSet).resources().sourceDirectories());
 	}
 
 	private SourceSet createSourceSet(Project project) {
