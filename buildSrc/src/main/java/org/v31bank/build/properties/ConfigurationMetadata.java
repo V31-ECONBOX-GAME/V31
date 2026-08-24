@@ -62,8 +62,4 @@ final class ConfigurationMetadata {
 		return elements(elementType).stream().map((element) -> (String) element.get("name")).toList();
 	}
 
-	List<ConfigurationProperty> properties() {
-		return elements("properties").stream().map(ConfigurationProperty::of).toList();
-	}
-
 }
