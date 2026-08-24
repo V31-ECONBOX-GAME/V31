@@ -69,14 +69,15 @@ public abstract class CheckAggregatedSpringConfigurationMetadata extends Default
 	}
 
 	/**
-	 * The replacement usually lives in another module, so no module can ask this alone.
+	 * The replacement usually lives in another module, so no module can ask this alone. A
+	 * replacement only exists inside a deprecation, so asking for one is the whole
+	 * filter.
 	 * @return the properties whose replacement is missing
 	 */
 	private List<ConfigurationProperty> danglingReplacements() {
 		ConfigurationProperties properties = ConfigurationProperties.of(getConfigurationPropertyMetadata());
 		Set<String> known = properties.stream().map(ConfigurationProperty::name).collect(Collectors.toSet());
 		return properties.stream()
-			.filter(ConfigurationProperty::deprecated)
 			.filter((property) -> replacementOf(property) != null && !known.contains(replacementOf(property)))
 			.toList();
 	}

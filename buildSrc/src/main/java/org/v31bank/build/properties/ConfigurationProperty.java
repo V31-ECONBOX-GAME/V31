@@ -25,18 +25,16 @@ import java.util.Map;
  * @param type the fully qualified name of its type
  * @param defaultValue the value it has when nothing sets it
  * @param description what it is for, taken from the field's javadoc
- * @param deprecated whether the file carries the older boolean form of the deprecation
  * @param deprecation what the file says about the deprecation
  * @author Xander Wang
  * @since 0.2.0
  */
-record ConfigurationProperty(String name, String type, Object defaultValue, String description, boolean deprecated,
+record ConfigurationProperty(String name, String type, Object defaultValue, String description,
 		Deprecation deprecation) {
 
 	static ConfigurationProperty of(Map<String, Object> json) {
 		return new ConfigurationProperty((String) json.get("name"), (String) json.get("type"), json.get("defaultValue"),
-				(String) json.get("description"), json.containsKey("deprecated"),
-				Deprecation.of((Map<?, ?>) json.get("deprecation")));
+				(String) json.get("description"), Deprecation.of((Map<?, ?>) json.get("deprecation")));
 	}
 
 	record Deprecation(String reason, String replacement, String since, String level) {

@@ -98,7 +98,6 @@ final class MetadataFiles {
 			deprecation.put("since", since);
 		}
 		Map<String, Object> property = entry("name", name, "type", "java.lang.String");
-		property.put("deprecated", true);
 		property.put("deprecation", deprecation);
 		this.properties.add(property);
 		return this;
