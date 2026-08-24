@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.v31bank.build.task.TaskDependencies;
+import org.v31bank.build.util.SourceSets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -84,6 +85,15 @@ class ConfigurationPropertiesPluginTests {
 		assertThat(TaskDependencies
 			.namesOf(compileJava.getInputs().getFiles().getBuildDependencies().getDependencies(compileJava)))
 			.contains(JavaPlugin.PROCESS_RESOURCES_TASK_NAME);
+	}
+
+	@Test
+	void pointsTheProcessorAtAResourceDirectoryTheProjectAddedAfterwards() {
+		Project project = project();
+		SourceSets.of(project).main().resources().unwrap().srcDir("src/main/extra-resources");
+		JavaCompile compileJava = (JavaCompile) project.getTasks().getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME);
+		assertThat(compileJava.getOptions().getCompilerArgs())
+			.anyMatch((argument) -> argument.contains("src/main/resources,src/main/extra-resources"));
 	}
 
 	@Test
