@@ -13,163 +13,161 @@ package org.v31bank.ledger.api.v1;
  * Protobuf enum {@code v31.ledger.v1.LedgerAccountType}
  */
 @com.google.protobuf.Generated
-public enum LedgerAccountType
-    implements com.google.protobuf.ProtocolMessageEnum {
-  /**
-   * <pre>
-   * Never sent. Proto3 gives every enum a zero value, and leaving it unnamed
-   * would make "not set" indistinguishable from the first real member.
-   * </pre>
-   *
-   * <code>LEDGER_ACCOUNT_TYPE_UNSPECIFIED = 0;</code>
-   */
-  LEDGER_ACCOUNT_TYPE_UNSPECIFIED(0),
-  /**
-   * <code>LEDGER_ACCOUNT_TYPE_ASSET = 1;</code>
-   */
-  LEDGER_ACCOUNT_TYPE_ASSET(1),
-  /**
-   * <code>LEDGER_ACCOUNT_TYPE_LIABILITY = 2;</code>
-   */
-  LEDGER_ACCOUNT_TYPE_LIABILITY(2),
-  /**
-   * <code>LEDGER_ACCOUNT_TYPE_EQUITY = 3;</code>
-   */
-  LEDGER_ACCOUNT_TYPE_EQUITY(3),
-  /**
-   * <code>LEDGER_ACCOUNT_TYPE_REVENUE = 4;</code>
-   */
-  LEDGER_ACCOUNT_TYPE_REVENUE(4),
-  /**
-   * <code>LEDGER_ACCOUNT_TYPE_EXPENSE = 5;</code>
-   */
-  LEDGER_ACCOUNT_TYPE_EXPENSE(5),
-  UNRECOGNIZED(-1),
-  ;
+public enum LedgerAccountType implements com.google.protobuf.ProtocolMessageEnum {
 
-  static {
-    com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
-      com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
-      /* major= */ 4,
-      /* minor= */ 34,
-      /* patch= */ 2,
-      /* suffix= */ "",
-      "LedgerAccountType");
-  }
-  /**
-   * <pre>
-   * Never sent. Proto3 gives every enum a zero value, and leaving it unnamed
-   * would make "not set" indistinguishable from the first real member.
-   * </pre>
-   *
-   * <code>LEDGER_ACCOUNT_TYPE_UNSPECIFIED = 0;</code>
-   */
-  public static final int LEDGER_ACCOUNT_TYPE_UNSPECIFIED_VALUE = 0;
-  /**
-   * <code>LEDGER_ACCOUNT_TYPE_ASSET = 1;</code>
-   */
-  public static final int LEDGER_ACCOUNT_TYPE_ASSET_VALUE = 1;
-  /**
-   * <code>LEDGER_ACCOUNT_TYPE_LIABILITY = 2;</code>
-   */
-  public static final int LEDGER_ACCOUNT_TYPE_LIABILITY_VALUE = 2;
-  /**
-   * <code>LEDGER_ACCOUNT_TYPE_EQUITY = 3;</code>
-   */
-  public static final int LEDGER_ACCOUNT_TYPE_EQUITY_VALUE = 3;
-  /**
-   * <code>LEDGER_ACCOUNT_TYPE_REVENUE = 4;</code>
-   */
-  public static final int LEDGER_ACCOUNT_TYPE_REVENUE_VALUE = 4;
-  /**
-   * <code>LEDGER_ACCOUNT_TYPE_EXPENSE = 5;</code>
-   */
-  public static final int LEDGER_ACCOUNT_TYPE_EXPENSE_VALUE = 5;
+	/**
+	 * <pre>
+	 * Never sent. Proto3 gives every enum a zero value, and leaving it unnamed
+	 * would make "not set" indistinguishable from the first real member.
+	 * </pre>
+	 *
+	 * <code>LEDGER_ACCOUNT_TYPE_UNSPECIFIED = 0;</code>
+	 */
+	LEDGER_ACCOUNT_TYPE_UNSPECIFIED(0),
+	/**
+	 * <code>LEDGER_ACCOUNT_TYPE_ASSET = 1;</code>
+	 */
+	LEDGER_ACCOUNT_TYPE_ASSET(1),
+	/**
+	 * <code>LEDGER_ACCOUNT_TYPE_LIABILITY = 2;</code>
+	 */
+	LEDGER_ACCOUNT_TYPE_LIABILITY(2),
+	/**
+	 * <code>LEDGER_ACCOUNT_TYPE_EQUITY = 3;</code>
+	 */
+	LEDGER_ACCOUNT_TYPE_EQUITY(3),
+	/**
+	 * <code>LEDGER_ACCOUNT_TYPE_REVENUE = 4;</code>
+	 */
+	LEDGER_ACCOUNT_TYPE_REVENUE(4),
+	/**
+	 * <code>LEDGER_ACCOUNT_TYPE_EXPENSE = 5;</code>
+	 */
+	LEDGER_ACCOUNT_TYPE_EXPENSE(5), UNRECOGNIZED(-1),;
 
+	static {
+		com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+				com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC, /* major= */ 4,
+				/* minor= */ 34, /* patch= */ 2, /* suffix= */ "", "LedgerAccountType");
+	}
+	/**
+	 * <pre>
+	 * Never sent. Proto3 gives every enum a zero value, and leaving it unnamed
+	 * would make "not set" indistinguishable from the first real member.
+	 * </pre>
+	 *
+	 * <code>LEDGER_ACCOUNT_TYPE_UNSPECIFIED = 0;</code>
+	 */
+	public static final int LEDGER_ACCOUNT_TYPE_UNSPECIFIED_VALUE = 0;
 
-  public final int getNumber() {
-    if (this == UNRECOGNIZED) {
-      throw new java.lang.IllegalArgumentException(
-          "Can't get the number of an unknown enum value.");
-    }
-    return value;
-  }
+	/**
+	 * <code>LEDGER_ACCOUNT_TYPE_ASSET = 1;</code>
+	 */
+	public static final int LEDGER_ACCOUNT_TYPE_ASSET_VALUE = 1;
 
-  /**
-   * @param value The numeric wire value of the corresponding enum entry.
-   * @return The enum associated with the given numeric wire value.
-   * @deprecated Use {@link #forNumber(int)} instead.
-   */
-  @java.lang.Deprecated
-  public static LedgerAccountType valueOf(int value) {
-    return forNumber(value);
-  }
+	/**
+	 * <code>LEDGER_ACCOUNT_TYPE_LIABILITY = 2;</code>
+	 */
+	public static final int LEDGER_ACCOUNT_TYPE_LIABILITY_VALUE = 2;
 
-  /**
-   * @param value The numeric wire value of the corresponding enum entry.
-   * @return The enum associated with the given numeric wire value.
-   */
-  public static LedgerAccountType forNumber(int value) {
-    switch (value) {
-      case 0: return LEDGER_ACCOUNT_TYPE_UNSPECIFIED;
-      case 1: return LEDGER_ACCOUNT_TYPE_ASSET;
-      case 2: return LEDGER_ACCOUNT_TYPE_LIABILITY;
-      case 3: return LEDGER_ACCOUNT_TYPE_EQUITY;
-      case 4: return LEDGER_ACCOUNT_TYPE_REVENUE;
-      case 5: return LEDGER_ACCOUNT_TYPE_EXPENSE;
-      default: return null;
-    }
-  }
+	/**
+	 * <code>LEDGER_ACCOUNT_TYPE_EQUITY = 3;</code>
+	 */
+	public static final int LEDGER_ACCOUNT_TYPE_EQUITY_VALUE = 3;
 
-  public static com.google.protobuf.Internal.EnumLiteMap<LedgerAccountType>
-      internalGetValueMap() {
-    return internalValueMap;
-  }
-  private static final com.google.protobuf.Internal.EnumLiteMap<
-      LedgerAccountType> internalValueMap =
-        new com.google.protobuf.Internal.EnumLiteMap<LedgerAccountType>() {
-          public LedgerAccountType findValueByNumber(int number) {
-            return LedgerAccountType.forNumber(number);
-          }
-        };
+	/**
+	 * <code>LEDGER_ACCOUNT_TYPE_REVENUE = 4;</code>
+	 */
+	public static final int LEDGER_ACCOUNT_TYPE_REVENUE_VALUE = 4;
 
-  public final com.google.protobuf.Descriptors.EnumValueDescriptor
-      getValueDescriptor() {
-    if (this == UNRECOGNIZED) {
-      throw new java.lang.IllegalStateException(
-          "Can't get the descriptor of an unrecognized enum value.");
-    }
-    return getDescriptor().getValue(ordinal());
-  }
-  public final com.google.protobuf.Descriptors.EnumDescriptor
-      getDescriptorForType() {
-    return getDescriptor();
-  }
-  public static com.google.protobuf.Descriptors.EnumDescriptor
-      getDescriptor() {
-    return org.v31bank.ledger.api.v1.LedgerAccountProto.getDescriptor().getEnumType(0);
-  }
+	/**
+	 * <code>LEDGER_ACCOUNT_TYPE_EXPENSE = 5;</code>
+	 */
+	public static final int LEDGER_ACCOUNT_TYPE_EXPENSE_VALUE = 5;
 
-  private static final LedgerAccountType[] VALUES = values();
+	public final int getNumber() {
+		if (this == UNRECOGNIZED) {
+			throw new java.lang.IllegalArgumentException("Can't get the number of an unknown enum value.");
+		}
+		return value;
+	}
 
-  public static LedgerAccountType valueOf(
-      com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
-    if (desc.getType() != getDescriptor()) {
-      throw new java.lang.IllegalArgumentException(
-        "EnumValueDescriptor is not for this type.");
-    }
-    if (desc.getIndex() == -1) {
-      return UNRECOGNIZED;
-    }
-    return VALUES[desc.getIndex()];
-  }
+	/**
+	 * @param value The numeric wire value of the corresponding enum entry.
+	 * @return The enum associated with the given numeric wire value.
+	 * @deprecated Use {@link #forNumber(int)} instead.
+	 */
+	@java.lang.Deprecated
+	public static LedgerAccountType valueOf(int value) {
+		return forNumber(value);
+	}
 
-  private final int value;
+	/**
+	 * @param value The numeric wire value of the corresponding enum entry.
+	 * @return The enum associated with the given numeric wire value.
+	 */
+	public static LedgerAccountType forNumber(int value) {
+		switch (value) {
+			case 0:
+				return LEDGER_ACCOUNT_TYPE_UNSPECIFIED;
+			case 1:
+				return LEDGER_ACCOUNT_TYPE_ASSET;
+			case 2:
+				return LEDGER_ACCOUNT_TYPE_LIABILITY;
+			case 3:
+				return LEDGER_ACCOUNT_TYPE_EQUITY;
+			case 4:
+				return LEDGER_ACCOUNT_TYPE_REVENUE;
+			case 5:
+				return LEDGER_ACCOUNT_TYPE_EXPENSE;
+			default:
+				return null;
+		}
+	}
 
-  private LedgerAccountType(int value) {
-    this.value = value;
-  }
+	public static com.google.protobuf.Internal.EnumLiteMap<LedgerAccountType> internalGetValueMap() {
+		return internalValueMap;
+	}
 
-  // @@protoc_insertion_point(enum_scope:v31.ledger.v1.LedgerAccountType)
+	private static final com.google.protobuf.Internal.EnumLiteMap<LedgerAccountType> internalValueMap = new com.google.protobuf.Internal.EnumLiteMap<LedgerAccountType>() {
+		public LedgerAccountType findValueByNumber(int number) {
+			return LedgerAccountType.forNumber(number);
+		}
+	};
+
+	public final com.google.protobuf.Descriptors.EnumValueDescriptor getValueDescriptor() {
+		if (this == UNRECOGNIZED) {
+			throw new java.lang.IllegalStateException("Can't get the descriptor of an unrecognized enum value.");
+		}
+		return getDescriptor().getValue(ordinal());
+	}
+
+	public final com.google.protobuf.Descriptors.EnumDescriptor getDescriptorForType() {
+		return getDescriptor();
+	}
+
+	public static com.google.protobuf.Descriptors.EnumDescriptor getDescriptor() {
+		return org.v31bank.ledger.api.v1.LedgerAccountProto.getDescriptor().getEnumType(0);
+	}
+
+	private static final LedgerAccountType[] VALUES = values();
+
+	public static LedgerAccountType valueOf(com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+		if (desc.getType() != getDescriptor()) {
+			throw new java.lang.IllegalArgumentException("EnumValueDescriptor is not for this type.");
+		}
+		if (desc.getIndex() == -1) {
+			return UNRECOGNIZED;
+		}
+		return VALUES[desc.getIndex()];
+	}
+
+	private final int value;
+
+	private LedgerAccountType(int value) {
+		this.value = value;
+	}
+
+	// @@protoc_insertion_point(enum_scope:v31.ledger.v1.LedgerAccountType)
+
 }
-

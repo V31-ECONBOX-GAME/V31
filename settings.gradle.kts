@@ -69,6 +69,10 @@ include("starter:V31-web-spring-boot-starter")
 include("module:V31-web-spring-boot")
 
 include("smoke-test:V31-grpc-smoke-test")
+include("smoke-test:V31-web-smoke-test")
+include("smoke-test:V31-data-jpa-smoke-test")
+include("smoke-test:V31-jooq-smoke-test")
+include("smoke-test:V31-data-valkey-smoke-test")
 
 include("integration-test:V31-bom-integration-test")
 include("integration-test:V31-configuration-roles-integration-test")

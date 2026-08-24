@@ -104,8 +104,8 @@ class ConfigurationRolesIntegrationTests {
 		BuildResult result = buildAndFail("""
 				dependencies { "autoConfigurationOptionalClasspath"("io.lettuce:lettuce-core:7.5.2.RELEASE") }
 				""", "help");
-		assertThat(result.getOutput())
-			.contains("Dependencies can not be declared against the `autoConfigurationOptionalClasspath` configuration");
+		assertThat(result.getOutput()).contains(
+				"Dependencies can not be declared against the `autoConfigurationOptionalClasspath` configuration");
 	}
 
 	/**
