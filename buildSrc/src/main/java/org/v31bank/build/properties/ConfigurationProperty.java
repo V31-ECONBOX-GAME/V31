@@ -33,16 +33,15 @@ import java.util.Map;
 record ConfigurationProperty(String name, String type, Object defaultValue, String description, boolean deprecated,
 		Deprecation deprecation) {
 
-	@SuppressWarnings("unchecked")
 	static ConfigurationProperty of(Map<String, Object> json) {
 		return new ConfigurationProperty((String) json.get("name"), (String) json.get("type"), json.get("defaultValue"),
 				(String) json.get("description"), json.containsKey("deprecated"),
-				Deprecation.of((Map<String, Object>) json.get("deprecation")));
+				Deprecation.of((Map<?, ?>) json.get("deprecation")));
 	}
 
 	record Deprecation(String reason, String replacement, String since, String level) {
 
-		static Deprecation of(Map<String, Object> json) {
+		static Deprecation of(Map<?, ?> json) {
 			return (json != null) ? new Deprecation((String) json.get("reason"), (String) json.get("replacement"),
 					(String) json.get("since"), (String) json.get("level")) : null;
 		}
