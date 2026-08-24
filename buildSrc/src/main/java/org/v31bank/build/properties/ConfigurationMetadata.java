@@ -20,7 +20,9 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import groovy.json.JsonSlurper;
+import tools.jackson.core.type.TypeReference;
+
+import org.v31bank.build.util.JsonFiles;
 
 /**
  * One {@code spring-configuration-metadata.json}, read as the structure it was written as
@@ -33,29 +35,27 @@ final class ConfigurationMetadata {
 
 	static final List<String> ELEMENT_TYPES = List.of("groups", "properties", "hints");
 
-	private final Map<String, Object> json;
+	private static final TypeReference<Map<String, List<Map<String, Object>>>> TYPE = new TypeReference<>() {
+	};
 
-	private ConfigurationMetadata(Map<String, Object> json) {
+	private final Map<String, List<Map<String, Object>>> json;
+
+	private ConfigurationMetadata(Map<String, List<Map<String, Object>>> json) {
 		this.json = json;
 	}
 
-	@SuppressWarnings("unchecked")
 	/**
-	 * Gradle's own Groovy parses it, at no dependency cost, and keeps the file's order.
+	 * The shape is declared rather than cast to, so a file that does not have it fails
+	 * here rather than wherever the first surprising value is read.
 	 * @param file the file to read
 	 * @return the result
 	 */
 	static ConfigurationMetadata of(File file) {
-		Object parsed = new JsonSlurper().parse(file);
-		if (!(parsed instanceof Map)) {
-			throw new IllegalArgumentException("%s does not hold a JSON object".formatted(file));
-		}
-		return new ConfigurationMetadata((Map<String, Object>) parsed);
+		return new ConfigurationMetadata(JsonFiles.read(file, TYPE));
 	}
 
-	@SuppressWarnings("unchecked")
 	List<Map<String, Object>> elements(String elementType) {
-		return (List<Map<String, Object>>) this.json.getOrDefault(elementType, List.of());
+		return this.json.getOrDefault(elementType, List.of());
 	}
 
 	List<String> names(String elementType) {

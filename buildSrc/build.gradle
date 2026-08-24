@@ -40,6 +40,7 @@ dependencies {
 
 	implementation("io.spring.javaformat:spring-javaformat-gradle-plugin:${javaFormatVersion}")
 	implementation("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	implementation("tools.jackson.core:jackson-databind:${jacksonVersion}")
 
 	testImplementation(platform("org.junit:junit-bom:${junitJupiterVersion}"))
 	testImplementation("org.assertj:assertj-core:${assertjVersion}")
