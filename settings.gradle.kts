@@ -32,6 +32,7 @@ include("library")
 include("platform")
 include("processor")
 include("integration-test")
+include("smoke-test")
 
 include("library:V31-core")
 
@@ -66,6 +67,8 @@ include("starter:V31-grpc-spring-boot-starter")
 include("module:V31-grpc-spring-boot")
 include("starter:V31-web-spring-boot-starter")
 include("module:V31-web-spring-boot")
+
+include("smoke-test:V31-grpc-smoke-test")
 
 include("integration-test:V31-bom-integration-test")
 include("integration-test:V31-configuration-roles-integration-test")
