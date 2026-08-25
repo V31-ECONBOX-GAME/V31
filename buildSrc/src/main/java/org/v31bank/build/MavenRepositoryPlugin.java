@@ -30,6 +30,7 @@ import org.gradle.api.plugins.JavaPlatformPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
+import org.gradle.api.tasks.TaskProvider;
 
 import org.v31bank.build.util.Directories;
 
@@ -87,7 +88,9 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 		// Emptied first, so a rename or a removal leaves no stale artifact to resolve
 		publishTask.doFirst(new CleanAction(location));
 		Configuration repository = project.getConfigurations().create(MAVEN_REPOSITORY_CONFIGURATION_NAME);
-		project.getArtifacts().add(repository.getName(), location, (artifact) -> artifact.builtBy(publishTask));
+		// Taken from the task, not the layout, so the artifact carries what builds it
+		TaskProvider<Task> publish = project.getTasks().named(publishTask.getName());
+		project.getArtifacts().add(repository.getName(), publish.map((_) -> location));
 		DependencySet contents = repository.getDependencies();
 		project.getPlugins()
 			.withType(JavaPlugin.class, (_) -> addMavenRepositoryProjectDependencies(project,

@@ -152,9 +152,7 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 						objects.named(Category.class, Category.DOCUMENTATION));
 				attributes.attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.class, METADATA_USAGE));
 			}));
-		project.getArtifacts()
-			.add(METADATA_CONFIGURATION_NAME, generatedMetadata(project, main),
-					(artifact) -> artifact.builtBy(main.getClassesTaskName()));
+		project.getArtifacts().add(METADATA_CONFIGURATION_NAME, generatedMetadata(project, main));
 	}
 
 	/**

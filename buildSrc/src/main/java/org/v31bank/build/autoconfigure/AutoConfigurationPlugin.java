@@ -113,9 +113,7 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 				task.dependsOn(main.getClassesTaskName());
 				task.getOutputFile().set(project.getLayout().getBuildDirectory().file(METADATA_FILE));
 			});
-		project.getArtifacts()
-			.add(METADATA_NAME, metadata.map(AutoConfigurationMetadata::getOutputFile),
-					(artifact) -> artifact.builtBy(metadata));
+		project.getArtifacts().add(METADATA_NAME, metadata.map(AutoConfigurationMetadata::getOutputFile));
 	}
 
 	private void registerChecks(Project project, SourceSet main) {

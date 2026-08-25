@@ -88,9 +88,7 @@ public class StarterPlugin implements Plugin<Project> {
 				task.getDestination().set(project.getLayout().getBuildDirectory().file("starter-metadata.properties"));
 			});
 		project.getConfigurations().consumable(STARTER_METADATA).get();
-		project.getArtifacts()
-			.add(STARTER_METADATA, metadata.map(StarterMetadata::getDestination),
-					(artifact) -> artifact.builtBy(metadata));
+		project.getArtifacts().add(STARTER_METADATA, metadata.map(StarterMetadata::getDestination));
 	}
 
 	/**

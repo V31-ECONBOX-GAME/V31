@@ -160,7 +160,7 @@ class ConfigurationPropertiesPluginTests {
 		assertThat(metadata.getArtifacts()).singleElement()
 			.satisfies((artifact) -> assertThat(
 					TaskDependencies.namesOf(artifact.getBuildDependencies().getDependencies(null)))
-				.contains(JavaPlugin.CLASSES_TASK_NAME));
+				.contains(JavaPlugin.COMPILE_JAVA_TASK_NAME));
 	}
 
 	private Project project() {
