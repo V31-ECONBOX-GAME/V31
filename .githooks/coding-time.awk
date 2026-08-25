@@ -68,6 +68,14 @@ function hours(minutes,   figure) {
 	return figure
 }
 
+# A count of one takes a singular noun. The test is on the count rather than on
+# what grouped() returned, which may carry a thousands separator, and on the raw
+# figure rather than a rounded one: "1.0" is stripped to "1" by hours() before it
+# ever reaches here.
+function plural(count, word) {
+	return (count == 1) ? word : word "s"
+}
+
 # Roughly how wide a string runs at a given font size in the card's font stack.
 # SVG cannot measure text, so the card is sized from an estimate rather than
 # from the glyphs themselves.
@@ -173,9 +181,12 @@ END {
 	last_played = short_civil(today)
 
 	headline = hours(total)
-	played = grouped(headline) " hours"
-	summary = grouped(hours(recently)) " hours in the last " recent " days   \302\267   " \
-			grouped(sittings) " sittings   \302\267   " grouped(commits) " commits"
+	played = grouped(headline) " " plural(headline, "hour")
+	recent_hours = hours(recently)
+	summary = grouped(recent_hours) " " plural(recent_hours, "hour") \
+			" in the last " recent " " plural(recent, "day") "   \302\267   " \
+			grouped(sittings) " " plural(sittings, "sitting") "   \302\267   " \
+			grouped(commits) " " plural(commits, "commit")
 
 	PAD = 24
 	LABEL_Y = 40
@@ -193,10 +204,20 @@ END {
 	# the summary and is much the shorter of the two, so the summary still sets this.
 	width = int(PAD + width_of(played, STAT_SIZE) + 46 + width_of(summary, SUMMARY_SIZE) + PAD)
 	span = width - PAD * 2
-	# A bar per day, each taking about two thirds of its slot: thin enough to read
-	# as a chart rather than a row of blocks, and it stays that way as days pile up.
+	# A bar per day, each leaving a sliver of its slot for the gap to the next one:
+	# thin enough to read as a chart rather than a row of blocks, and it stays that
+	# way as days pile up.
+	#
+	# The sliver is capped rather than a flat third, because a third of a slot is a
+	# gap only while the slots are narrow. One slot wide is the whole chart, and a
+	# third of it became a third of the card standing empty to the right of a
+	# single bar, past the axis drawn to the full width underneath it.
 	pitch = span / days
-	bar = int(pitch * 0.68)
+	slack = pitch * 0.32
+	if (slack > 6) {
+		slack = 6
+	}
+	bar = int(pitch - slack)
 	if (bar < 2) {
 		bar = 2
 	}
@@ -204,7 +225,8 @@ END {
 	printf "" > card
 	svg("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" width "\" height=\"" HEIGHT "\"" \
 			" viewBox=\"0 0 " width " " HEIGHT "\" role=\"img\"" \
-			" aria-label=\"Play time: " headline " hours over " commits " commits," \
+			" aria-label=\"Play time: " headline " " plural(headline, "hour") \
+					" over " commits " " plural(commits, "commit") "," \
 					" last played " last_played "\">")
 	svg("  <style>")
 	svg("    .card { fill: #0d1117; stroke: #30363d }")
@@ -242,7 +264,7 @@ END {
 
 	svg("  <text class=\"axis\" x=\"" PAD "\" y=\"" AXIS_Y "\">" first_seen "</text>")
 	svg("  <text class=\"axis\" x=\"" (width / 2) "\" y=\"" AXIS_Y "\" text-anchor=\"middle\">" \
-			grouped(lived) (lived == 1 ? " day" : " days") "</text>")
+			grouped(lived) " " plural(lived, "day") "</text>")
 	svg("  <text class=\"axis\" x=\"" (width - PAD) "\" y=\"" AXIS_Y "\" text-anchor=\"end\">" last_seen "</text>")
 	svg("</svg>")
 	close(card)
@@ -255,9 +277,11 @@ END {
 	markdown("<summary>How this is counted</summary>")
 	markdown("")
 	markdown("Commits record when work was saved, never how long it took, so this is an")
-	markdown("estimate rather than a timesheet. Commits less than " int(gap / 60) " minutes apart")
+	markdown("estimate rather than a timesheet. Commits less than " int(gap / 60) " " \
+			plural(int(gap / 60), "minute") " apart")
 	markdown("count as one sitting and contribute the real time between them; a commit that")
-	markdown("opens a sitting contributes a flat " opening " minutes for the work that led up to")
+	markdown("opens a sitting contributes a flat " opening " " plural(opening, "minute") \
+			" for the work that led up to")
 	markdown("it. Merges are skipped, and nothing that was never committed is visible here.")
 	markdown("")
 	markdown("Covers every author. Regenerated on each commit by `.githooks/coding-time`,")
