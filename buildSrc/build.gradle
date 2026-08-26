@@ -38,9 +38,11 @@ dependencies {
 	checkstyle("com.puppycrawl.tools:checkstyle:${checkstyle.toolVersion}")
 	checkstyle("io.spring.javaformat:spring-javaformat-checkstyle:${javaFormatVersion}")
 
+	implementation(platform("tools.jackson:jackson-bom:${jacksonVersion}"))
+	implementation(platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion"))
 	implementation("io.spring.javaformat:spring-javaformat-gradle-plugin:${javaFormatVersion}")
 	implementation("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-	implementation("tools.jackson.core:jackson-databind:${jacksonVersion}")
+	implementation("tools.jackson.core:jackson-databind")
 
 	testImplementation(platform("org.junit:junit-bom:${junitJupiterVersion}"))
 	testImplementation("org.assertj:assertj-core:${assertjVersion}")
