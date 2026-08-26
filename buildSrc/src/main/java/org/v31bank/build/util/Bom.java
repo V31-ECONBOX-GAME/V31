@@ -39,11 +39,8 @@ import org.gradle.api.plugins.JavaBasePlugin;
  * Bom.of(project, project.project(":platform:V31-dependencies")).version("io.grpc:grpc-protobuf")
  * </pre>
  *
- * The BOM is asked rather than read: the module is resolved without a version of its own,
- * beside the BOM, so the version it comes back with is the one it would have on a
- * consumer's classpath. Nothing here knows what a pom looks like, so a BOM that renames a
- * property, spells one in terms of another or inherits one from a parent needs no
- * allowance made for it.
+ * The BOM is asked rather than read: the module carries no version of its own, so the one
+ * it comes back with is the one it would have on a consumer's classpath.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -64,14 +61,12 @@ public final class Bom {
 
 	/**
 	 * The versions a BOM settles.
-	 * @param project the project to resolve with, which has to be one that resolves Java
-	 * libraries: matching a platform's variant takes the attributes {@code java-base}
-	 * brings, and without them a pom answers with its default variant, which carries none
-	 * of its constraints
+	 * @param project the project to resolve with, which needs {@code java-base}: without
+	 * the attributes it brings, a pom answers with its default variant, which carries no
+	 * constraints
 	 * @param notation what names the BOM, in any notation
 	 * {@link org.gradle.api.artifacts.dsl.DependencyHandler#platform(Object) platform}
-	 * takes: a {@code group:artifact:version} string, a project that publishes one, a
-	 * dependency already in hand
+	 * takes
 	 * @return the versions it settles
 	 * @throws GradleException if the project resolves no Java libraries
 	 */
@@ -85,12 +80,9 @@ public final class Bom {
 	}
 
 	/**
-	 * The version this BOM settles a module at.
-	 * <p>
-	 * Answered on the spot rather than through a {@link org.gradle.api.provider.Provider
-	 * Provider}: a provider handed to a task is queried as the configuration cache is
-	 * written, and a configuration cannot be resolved there. Call it while configuring,
-	 * where resolving is allowed.
+	 * The version this BOM settles a module at, answered on the spot because a provider
+	 * handed to a task is queried as the configuration cache is written, where a
+	 * configuration cannot be resolved.
 	 * @param module the module, as {@code group:name}
 	 * @return its version
 	 * @throws GradleException if the BOM settles no version for the module
@@ -105,8 +97,7 @@ public final class Bom {
 	}
 
 	/**
-	 * The module asked for without a version of its own, so that the only version it can
-	 * come back with is the one the BOM beside it hands out.
+	 * The module asked for without a version, so only the BOM beside it can supply one.
 	 * @param module the module, as {@code group:name}
 	 * @return what the pair resolves to
 	 */
@@ -134,8 +125,7 @@ public final class Bom {
 	}
 
 	/**
-	 * What to call the BOM when it has to be named in a failure, since a notation can
-	 * arrive as anything.
+	 * What to call the BOM in a failure, since a notation can arrive as anything.
 	 * @param bom the dependency the notation was read as
 	 * @return the coordinate it stands for
 	 */

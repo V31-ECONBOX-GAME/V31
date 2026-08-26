@@ -88,10 +88,9 @@ public class ProtobufPlugin implements Plugin<Project> {
 	private static final String BUF_VERSION = "bufVersion";
 
 	/**
-	 * A generator has to match the runtime it generates for, so each one is fetched at
-	 * the version the platform this project compiles against settles that runtime at. The
-	 * runtime is this project's own, listed in {@link #RUNTIME}, rather than a coordinate
-	 * named a second time for the generator, so the two cannot be left at odds.
+	 * A generator has to match the runtime it generates for, so each is fetched at the
+	 * version the platform settles this project's own runtime at, listed in
+	 * {@link #RUNTIME} rather than named a second time here.
 	 */
 	private static final String PROTOBUF_RUNTIME = "com.google.protobuf:protobuf-java";
 
@@ -201,9 +200,9 @@ public class ProtobufPlugin implements Plugin<Project> {
 
 	/**
 	 * Registered on the root project so the whole build shares one install and
-	 * {@code buf.gen.yaml} can name one path, but asked of the project that wants them:
-	 * the root project resolves no Java libraries, and a BOM asked there settles nothing.
-	 * Looked up by name first, because a second {@code register} of the same name throws.
+	 * {@code buf.gen.yaml} can name one path, but versioned from the project that wants
+	 * them, since the root project resolves no Java libraries. Looked up by name first,
+	 * because a second {@code register} of the same name throws.
 	 * @param project the project the generated sources are for
 	 * @return the task that installs them
 	 */
