@@ -42,6 +42,9 @@ import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.jvm.toolchain.JavaLanguageVersion;
 
+import org.v31bank.build.constant.Coordinates;
+import org.v31bank.build.constant.Projects;
+
 /**
  * Conventions applied to every project that builds Java.
  * <p>
@@ -53,8 +56,6 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion;
  * @since 0.2.0
  */
 class JavaConventions {
-
-	private static final String INTERNAL_DEPENDENCIES = ":platform:V31-internal-dependencies";
 
 	/**
 	 * Names the JDK that compiles the code and runs the tests.
@@ -124,8 +125,8 @@ class JavaConventions {
 		configurations.matching(JavaConventions::needsManagedVersions)
 			.all((configuration) -> configuration.extendsFrom(dependencyManagement));
 		Dependency platform = project.getDependencies()
-			.enforcedPlatform(
-					project.getDependencies().project(Collections.singletonMap("path", INTERNAL_DEPENDENCIES)));
+			.enforcedPlatform(project.getDependencies()
+				.project(Collections.singletonMap("path", Projects.INTERNAL_DEPENDENCIES)));
 		dependencyManagement.getDependencies().add(platform);
 	}
 
@@ -168,7 +169,7 @@ class JavaConventions {
 		});
 		project.getPlugins()
 			.withType(JavaPlugin.class, (_) -> project.getDependencies()
-				.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, "org.junit.platform:junit-platform-launcher"));
+				.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, Coordinates.JUNIT_PLATFORM_LAUNCHER));
 	}
 
 }

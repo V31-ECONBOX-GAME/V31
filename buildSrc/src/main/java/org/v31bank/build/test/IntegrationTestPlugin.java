@@ -28,6 +28,7 @@ import org.gradle.plugins.ide.idea.IdeaPlugin;
 import org.gradle.plugins.ide.idea.model.IdeaModel;
 import org.gradle.plugins.ide.idea.model.IdeaModule;
 
+import org.v31bank.build.constant.Coordinates;
 import org.v31bank.build.util.SourceSets;
 
 /**
@@ -71,7 +72,7 @@ public class IntegrationTestPlugin implements Plugin<Project> {
 		TaskProvider<Test> task = createTestTask(project, intTestSourceSet);
 		project.getTasks().named(LifecycleBasePlugin.CHECK_TASK_NAME).configure((check) -> check.dependsOn(task));
 		project.getDependencies()
-			.add(intTestSourceSet.getRuntimeOnlyConfigurationName(), "org.junit.platform:junit-platform-launcher");
+			.add(intTestSourceSet.getRuntimeOnlyConfigurationName(), Coordinates.JUNIT_PLATFORM_LAUNCHER);
 		declareAsTestSources(project, intTestSourceSet);
 	}
 

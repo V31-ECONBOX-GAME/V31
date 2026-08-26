@@ -39,6 +39,8 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 
+import org.v31bank.build.constant.Projects;
+
 /**
  * Fails when a dependency excludes something it never brings in.
  * <p>
@@ -50,12 +52,6 @@ import org.gradle.api.tasks.TaskAction;
  * @since 0.2.0
  */
 public abstract class CheckClasspathForUnnecessaryExclusions extends ClasspathCheck {
-
-	/**
-	 * The published platform, not the internal one: a consumer has only this one, so
-	 * resolving here also catches a starter nobody outside this build could use.
-	 */
-	private static final String DEPENDENCIES = ":platform:V31-dependencies";
 
 	/**
 	 * The resolved classpath does not change when an unnecessary exclusion is added or
@@ -84,8 +80,8 @@ public abstract class CheckClasspathForUnnecessaryExclusions extends ClasspathCh
 	public void setClasspath(Configuration classpath) {
 		super.setClasspath(classpath);
 		DependencyHandler dependencies = getProject().getDependencies();
-		Dependency platform = dependencies
-			.create(dependencies.platform(dependencies.project(Collections.singletonMap("path", DEPENDENCIES))));
+		Dependency platform = dependencies.create(
+				dependencies.platform(dependencies.project(Collections.singletonMap("path", Projects.DEPENDENCIES))));
 		classpath.getAllDependencies().all((dependency) -> {
 			if (!(dependency instanceof ModuleDependency moduleDependency)) {
 				return;
