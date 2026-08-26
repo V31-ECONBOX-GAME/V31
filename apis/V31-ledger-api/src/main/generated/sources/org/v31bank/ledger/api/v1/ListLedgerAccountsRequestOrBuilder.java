@@ -7,79 +7,76 @@ package org.v31bank.ledger.api.v1;
 
 @com.google.protobuf.Generated
 public interface ListLedgerAccountsRequestOrBuilder extends
-		// @@protoc_insertion_point(interface_extends:v31.ledger.v1.ListLedgerAccountsRequest)
-		com.google.protobuf.MessageOrBuilder {
+    // @@protoc_insertion_point(interface_extends:v31.ledger.v1.ListLedgerAccountsRequest)
+    com.google.protobuf.MessageOrBuilder {
 
-	/**
-	 * <pre>
-	 * One-based, to match the rest of the platform. Zero means the first page.
-	 * </pre>
-	 *
-	 * <code>int32 page_number = 1 [json_name = "pageNumber"];</code>
-	 * @return The pageNumber.
-	 */
-	int getPageNumber();
+  /**
+   * <pre>
+   * One-based, to match the rest of the platform. Zero means the first page.
+   * </pre>
+   *
+   * <code>int32 page_number = 1 [json_name = "pageNumber"];</code>
+   * @return The pageNumber.
+   */
+  int getPageNumber();
 
-	/**
-	 * <pre>
-	 * Zero means the server's default of 10; anything above 500 is clamped to it.
-	 * </pre>
-	 *
-	 * <code>int32 page_size = 2 [json_name = "pageSize"];</code>
-	 * @return The pageSize.
-	 */
-	int getPageSize();
+  /**
+   * <pre>
+   * Zero means the server's default of 10; anything above 500 is clamped to it.
+   * </pre>
+   *
+   * <code>int32 page_size = 2 [json_name = "pageSize"];</code>
+   * @return The pageSize.
+   */
+  int getPageSize();
 
-	/**
-	 * <pre>
-	 * Fragment matched against the code, case-insensitive. Empty means no filter.
-	 * </pre>
-	 *
-	 * <code>string code = 3 [json_name = "code"];</code>
-	 * @return The code.
-	 */
-	java.lang.String getCode();
+  /**
+   * <pre>
+   * Fragment matched against the code, case-insensitive. Empty means no filter.
+   * </pre>
+   *
+   * <code>string code = 3 [json_name = "code"];</code>
+   * @return The code.
+   */
+  java.lang.String getCode();
+  /**
+   * <pre>
+   * Fragment matched against the code, case-insensitive. Empty means no filter.
+   * </pre>
+   *
+   * <code>string code = 3 [json_name = "code"];</code>
+   * @return The bytes for code.
+   */
+  com.google.protobuf.ByteString
+      getCodeBytes();
 
-	/**
-	 * <pre>
-	 * Fragment matched against the code, case-insensitive. Empty means no filter.
-	 * </pre>
-	 *
-	 * <code>string code = 3 [json_name = "code"];</code>
-	 * @return The bytes for code.
-	 */
-	com.google.protobuf.ByteString getCodeBytes();
+  /**
+   * <pre>
+   * Unspecified means no filter.
+   * </pre>
+   *
+   * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
+   * @return The enum numeric value on the wire for type.
+   */
+  int getTypeValue();
+  /**
+   * <pre>
+   * Unspecified means no filter.
+   * </pre>
+   *
+   * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
+   * @return The type.
+   */
+  org.v31bank.ledger.api.v1.LedgerAccountType getType();
 
-	/**
-	 * <pre>
-	 * Unspecified means no filter.
-	 * </pre>
-	 *
-	 * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
-	 * @return The enum numeric value on the wire for type.
-	 */
-	int getTypeValue();
-
-	/**
-	 * <pre>
-	 * Unspecified means no filter.
-	 * </pre>
-	 *
-	 * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
-	 * @return The type.
-	 */
-	org.v31bank.ledger.api.v1.LedgerAccountType getType();
-
-	/**
-	 * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
-	 * @return The enum numeric value on the wire for status.
-	 */
-	int getStatusValue();
-
-	/**
-	 * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
-	 * @return The status.
-	 */
-	org.v31bank.ledger.api.v1.LedgerAccountStatus getStatus();
-
+  /**
+   * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
+   * @return The enum numeric value on the wire for status.
+   */
+  int getStatusValue();
+  /**
+   * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
+   * @return The status.
+   */
+  org.v31bank.ledger.api.v1.LedgerAccountStatus getStatus();
 }
