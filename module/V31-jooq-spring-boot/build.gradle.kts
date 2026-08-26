@@ -16,7 +16,8 @@
 
 plugins {
     `java-library`
-    id("org.v31bank.deployed")
+    id("org.v31bank.auto-configuration")
+    id("org.v31bank.configuration-properties")
 }
 
 description = "V31 jOOQ auto-configuration"

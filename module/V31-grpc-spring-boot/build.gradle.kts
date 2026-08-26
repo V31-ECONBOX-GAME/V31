@@ -17,7 +17,7 @@
 plugins {
     `java-library`
     id("org.v31bank.auto-configuration")
-    //id("org.v31bank.configuration-properties")
+    id("org.v31bank.configuration-properties")
 }
 
 description = "V31 gRPC auto-configuration"
