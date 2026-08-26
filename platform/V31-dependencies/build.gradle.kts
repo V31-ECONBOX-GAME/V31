@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
 plugins {
-    `java-platform`
+    id("org.v31bank.bom")
     id("org.v31bank.deployed")
 }
 
 description = "V31 Dependencies"
-
-javaPlatform {
-    allowDependencies()
-}
-
-val springBootVersion = providers.gradleProperty("springBootVersion").get()
-val protobufVersion = providers.gradleProperty("protobufVersion").get()
-val grpcVersion = providers.gradleProperty("grpcVersion").get()
 
 // The one thing another build imports. It settles two sets of versions at once: V31's
 // own artifacts, and the third-party libraries they were built and tested against. A
@@ -36,13 +30,11 @@ val grpcVersion = providers.gradleProperty("grpcVersion").get()
 //
 // Adding a published project means adding it here too. Nothing checks that, so a
 // module left out is only noticed when a consumer cannot resolve it.
+bom {
+    imports(SpringBootPlugin.BOM_COORDINATES)
+}
+
 dependencies {
-    api(platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion"))
-
-    // Both track Spring Boot 4.1.0: protobuf is exactly its pin, gRPC one minor ahead of it.
-    api(platform("io.grpc:grpc-bom:$grpcVersion"))
-    api(platform("com.google.protobuf:protobuf-bom:$protobufVersion"))
-
     constraints {
         api("com.google.guava:guava:33.6.0-jre")
 
