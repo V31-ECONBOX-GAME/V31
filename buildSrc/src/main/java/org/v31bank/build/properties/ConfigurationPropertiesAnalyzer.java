@@ -173,7 +173,7 @@ final class ConfigurationPropertiesAnalyzer {
 		}
 
 		void register(File source, Analysis analysis) {
-			this.analyses.computeIfAbsent(source, (file) -> new ArrayList<>()).add(analysis);
+			this.analyses.computeIfAbsent(source, (_) -> new ArrayList<>()).add(analysis);
 		}
 
 		boolean hasProblems() {

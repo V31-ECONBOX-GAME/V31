@@ -17,45 +17,43 @@
 package org.v31bank.build.util;
 
 import java.io.File;
+import java.util.Map;
 
 import tools.jackson.core.JacksonException;
+import tools.jackson.core.StreamReadFeature;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * A JSON file read as a shape the caller declares.
+ * A JSON file read as the object it is, with every value left as written.
  * <p>
- * The shape is a type argument rather than a cast, so it survives to runtime and the file
- * is held to it as it is read:
- *
- * <pre class="code">
- * private static final TypeReference&lt;Map&lt;String, String&gt;&gt; TYPE = new TypeReference&lt;&gt;() {
- * };
- *
- * Map&lt;String, String&gt; json = JsonFiles.read(file, TYPE);
- * </pre>
+ * Nothing beyond "the top level is an object" is asked of the file, so a section this
+ * build does not read is a section it cannot fail on. Narrowing a value it does read is
+ * the caller's business.
  *
  * @author Xander Wang
  * @since 0.2.0
  */
 public final class JsonFiles {
 
-	private static final JsonMapper MAPPER = JsonMapper.builder().build();
+	private static final JsonMapper MAPPER = JsonMapper.builder()
+		.enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
+		.build();
+
+	private static final TypeReference<Map<String, Object>> OBJECT = new TypeReference<>() {
+	};
 
 	private JsonFiles() {
 	}
 
 	/**
-	 * Reads the file, and fails naming it: Jackson keeps the source out of its own
-	 * message, so the file is named here or nowhere.
-	 * @param <T> the shape to read the file as
+	 * Reads the file's top-level object, keeping the order it was written in.
 	 * @param file the file to read
-	 * @param type the shape to read it as
-	 * @return the file, read as that shape
+	 * @return what it holds
 	 */
-	public static <T> T read(File file, TypeReference<T> type) {
+	public static Map<String, Object> readObject(File file) {
 		try {
-			return MAPPER.readValue(file, type);
+			return MAPPER.readValue(file, OBJECT);
 		}
 		catch (JacksonException ex) {
 			throw new IllegalArgumentException("Failed to read %s".formatted(file), ex);
