@@ -35,12 +35,12 @@ final class ConfigurationMetadata {
 
 	static final List<String> ELEMENT_TYPES = List.of("groups", "properties", "hints");
 
-	private static final TypeReference<Map<String, List<Map<String, Object>>>> TYPE = new TypeReference<>() {
+	private static final TypeReference<Map<String, Object>> TYPE = new TypeReference<>() {
 	};
 
-	private final Map<String, List<Map<String, Object>>> json;
+	private final Map<String, Object> json;
 
-	private ConfigurationMetadata(Map<String, List<Map<String, Object>>> json) {
+	private ConfigurationMetadata(Map<String, Object> json) {
 		this.json = json;
 	}
 
@@ -54,8 +54,9 @@ final class ConfigurationMetadata {
 		return new ConfigurationMetadata(JsonFiles.read(file, TYPE));
 	}
 
+	@SuppressWarnings("unchecked")
 	List<Map<String, Object>> elements(String elementType) {
-		return this.json.getOrDefault(elementType, List.of());
+		return (List<Map<String, Object>>) this.json.getOrDefault(elementType, List.of());
 	}
 
 	List<String> names(String elementType) {
