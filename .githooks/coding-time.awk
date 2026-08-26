@@ -204,23 +204,27 @@ END {
 	# the summary and is much the shorter of the two, so the summary still sets this.
 	width = int(PAD + width_of(played, STAT_SIZE) + 46 + width_of(summary, SUMMARY_SIZE) + PAD)
 	span = width - PAD * 2
-	# A bar per day, each leaving a sliver of its slot for the gap to the next one:
-	# thin enough to read as a chart rather than a row of blocks, and it stays that
-	# way as days pile up.
+	# How wide the gap between two neighbouring bars is. It follows how much room a
+	# day has, so a dense chart keeps its spacing, but it is capped: a gap is judged
+	# in pixels rather than in proportion, and a third of a day's room is a hair at
+	# fifty days and half the card at one.
 	#
-	# The sliver is capped rather than a flat third, because a third of a slot is a
-	# gap only while the slots are narrow. One slot wide is the whole chart, and a
-	# third of it became a third of the card standing empty to the right of a
-	# single bar, past the axis drawn to the full width underneath it.
-	pitch = span / days
-	slack = pitch * 0.32
-	if (slack > 6) {
-		slack = 6
+	# Named for the bars because `gap` is already the pause that ends a sitting.
+	bar_gap = span * 0.32 / days
+	if (bar_gap > 6) {
+		bar_gap = 6
 	}
-	bar = int(pitch - slack)
+	# A gap sits between two bars, so there are days - 1 of them rather than one per
+	# bar. Take them out of the span and the bars share what is left, which is what
+	# lets a single day fill the chart: one bar, and no gap to leave room for.
+	bar = int((span - (days - 1) * bar_gap) / days)
 	if (bar < 2) {
 		bar = 2
 	}
+	# The step from one bar to the next, measured from the width the bars actually
+	# rounded to, so the last one lands on the margin rather than short of it by the
+	# truncation collected along the way.
+	bar_step = (days > 1) ? (span - bar) / (days - 1) : 0
 
 	printf "" > card
 	svg("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" width "\" height=\"" HEIGHT "\"" \
@@ -259,7 +263,7 @@ END {
 		}
 		# SVG measures y downwards, so the top of a bar is the baseline minus its height.
 		svg(sprintf("  <rect class=\"%s\" x=\"%.1f\" y=\"%.1f\" width=\"%d\" height=\"%.1f\" rx=\"1.5\"/>",
-				style, PAD + i * pitch, BASE - height, bar, height))
+				style, PAD + i * bar_step, BASE - height, bar, height))
 	}
 
 	svg("  <text class=\"axis\" x=\"" PAD "\" y=\"" AXIS_Y "\">" first_seen "</text>")
