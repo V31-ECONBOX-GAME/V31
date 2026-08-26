@@ -30,7 +30,6 @@ import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPlugin;
@@ -42,10 +41,12 @@ import org.gradle.plugins.ide.idea.IdeaPlugin;
 import org.gradle.plugins.ide.idea.model.IdeaModel;
 import org.gradle.plugins.ide.idea.model.IdeaModule;
 
+import org.v31bank.build.constant.Projects;
 import org.v31bank.build.proto.BufTask;
 import org.v31bank.build.proto.DownloadProtoTools;
 import org.v31bank.build.proto.GenerateProtoSources;
 import org.v31bank.build.proto.LintProto;
+import org.v31bank.build.util.Bom;
 import org.v31bank.build.util.SourceSets;
 import org.v31bank.build.util.SourceSets.Directories;
 
@@ -87,13 +88,14 @@ public class ProtobufPlugin implements Plugin<Project> {
 	private static final String BUF_VERSION = "bufVersion";
 
 	/**
-	 * One version per generator-and-runtime pair, because they are one decision: the
-	 * platform pins the library from the same property this fetches the generator with,
-	 * so the two cannot drift.
+	 * A generator has to match the runtime it generates for, so each one is fetched at
+	 * the version the platform this project compiles against settles that runtime at. The
+	 * runtime is this project's own, listed in {@link #RUNTIME}, rather than a coordinate
+	 * named a second time for the generator, so the two cannot be left at odds.
 	 */
-	private static final String PROTOBUF_VERSION = "protobufVersion";
+	private static final String PROTOBUF_RUNTIME = "com.google.protobuf:protobuf-java";
 
-	private static final String GRPC_VERSION = "grpcVersion";
+	private static final String GRPC_RUNTIME = "io.grpc:grpc-protobuf";
 
 	/**
 	 * Where buf and the generators it runs are installed, and the path
@@ -105,8 +107,7 @@ public class ProtobufPlugin implements Plugin<Project> {
 	 * Added to {@code api} rather than {@code implementation}: the generated types are
 	 * the API, so anything depending on this project names them.
 	 */
-	private static final List<String> RUNTIME = List.of("com.google.protobuf:protobuf-java", "io.grpc:grpc-protobuf",
-			"io.grpc:grpc-stub");
+	private static final List<String> RUNTIME = List.of(PROTOBUF_RUNTIME, GRPC_RUNTIME, "io.grpc:grpc-stub");
 
 	@Override
 	public void apply(Project project) {
@@ -147,7 +148,7 @@ public class ProtobufPlugin implements Plugin<Project> {
 
 	private void generate(Project project, Api api) {
 		declareAsGeneratedSources(project);
-		TaskProvider<DownloadProtoTools> tools = tools(project.getRootProject());
+		TaskProvider<DownloadProtoTools> tools = tools(project);
 		Provider<RegularFile> buf = tools.flatMap(DownloadProtoTools::getInstalledBuf);
 		TaskProvider<GenerateProtoSources> generate = bufTask(project, GENERATE_TASK_NAME, GenerateProtoSources.class,
 				api, buf, (task) -> {
@@ -178,10 +179,11 @@ public class ProtobufPlugin implements Plugin<Project> {
 
 	private Provider<RegularFile> fromMaven(Project project, String coordinate, String version) {
 		// buf's own registry answered resource_exhausted once every build called it.
-		String full = coordinate + ":" + project.property(version) + ":" + platform() + "@exe";
-		Configuration resolved = project.getConfigurations()
-			.detachedConfiguration(project.getDependencies().create(full));
-		return project.getLayout().file(project.provider(resolved::getSingleFile));
+		String full = coordinate + ":" + version + ":" + platform() + "@exe";
+		return project.getLayout()
+			.file(project.provider(() -> project.getConfigurations()
+				.detachedConfiguration(project.getDependencies().create(full))
+				.getSingleFile()));
 	}
 
 	private static String platform() {
@@ -199,21 +201,25 @@ public class ProtobufPlugin implements Plugin<Project> {
 
 	/**
 	 * Registered on the root project so the whole build shares one install and
-	 * {@code buf.gen.yaml} can name one path. Looked up by name first, because a second
-	 * {@code register} of the same name throws.
-	 * @param root the root project
+	 * {@code buf.gen.yaml} can name one path, but asked of the project that wants them:
+	 * the root project resolves no Java libraries, and a BOM asked there settles nothing.
+	 * Looked up by name first, because a second {@code register} of the same name throws.
+	 * @param project the project the generated sources are for
 	 * @return the task that installs them
 	 */
-	private TaskProvider<DownloadProtoTools> tools(Project root) {
+	private TaskProvider<DownloadProtoTools> tools(Project project) {
+		Project root = project.getRootProject();
 		TaskContainer tasks = root.getTasks();
 		if (tasks.getNames().contains(TOOLS_TASK_NAME)) {
 			return tasks.named(TOOLS_TASK_NAME, DownloadProtoTools.class);
 		}
+		Bom platform = Bom.of(project, project.project(Projects.INTERNAL_DEPENDENCIES));
 		return tasks.register(TOOLS_TASK_NAME, DownloadProtoTools.class, (task) -> {
 			task.setDescription("Fetches buf and the generators it runs.");
-			task.getBuf().set(fromMaven(root, "build.buf:buf", BUF_VERSION));
-			task.getProtoc().set(fromMaven(root, "com.google.protobuf:protoc", PROTOBUF_VERSION));
-			task.getGrpcJavaGenerator().set(fromMaven(root, "io.grpc:protoc-gen-grpc-java", GRPC_VERSION));
+			task.getBuf().set(fromMaven(root, "build.buf:buf", root.property(BUF_VERSION).toString()));
+			task.getProtoc().set(fromMaven(root, "com.google.protobuf:protoc", platform.version(PROTOBUF_RUNTIME)));
+			task.getGrpcJavaGenerator()
+				.set(fromMaven(root, "io.grpc:protoc-gen-grpc-java", platform.version(GRPC_RUNTIME)));
 			task.getDestination().set(root.getLayout().getBuildDirectory().dir(TOOLS));
 		});
 	}
