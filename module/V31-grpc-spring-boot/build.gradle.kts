@@ -18,6 +18,7 @@ plugins {
     `java-library`
     id("org.v31bank.auto-configuration")
     id("org.v31bank.configuration-properties")
+    id("org.v31bank.optional-dependencies")
 }
 
 description = "V31 gRPC auto-configuration"
@@ -33,8 +34,8 @@ dependencies {
     // The HTTP entry point is where a request's context first appears, so the
     // filter that reads it lives here. Optional: a service that speaks gRPC alone
     // has no servlet container and the auto-configuration backs off.
-    compileOnly("org.springframework:spring-web")
-    compileOnly("jakarta.servlet:jakarta.servlet-api")
+    optional("org.springframework:spring-web")
+    optional("jakarta.servlet:jakarta.servlet-api")
     api(project(":library:V31-core"))
 
     testImplementation("org.springframework.boot:spring-boot-test")
@@ -44,8 +45,6 @@ dependencies {
     testImplementation("io.grpc:grpc-stub")
     testImplementation("io.grpc:grpc-protobuf")
     testImplementation("org.mockito:mockito-core")
-    testImplementation("org.springframework:spring-web")
-    testImplementation("jakarta.servlet:jakarta.servlet-api")
 
     // MDC is a no-op without an SLF4J provider, so the request-id fallback would
     // silently do nothing. Every Spring Boot application has one; the tests need

@@ -18,6 +18,7 @@ plugins {
     `java-library`
     id("org.v31bank.auto-configuration")
     id("org.v31bank.configuration-properties")
+    id("org.v31bank.optional-dependencies")
 }
 
 description = "V31 Web auto-configuration"
@@ -41,14 +42,12 @@ dependencies {
     // Bean Validation is what turns a rejected field into a `FieldViolation`. Not
     // exported: a service that has no use for it should not be made to carry a
     // validator, and the handler that reads violations is conditional on it.
-    compileOnly("org.springframework.boot:spring-boot-starter-validation")
+    optional("org.springframework.boot:spring-boot-starter-validation")
 
     // `org.springframework.dao` lives here. Optional for the same reason: a
     // service backed by something other than a database never raises these.
-    compileOnly("org.springframework:spring-tx")
+    optional("org.springframework:spring-tx")
 
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc")
-    testImplementation("org.springframework.boot:spring-boot-starter-validation")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework:spring-tx")
 }
