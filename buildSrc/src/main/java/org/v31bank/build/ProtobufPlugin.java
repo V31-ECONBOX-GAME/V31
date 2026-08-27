@@ -222,7 +222,7 @@ public class ProtobufPlugin implements Plugin<Project> {
 		if (tasks.getNames().contains(TOOLS_TASK_NAME)) {
 			return tasks.named(TOOLS_TASK_NAME, DownloadProtoTools.class);
 		}
-		Bom platform = Bom.of(project, project.project(Projects.INTERNAL_DEPENDENCIES));
+		Bom platform = Bom.of(project, project.getDependencies().project(Projects.INTERNAL_DEPENDENCIES));
 		return tasks.register(TOOLS_TASK_NAME, DownloadProtoTools.class, (task) -> {
 			task.setDescription("Fetches buf and the generators it runs.");
 			task.getBuf().set(fromMaven(root, "build.buf:buf", root.property(BUF_VERSION).toString()));
