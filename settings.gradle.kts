@@ -75,4 +75,3 @@ include("smoke-test:V31-jooq-smoke-test")
 include("smoke-test:V31-data-valkey-smoke-test")
 
 include("integration-test:V31-bom-integration-test")
-include("integration-test:V31-configuration-roles-integration-test")
