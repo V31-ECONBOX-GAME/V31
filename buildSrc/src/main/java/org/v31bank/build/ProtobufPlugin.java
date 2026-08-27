@@ -30,6 +30,7 @@ import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPlugin;
@@ -90,11 +91,11 @@ public class ProtobufPlugin implements Plugin<Project> {
 	/**
 	 * A generator has to match the runtime it generates for, so each is fetched at the
 	 * version the platform settles this project's own runtime at, listed in
-	 * {@link #RUNTIME} rather than named a second time here.
+	 * {@link #API} rather than named a second time here.
 	 */
-	private static final String PROTOBUF_RUNTIME = "com.google.protobuf:protobuf-java";
+	private static final String PROTOBUF_API = "com.google.protobuf:protobuf-java";
 
-	private static final String GRPC_RUNTIME = "io.grpc:grpc-protobuf";
+	private static final String GRPC_API = "io.grpc:grpc-protobuf";
 
 	/**
 	 * Where buf and the generators it runs are installed, and the path
@@ -106,14 +107,23 @@ public class ProtobufPlugin implements Plugin<Project> {
 	 * Added to {@code api} rather than {@code implementation}: the generated types are
 	 * the API, so anything depending on this project names them.
 	 */
-	private static final List<String> RUNTIME = List.of(PROTOBUF_RUNTIME, GRPC_RUNTIME, "io.grpc:grpc-stub");
+	private static final List<String> API = List.of(PROTOBUF_API, GRPC_API, "io.grpc:grpc-stub");
 
 	@Override
 	public void apply(Project project) {
 		project.getPluginManager().apply(JavaLibraryPlugin.class);
 		project.getPluginManager().apply(DeployedPlugin.class);
-		RUNTIME.forEach((coordinate) -> project.getDependencies().add(JavaPlugin.API_CONFIGURATION_NAME, coordinate));
+		addApiDependencies(project);
 		apiFor(project).ifPresent((api) -> generate(project, api));
+	}
+
+	private void addApiDependencies(Project project) {
+		Provider<List<Dependency>> dependencies = project.provider(() ->
+				API.stream().map(project.getDependencies()::create).toList());
+		project.getConfigurations()
+				.getByName(JavaPlugin.API_CONFIGURATION_NAME)
+				.getDependencies()
+				.addAllLater(dependencies);
 	}
 
 	private Optional<Api> apiFor(Project project) {
@@ -216,9 +226,9 @@ public class ProtobufPlugin implements Plugin<Project> {
 		return tasks.register(TOOLS_TASK_NAME, DownloadProtoTools.class, (task) -> {
 			task.setDescription("Fetches buf and the generators it runs.");
 			task.getBuf().set(fromMaven(root, "build.buf:buf", root.property(BUF_VERSION).toString()));
-			task.getProtoc().set(fromMaven(root, "com.google.protobuf:protoc", platform.version(PROTOBUF_RUNTIME)));
+			task.getProtoc().set(fromMaven(root, "com.google.protobuf:protoc", platform.version(PROTOBUF_API)));
 			task.getGrpcJavaGenerator()
-				.set(fromMaven(root, "io.grpc:protoc-gen-grpc-java", platform.version(GRPC_RUNTIME)));
+				.set(fromMaven(root, "io.grpc:protoc-gen-grpc-java", platform.version(GRPC_API)));
 			task.getDestination().set(root.getLayout().getBuildDirectory().dir(TOOLS));
 		});
 	}

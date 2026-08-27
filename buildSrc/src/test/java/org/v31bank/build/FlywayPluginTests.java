@@ -40,16 +40,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 /**
- * Tests for {@link FlywayConventions}.
- * <p>
- * Each test applies the conventions first and the Spring Boot plugin second, the order
- * the real build uses: the root applies the conventions before a subproject's own build
- * file has run.
+ * Tests for {@link FlywayPlugin}.
  *
  * @author Xander Wang
  * @since 0.2.0
  */
-class FlywayConventionsTests {
+class FlywayPluginTests {
 
 	private static final String TASK_NAME = "validateMigrationNames";
 
@@ -190,7 +186,7 @@ class FlywayConventionsTests {
 
 	private Project javaProject() {
 		Project project = ProjectBuilder.builder().withProjectDir(this.directory).build();
-		new FlywayConventions().apply(project);
+		new FlywayPlugin().apply(project);
 		project.getPlugins().apply("java");
 		return project;
 	}

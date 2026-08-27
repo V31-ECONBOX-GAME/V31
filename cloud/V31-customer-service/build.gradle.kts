@@ -15,15 +15,13 @@
  */
 
 plugins {
-    java
-    id("org.springframework.boot")
+    id("org.v31bank.flyway")
+	id("org.springframework.boot")
 }
 
 dependencies {
     implementation(project(":starter:V31-web-spring-boot-starter"))
     implementation(project(":starter:V31-data-jpa-spring-boot-starter"))
-
-    runtimeOnly("org.postgresql:postgresql")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

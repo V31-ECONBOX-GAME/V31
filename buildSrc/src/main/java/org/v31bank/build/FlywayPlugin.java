@@ -19,6 +19,7 @@ package org.v31bank.build;
 import java.util.Collections;
 import java.util.List;
 
+import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.file.FileTree;
@@ -26,31 +27,40 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
+import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 
 import org.v31bank.build.util.SourceSets;
 
 /**
- * Conventions for the services whose schema is owned by Flyway.
+ * Plugin for services whose schema is owned by Flyway.
  * <p>
- * Migration names are checked at build time because Flyway records a version the first
- * time it applies one. Once a bad name has been applied, the fix is a manual repair of
- * {@code flyway_schema_history} in every environment that got there first.
+ * Applied by the service itself:
+ *
+ * <pre class="code">
+ * plugins {
+ *     id("org.v31bank.flyway")
+ * }
+ * </pre>
+ *
+ * Migration names are checked at build time because Flyway records a version when it first
+ * applies a migration. Once a bad name has been applied, fixing it requires manual repair
+ * of {@code flyway_schema_history} in every affected environment.
  *
  * @author Xander Wang
  * @since 0.2.0
  */
-class FlywayConventions {
-
-	private static final String SPRING_BOOT = "org.springframework.boot";
+public class FlywayPlugin implements Plugin<Project> {
 
 	private static final String MIGRATIONS = "db/migration/**/*.sql";
 
 	private static final List<String> RUNTIME = List.of("org.springframework.boot:spring-boot-flyway",
-			"org.flywaydb:flyway-database-postgresql");
+			"org.flywaydb:flyway-database-postgresql",  "org.postgresql:postgresql");
 
-	void apply(Project project) {
-		project.getPluginManager().withPlugin(SPRING_BOOT, (_) -> {
-			addTheRuntimeAMigrationNeeds(project);
+	@Override
+	public void apply(Project project) {
+		project.getPluginManager().apply(JavaPlugin.class);
+		project.getPlugins().withType(SpringBootPlugin.class, (_) -> {
+			addRuntimeDependencies(project);
 			runAsPartOfCheck(project, registerValidateMigrationNames(project));
 		});
 	}
@@ -61,7 +71,7 @@ class FlywayConventions {
 	 * would be missed until the next sync.
 	 * @param project the project to configure
 	 */
-	private void addTheRuntimeAMigrationNeeds(Project project) {
+	private void addRuntimeDependencies(Project project) {
 		Provider<List<Dependency>> dependencies = project.provider(() -> migrations(project).isEmpty()
 				? Collections.emptyList() : RUNTIME.stream().map(project.getDependencies()::create).toList());
 		project.getConfigurations()

@@ -15,8 +15,8 @@
  */
 
 plugins {
-    java
-    id("org.springframework.boot")
+    id("org.v31bank.flyway")
+	id("org.springframework.boot")
 }
 
 dependencies {
@@ -24,8 +24,6 @@ dependencies {
     implementation(project(":starter:V31-data-jpa-spring-boot-starter"))
     implementation(project(":starter:V31-grpc-spring-boot-starter"))
     implementation(project(":apis:V31-ledger-api"))
-
-    runtimeOnly("org.postgresql:postgresql")
 
     // The ledger this service calls, stood up in-process for the tests, so the
     // client half is exercised without a second process having to be running.

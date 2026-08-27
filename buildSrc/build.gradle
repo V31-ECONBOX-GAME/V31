@@ -98,6 +98,10 @@ gradlePlugin {
 			id = "org.v31bank.configuration-metadata"
 			implementationClass = "org.v31bank.build.properties.ConfigurationMetadataPlugin"
 		}
+		flywayPlugin {
+			id = "org.v31bank.flyway"
+			implementationClass = "org.v31bank.build.FlywayPlugin"
+		}
 	}
 }
 

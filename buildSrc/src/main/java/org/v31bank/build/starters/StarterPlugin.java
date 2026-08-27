@@ -21,11 +21,9 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.PluginManager;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 
-import org.v31bank.build.ConventionsPlugin;
 import org.v31bank.build.DeployedPlugin;
 import org.v31bank.build.classpath.CheckClasspathForConflicts;
 import org.v31bank.build.classpath.CheckClasspathForUnconstrainedDirectDependencies;
@@ -57,15 +55,11 @@ public class StarterPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		PluginManager pluginManager = project.getPluginManager();
-		pluginManager.apply(JavaLibraryPlugin.class);
-		pluginManager.apply(ConventionsPlugin.class);
-		pluginManager.apply(DeployedPlugin.class);
-
+		project.getPluginManager().apply(JavaLibraryPlugin.class);
+		project.getPluginManager().apply(DeployedPlugin.class);
 		Configuration runtimeClasspath = project.getConfigurations()
 			.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
 		registerMetadata(project, runtimeClasspath);
-
 		registerClasspathCheck(project, runtimeClasspath, "ForConflicts", CheckClasspathForConflicts.class);
 		registerClasspathCheck(project, runtimeClasspath, "ForUnconstrainedDirectDependencies",
 				CheckClasspathForUnconstrainedDirectDependencies.class);

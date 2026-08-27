@@ -41,7 +41,6 @@ public class ConventionsPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
 		new JavaConventions().apply(project);
-		new FlywayConventions().apply(project);
 	}
 
 }
