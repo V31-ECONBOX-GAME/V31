@@ -74,8 +74,7 @@ import org.v31bank.build.util.SourceSets;
  * there is no list of who gets what. Generated sources are committed, so a clone compiles
  * without running buf, and the build regenerates them when the {@code .proto} changes.
  * <p>
- * buf itself comes from {@link ProtoToolchainPlugin}, which the root project applies: one
- * install is shared, and this project resolves it rather than building it.
+ * {@link ProtoToolchainPlugin} provides buf and the generators.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -171,9 +170,9 @@ public class ProtobufPlugin implements Plugin<Project> {
 	}
 
 	/**
-	 * Where the shared toolchain landed, asked of the project that owns it the way a jar
-	 * is asked for. Resolving it is what makes a task wait for the install, so nothing
-	 * else has to order the two.
+	 * Returns the directory containing buf and its generators.
+	 * <p>
+	 * Resolving the directory establishes the dependency on the toolchain installation.
 	 * @param project the project the generated sources are for
 	 * @return the directory holding buf and the generators
 	 */
