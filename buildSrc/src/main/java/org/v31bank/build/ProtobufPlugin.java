@@ -49,6 +49,7 @@ import org.gradle.plugins.ide.idea.model.IdeaModule;
 import org.v31bank.build.constant.Configurations;
 import org.v31bank.build.constant.Coordinates;
 import org.v31bank.build.constant.Locations;
+import org.v31bank.build.constant.Metadata;
 import org.v31bank.build.constant.Projects;
 import org.v31bank.build.constant.Tasks;
 import org.v31bank.build.proto.BufTask;
@@ -82,13 +83,6 @@ import org.v31bank.build.util.SourceSets;
 public class ProtobufPlugin implements Plugin<Project> {
 
 	private static final String PROTO = "proto";
-
-	/**
-	 * buf's {@code PACKAGE_DIRECTORY_MATCH} wants a file's path to spell out its package,
-	 * and every package here begins {@code v31}. Every path this plugin builds is derived
-	 * from this one line.
-	 */
-	private static final String APIS = "v31";
 
 	/**
 	 * Added to {@code api} rather than {@code implementation}: the generated types are
@@ -128,7 +122,7 @@ public class ProtobufPlugin implements Plugin<Project> {
 
 	private Stream<Api> apisIn(File root) {
 		// null covers both a missing path and a non-directory one.
-		File[] directories = new File(root, APIS).listFiles();
+		File[] directories = new File(root, Metadata.NAME).listFiles();
 		return (directories != null) ? Stream.of(directories)
 			.filter((file) -> file.isDirectory() && !file.getName().startsWith("."))
 			.map((file) -> new Api(root, file.getName())) : Stream.empty();
@@ -206,7 +200,7 @@ public class ProtobufPlugin implements Plugin<Project> {
 	/**
 	 * One API: the directory holding its {@code .proto} and the path buf addresses it by.
 	 * <p>
-	 * Both are derived from {@link #APIS} here rather than spelled out at each use, so
+	 * Both are derived from {@link Metadata#NAME} rather than spelled out at each use, so
 	 * they cannot drift apart when the layout moves.
 	 *
 	 * @param root where buf runs, holding {@code buf.yaml} and every API
@@ -220,7 +214,7 @@ public class ProtobufPlugin implements Plugin<Project> {
 		 * @return this API's path beneath the proto root
 		 */
 		String path() {
-			return APIS + "/" + this.name;
+			return Metadata.NAME + "/" + this.name;
 		}
 
 		File directory() {

@@ -24,6 +24,8 @@ import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.tasks.GenerateModuleMetadata;
 
+import org.v31bank.build.constant.Metadata;
+
 /**
  * Marks a project as one that is published, and applies everything that follows from
  * that.
@@ -44,13 +46,11 @@ import org.gradle.api.publish.tasks.GenerateModuleMetadata;
  */
 public class DeployedPlugin implements Plugin<Project> {
 
-	private static final String PUBLICATION_NAME = "v31";
-
 	@Override
 	public void apply(Project project) {
 		project.getPluginManager().apply(MavenRepositoryPlugin.class);
 		PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
-		MavenPublication publication = publishing.getPublications().create(PUBLICATION_NAME, MavenPublication.class);
+		MavenPublication publication = publishing.getPublications().create(Metadata.NAME, MavenPublication.class);
 		// Matched, not looked up: the subproject's build file runs after this.
 		publishComponent(project, publication, JavaPlugin.class, "java");
 		publishComponent(project, publication, JavaPlatformPlugin.class, "javaPlatform");

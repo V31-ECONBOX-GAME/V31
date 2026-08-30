@@ -55,10 +55,10 @@ import org.v31bank.build.util.Directories;
  */
 public class MavenRepositoryPlugin implements Plugin<Project> {
 
-	/** What {@link DeployedPlugin} calls the publication it creates. */
+	/** What Gradle calls the task that publishes this build's own publication. */
 	private static final String PUBLISH_TASK_NAME = "publishV31PublicationToProjectRepository";
 
-	/** What {@code java-gradle-plugin} calls the one it creates on a project's behalf. */
+	/** What it calls the one {@code java-gradle-plugin} creates on a project's behalf. */
 	private static final String PLUGIN_PUBLISH_TASK_NAME = "publishPluginMavenPublicationToProjectRepository";
 
 	private static final String REPOSITORY_NAME = "project";
