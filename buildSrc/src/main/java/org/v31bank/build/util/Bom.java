@@ -36,7 +36,8 @@ import org.gradle.api.plugins.JavaBasePlugin;
  *
  * <pre class="code">
  * Bom.of(project, SpringBootPlugin.BOM_COORDINATES).version("com.google.protobuf:protobuf-java")
- * Bom.of(project, project.project(":platform:V31-dependencies")).version("io.grpc:grpc-protobuf")
+ * Bom.of(project, project.getDependencies().project(":platform:V31-dependencies"))
+ *     .version("io.grpc:grpc-protobuf")
  * </pre>
  *
  * The BOM is asked rather than read: the module carries no version of its own, so the one
