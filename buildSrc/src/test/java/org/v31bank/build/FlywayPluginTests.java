@@ -136,7 +136,7 @@ class FlywayPluginTests {
 		givenAMigration();
 		assertThat(runtimeOnly(springBootProject())).extracting(Dependency::getGroup, Dependency::getName)
 			.containsExactlyInAnyOrder(tuple("org.springframework.boot", "spring-boot-flyway"),
-					tuple("org.flywaydb", "flyway-database-postgresql"));
+					tuple("org.flywaydb", "flyway-database-postgresql"), tuple("org.postgresql", "postgresql"));
 	}
 
 	@Test

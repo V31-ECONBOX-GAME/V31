@@ -28,6 +28,7 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.v31bank.build.ConventionsPlugin;
 import org.v31bank.build.classpath.CheckClasspathForConflicts;
 import org.v31bank.build.classpath.CheckClasspathForUnconstrainedDirectDependencies;
 import org.v31bank.build.classpath.CheckClasspathForUnnecessaryExclusions;
@@ -148,6 +149,7 @@ class StarterPluginTests {
 		starter.getExtensions().getExtraProperties().set("buildJavaVersion", "25");
 		starter.getExtensions().getExtraProperties().set("runtimeJavaVersion", "25");
 		starter.getExtensions().getExtraProperties().set("checkstyleToolVersion", "12.3.1");
+		starter.getPlugins().apply(ConventionsPlugin.class);
 		starter.getPlugins().apply(StarterPlugin.class);
 		return starter;
 	}

@@ -90,8 +90,8 @@ public class ProtobufPlugin implements Plugin<Project> {
 
 	/**
 	 * A generator has to match the runtime it generates for, so each is fetched at the
-	 * version the platform settles this project's own runtime at, listed in
-	 * {@link #API} rather than named a second time here.
+	 * version the platform settles this project's own runtime at, listed in {@link #API}
+	 * rather than named a second time here.
 	 */
 	private static final String PROTOBUF_API = "com.google.protobuf:protobuf-java";
 
@@ -118,12 +118,12 @@ public class ProtobufPlugin implements Plugin<Project> {
 	}
 
 	private void addApiDependencies(Project project) {
-		Provider<List<Dependency>> dependencies = project.provider(() ->
-				API.stream().map(project.getDependencies()::create).toList());
+		Provider<List<Dependency>> dependencies = project
+			.provider(() -> API.stream().map(project.getDependencies()::create).toList());
 		project.getConfigurations()
-				.getByName(JavaPlugin.API_CONFIGURATION_NAME)
-				.getDependencies()
-				.addAllLater(dependencies);
+			.getByName(JavaPlugin.API_CONFIGURATION_NAME)
+			.getDependencies()
+			.addAllLater(dependencies);
 	}
 
 	private Optional<Api> apiFor(Project project) {

@@ -42,9 +42,9 @@ import org.v31bank.build.util.SourceSets;
  * }
  * </pre>
  *
- * Migration names are checked at build time because Flyway records a version when it first
- * applies a migration. Once a bad name has been applied, fixing it requires manual repair
- * of {@code flyway_schema_history} in every affected environment.
+ * Migration names are checked at build time because Flyway records a version when it
+ * first applies a migration. Once a bad name has been applied, fixing it requires manual
+ * repair of {@code flyway_schema_history} in every affected environment.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -54,7 +54,7 @@ public class FlywayPlugin implements Plugin<Project> {
 	private static final String MIGRATIONS = "db/migration/**/*.sql";
 
 	private static final List<String> RUNTIME = List.of("org.springframework.boot:spring-boot-flyway",
-			"org.flywaydb:flyway-database-postgresql",  "org.postgresql:postgresql");
+			"org.flywaydb:flyway-database-postgresql", "org.postgresql:postgresql");
 
 	@Override
 	public void apply(Project project) {
