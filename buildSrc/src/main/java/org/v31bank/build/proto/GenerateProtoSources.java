@@ -96,7 +96,7 @@ public abstract class GenerateProtoSources extends BufTask {
 
 	@TaskAction
 	void generate() throws IOException {
-		removeWhatTheLastRunWrote();
+		deletePreviousGeneratedSources();
 		Path staging = getTemporaryDir().toPath().resolve("generated");
 		// Staging holds only the last run's output, so it is safe to take whole.
 		getFileSystemOperations().delete((spec) -> spec.delete(staging));
@@ -115,7 +115,7 @@ public abstract class GenerateProtoSources extends BufTask {
 	 * else lives there; only the files the manifest names go.
 	 * @throws IOException if the manifest cannot be read
 	 */
-	private void removeWhatTheLastRunWrote() throws IOException {
+	private void deletePreviousGeneratedSources() throws IOException {
 		Path manifest = getManifest().get().getAsFile().toPath();
 		if (!Files.exists(manifest)) {
 			return;
