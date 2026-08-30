@@ -27,6 +27,9 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.v31bank.build.constant.Locations;
+import org.v31bank.build.constant.Tasks;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -65,7 +68,7 @@ class CheckAutoConfigurationImportsTests {
 		writeImports(A, B);
 		CheckAutoConfigurationImports task = task();
 		assertThatExceptionOfType(VerificationException.class).isThrownBy(task::check)
-			.withMessageContaining(AutoConfigurationImports.PATH)
+			.withMessageContaining(Locations.AUTO_CONFIGURATION_IMPORTS_FILE)
 			.withMessageContaining(AutoConfigurationImportsTask.FAILURE_REPORT);
 		assertThat(report(task)).contains("'%s' was not found".formatted(B));
 	}
@@ -91,7 +94,7 @@ class CheckAutoConfigurationImportsTests {
 		CheckAutoConfigurationImports task = task();
 		assertThatExceptionOfType(VerificationException.class).isThrownBy(task::check);
 		assertThat(report(task)).contains("sorted alphabetically");
-		assertThat(read(outputDirectory(task).resolve("sorted-" + AutoConfigurationImports.FILE_NAME)))
+		assertThat(read(outputDirectory(task).resolve("sorted-" + Locations.AUTO_CONFIGURATION_IMPORTS_FILE_NAME)))
 			.containsSubsequence(A, B);
 	}
 
@@ -116,7 +119,7 @@ class CheckAutoConfigurationImportsTests {
 	private CheckAutoConfigurationImports task() {
 		Project project = ProjectBuilder.builder().withProjectDir(this.directory.toFile()).build();
 		CheckAutoConfigurationImports task = project.getTasks()
-			.register(AutoConfigurationPlugin.CHECK_IMPORTS_TASK_NAME, CheckAutoConfigurationImports.class)
+			.register(Tasks.CHECK_AUTO_CONFIGURATION_IMPORTS, CheckAutoConfigurationImports.class)
 			.get();
 		task.getResources().from(resources().toFile());
 		task.getClasspath().from(classes().toFile());
@@ -149,7 +152,7 @@ class CheckAutoConfigurationImportsTests {
 	}
 
 	private void writeImports(String... lines) {
-		Path importsFile = resources().resolve(AutoConfigurationImports.PATH);
+		Path importsFile = resources().resolve(Locations.AUTO_CONFIGURATION_IMPORTS_FILE);
 		try {
 			Files.createDirectories(importsFile.getParent());
 			Files.writeString(importsFile, String.join(System.lineSeparator(), lines) + System.lineSeparator());

@@ -24,8 +24,12 @@ import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.stream.Stream;
 
+import org.gradle.api.Project;
+import org.gradle.api.file.Directory;
+
 /**
- * Directory operations {@link Files} leaves to the caller.
+ * Directory operations {@link Files} leaves to the caller, and the one directory a
+ * project cannot ask another project for.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -33,6 +37,16 @@ import java.util.stream.Stream;
 public final class Directories {
 
 	private Directories() {
+	}
+
+	/**
+	 * The directory the build is rooted at, taken from the root project's isolated view:
+	 * an isolated project may not reach the root project itself.
+	 * @param project the project asking
+	 * @return the directory the build is rooted at
+	 */
+	public static Directory rootOf(Project project) {
+		return project.getIsolated().getRootProject().getProjectDirectory();
 	}
 
 	/**

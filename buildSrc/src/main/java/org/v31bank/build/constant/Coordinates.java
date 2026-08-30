@@ -32,6 +32,63 @@ public final class Coordinates {
 	 */
 	public static final String JUNIT_PLATFORM_LAUNCHER = "org.junit.platform:junit-platform-launcher";
 
+	/**
+	 * The protobuf runtime the generated types are compiled against, and so the version
+	 * {@link #PROTOC} is fetched at.
+	 */
+	public static final String PROTOBUF_JAVA = "com.google.protobuf:protobuf-java";
+
+	/**
+	 * The gRPC runtime the generated stubs are compiled against, and so the version
+	 * {@link #GRPC_JAVA_GENERATOR} is fetched at.
+	 */
+	public static final String GRPC_PROTOBUF = "io.grpc:grpc-protobuf";
+
+	/**
+	 * The base class every generated stub extends.
+	 */
+	public static final String GRPC_STUB = "io.grpc:grpc-stub";
+
+	/**
+	 * buf, published as an executable rather than as a jar.
+	 */
+	public static final String BUF = "build.buf:buf";
+
+	/**
+	 * protoc, published as an executable rather than as a jar.
+	 */
+	public static final String PROTOC = "com.google.protobuf:protoc";
+
+	/**
+	 * The protoc plugin that turns a service into Java stubs.
+	 */
+	public static final String GRPC_JAVA_GENERATOR = "io.grpc:protoc-gen-grpc-java";
+
+	/**
+	 * Generates the metadata describing a module's {@code @ConfigurationProperties}.
+	 */
+	public static final String CONFIGURATION_PROCESSOR = "org.springframework.boot:spring-boot-configuration-processor";
+
+	/**
+	 * Generates the metadata describing a module's auto-configurations.
+	 */
+	public static final String AUTO_CONFIGURATION_PROCESSOR = "org.springframework.boot:spring-boot-autoconfigure-processor";
+
+	/**
+	 * What a service whose schema Flyway owns needs on its runtime classpath.
+	 */
+	public static final String FLYWAY = "org.springframework.boot:spring-boot-flyway";
+
+	/**
+	 * Teaches Flyway the dialect the migrations are written in.
+	 */
+	public static final String FLYWAY_POSTGRESQL = "org.flywaydb:flyway-database-postgresql";
+
+	/**
+	 * The driver those migrations run over.
+	 */
+	public static final String POSTGRESQL = "org.postgresql:postgresql";
+
 	private Coordinates() {
 	}
 

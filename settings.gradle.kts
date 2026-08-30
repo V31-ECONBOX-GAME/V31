@@ -24,6 +24,14 @@ dependencyResolutionManagement {
 
 rootProject.name = "V31"
 
+// Conventions reach every project from here rather than from a `subprojects` block in the
+// root build file: under isolated projects no project may configure another, and a
+// lifecycle action is run against each project on its own.
+@Suppress("UnstableApiUsage")
+gradle.lifecycle.beforeProject {
+	pluginManager.apply("org.v31bank.conventions")
+}
+
 include("apis")
 include("cloud")
 include("module")

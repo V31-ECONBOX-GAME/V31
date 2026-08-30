@@ -37,6 +37,7 @@ import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
 
+import org.v31bank.build.constant.Locations;
 import org.v31bank.build.util.PropertiesFiles;
 
 /**
@@ -71,7 +72,7 @@ public abstract class AutoConfigurationMetadata extends DefaultTask {
 	 */
 	public void setSourceSet(SourceSet sourceSet) {
 		getAutoConfigurationImports()
-			.set(new File(sourceSet.getOutput().getResourcesDir(), AutoConfigurationImports.PATH));
+			.set(new File(sourceSet.getOutput().getResourcesDir(), Locations.AUTO_CONFIGURATION_IMPORTS_FILE));
 		getClassesDirectories().from(sourceSet.getOutput().getClassesDirs());
 		dependsOn(sourceSet.getOutput());
 	}

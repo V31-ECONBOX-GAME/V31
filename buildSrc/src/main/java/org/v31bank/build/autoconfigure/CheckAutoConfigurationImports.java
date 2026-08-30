@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.VerificationException;
 
+import org.v31bank.build.constant.Locations;
+
 /**
  * Fails when the imports file names a class that is missing or unannotated, or lists its
  * entries out of order.
@@ -44,8 +46,8 @@ public abstract class CheckAutoConfigurationImports extends AutoConfigurationImp
 		checkSorted(imports).ifPresent(problems::add);
 		File report = writeReport(report(importsFile, problems));
 		if (!problems.isEmpty()) {
-			throw new VerificationException(
-					"%s check failed. See '%s' for details".formatted(AutoConfigurationImports.PATH, report));
+			throw new VerificationException("%s check failed. See '%s' for details"
+				.formatted(Locations.AUTO_CONFIGURATION_IMPORTS_FILE, report));
 		}
 	}
 
@@ -72,7 +74,9 @@ public abstract class CheckAutoConfigurationImports extends AutoConfigurationImp
 		if (sorted.equals(imports)) {
 			return Optional.empty();
 		}
-		File sortedFile = getOutputDirectory().file("sorted-" + AutoConfigurationImports.FILE_NAME).get().getAsFile();
+		File sortedFile = getOutputDirectory().file("sorted-" + Locations.AUTO_CONFIGURATION_IMPORTS_FILE_NAME)
+			.get()
+			.getAsFile();
 		write(sortedFile,
 				sorted.stream().collect(Collectors.joining(System.lineSeparator(), "", System.lineSeparator())));
 		return Optional

@@ -24,6 +24,9 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.v31bank.build.constant.Locations;
+import org.v31bank.build.constant.Tasks;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -78,8 +81,7 @@ class CheckManualSpringConfigurationMetadataTests {
 	private CheckManualSpringConfigurationMetadata task() {
 		Project project = ProjectBuilder.builder().withProjectDir(this.directory.toFile()).build();
 		CheckManualSpringConfigurationMetadata task = project.getTasks()
-			.register(ConfigurationMetadataPlugin.CHECK_METADATA_TASK_NAME,
-					CheckManualSpringConfigurationMetadata.class)
+			.register(Tasks.CHECK_MANUAL_CONFIGURATION_METADATA, CheckManualSpringConfigurationMetadata.class)
 			.get();
 		task.getMetadataLocation().set(metadataFile().toFile());
 		task.getReportLocation().set(report().toFile());
@@ -87,7 +89,7 @@ class CheckManualSpringConfigurationMetadataTests {
 	}
 
 	private Path metadataFile() {
-		return this.directory.resolve("resources").resolve(ConfigurationPropertiesPlugin.METADATA_FILE);
+		return this.directory.resolve("resources").resolve(Locations.CONFIGURATION_METADATA_FILE);
 	}
 
 	private Path report() {

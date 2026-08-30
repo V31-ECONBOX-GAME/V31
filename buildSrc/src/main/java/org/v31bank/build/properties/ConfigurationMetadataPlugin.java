@@ -30,6 +30,9 @@ import org.gradle.api.tasks.TaskProvider;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.gradle.language.jvm.tasks.ProcessResources;
 
+import org.v31bank.build.constant.Configurations;
+import org.v31bank.build.constant.Locations;
+import org.v31bank.build.constant.Tasks;
 import org.v31bank.build.util.SourceSets;
 
 /**
@@ -50,11 +53,6 @@ import org.v31bank.build.util.SourceSets;
  */
 public class ConfigurationMetadataPlugin implements Plugin<Project> {
 
-	/**
-	 * Name of the task that checks the hand-written metadata.
-	 */
-	public static final String CHECK_METADATA_TASK_NAME = "checkManualSpringConfigurationMetadata";
-
 	@Override
 	public void apply(Project project) {
 		project.getPlugins().withType(JavaPlugin.class, (_) -> configure(project));
@@ -64,14 +62,15 @@ public class ConfigurationMetadataPlugin implements Plugin<Project> {
 		SourceSet main = SourceSets.of(project).main().unwrap();
 		Provider<File> metadata = metadata(project, main);
 		TaskProvider<CheckManualSpringConfigurationMetadata> check = project.getTasks()
-			.register(CHECK_METADATA_TASK_NAME, CheckManualSpringConfigurationMetadata.class, (task) -> {
-				task.setDescription("Checks the hand-written configuration metadata of the main source set.");
-				task.getMetadataLocation().set(metadata);
-				task.getReportLocation()
-					.set(project.getLayout()
-						.getBuildDirectory()
-						.file("reports/manual-spring-configuration-metadata/check.txt"));
-			});
+			.register(Tasks.CHECK_MANUAL_CONFIGURATION_METADATA, CheckManualSpringConfigurationMetadata.class,
+					(task) -> {
+						task.setDescription("Checks the hand-written configuration metadata of the main source set.");
+						task.getMetadataLocation().set(metadata);
+						task.getReportLocation()
+							.set(project.getLayout()
+								.getBuildDirectory()
+								.file("reports/manual-spring-configuration-metadata/check.txt"));
+					});
 		offerMetadata(project, metadata);
 		project.getTasks()
 			.named(LifecycleBasePlugin.CHECK_TASK_NAME)
@@ -88,20 +87,24 @@ public class ConfigurationMetadataPlugin implements Plugin<Project> {
 		return project.getTasks()
 			.named(main.getProcessResourcesTaskName(), ProcessResources.class)
 			.map((processResources) -> new File(processResources.getDestinationDir(),
-					ConfigurationPropertiesPlugin.METADATA_FILE));
+					Locations.CONFIGURATION_METADATA_FILE));
 	}
 
 	private void offerMetadata(Project project, Provider<File> metadata) {
+		ee(project);
+		project.getArtifacts().add(Configurations.CONFIGURATION_PROPERTIES_METADATA, metadata);
+	}
+
+	static void ee(Project project) {
 		ObjectFactory objects = project.getObjects();
 		project.getConfigurations()
-			.consumable(ConfigurationPropertiesPlugin.METADATA_CONFIGURATION_NAME,
+			.consumable(Configurations.CONFIGURATION_PROPERTIES_METADATA,
 					(configuration) -> configuration.attributes((attributes) -> {
 						attributes.attribute(Category.CATEGORY_ATTRIBUTE,
 								objects.named(Category.class, Category.DOCUMENTATION));
 						attributes.attribute(Usage.USAGE_ATTRIBUTE,
-								objects.named(Usage.class, ConfigurationPropertiesPlugin.METADATA_USAGE));
+								objects.named(Usage.class, Configurations.CONFIGURATION_PROPERTIES_METADATA_USAGE));
 					}));
-		project.getArtifacts().add(ConfigurationPropertiesPlugin.METADATA_CONFIGURATION_NAME, metadata);
 	}
 
 }

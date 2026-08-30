@@ -42,32 +42,23 @@ import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.jvm.toolchain.JavaLanguageVersion;
 
+import org.v31bank.build.constant.Configurations;
 import org.v31bank.build.constant.Coordinates;
+import org.v31bank.build.constant.GradleProperties;
 import org.v31bank.build.constant.Projects;
+import org.v31bank.build.util.Directories;
 
 /**
  * Conventions applied to every project that builds Java.
  * <p>
- * Not a registered Gradle plugin: {@code ConventionsPlugin} instantiates it directly.
- * These rules used to be a {@code subprojects} block in the root build file, and as
- * ordinary code they can be read, compiled and tested.
+ * Not a registered Gradle plugin: {@code ConventionsPlugin} instantiates it directly, so
+ * these rules are ordinary code that can be read, compiled and tested. Nothing here
+ * touches a project other than the one it is handed.
  *
  * @author Xander Wang
  * @since 0.2.0
  */
 class JavaConventions {
-
-	/**
-	 * Names the JDK that compiles the code and runs the tests.
-	 */
-	private static final String BUILD_JAVA_VERSION = "buildJavaVersion";
-
-	/**
-	 * Names the JDK the result must run on, which is a different question.
-	 */
-	private static final String RUNTIME_JAVA_VERSION = "runtimeJavaVersion";
-
-	private static final String CHECKSTYLE_TOOL_VERSION = "checkstyleToolVersion";
 
 	void apply(Project project) {
 		project.getPlugins().withType(JavaBasePlugin.class, (_) -> {
@@ -89,11 +80,11 @@ class JavaConventions {
 		project.getTasks().withType(Format.class).configureEach((format) -> format.setEncoding("UTF-8"));
 		project.getPluginManager().apply(CheckstylePlugin.class);
 		CheckstyleExtension checkstyle = project.getExtensions().getByType(CheckstyleExtension.class);
-		Object toolVersion = project.findProperty(CHECKSTYLE_TOOL_VERSION);
+		Object toolVersion = project.findProperty(GradleProperties.CHECKSTYLE_TOOL_VERSION);
 		if (toolVersion != null) {
 			checkstyle.setToolVersion(toolVersion.toString());
 		}
-		checkstyle.getConfigDirectory().set(project.getRootProject().file("config/checkstyle"));
+		checkstyle.getConfigDirectory().set(Directories.rootOf(project).dir("config/checkstyle"));
 		String formatVersion = SpringJavaFormatPlugin.class.getPackage().getImplementationVersion();
 		DependencySet checkstyleDependencies = project.getConfigurations().getByName("checkstyle").getDependencies();
 		checkstyleDependencies
@@ -121,7 +112,7 @@ class JavaConventions {
 	 */
 	private void configureDependencyManagement(Project project) {
 		ConfigurationContainer configurations = project.getConfigurations();
-		Configuration dependencyManagement = configurations.dependencyScope("dependencyManagement").get();
+		Configuration dependencyManagement = configurations.dependencyScope(Configurations.DEPENDENCY_MANAGEMENT).get();
 		configurations.matching(JavaConventions::needsManagedVersions)
 			.all((configuration) -> configuration.extendsFrom(dependencyManagement));
 		Dependency platform = project.getDependencies()
@@ -142,8 +133,8 @@ class JavaConventions {
 	 * @param project the project to configure
 	 */
 	private void configureJavaCompilation(Project project) {
-		int buildVersion = version(project, BUILD_JAVA_VERSION);
-		int runtimeVersion = version(project, RUNTIME_JAVA_VERSION);
+		int buildVersion = version(project, GradleProperties.BUILD_JAVA_VERSION);
+		int runtimeVersion = version(project, GradleProperties.RUNTIME_JAVA_VERSION);
 		project.getExtensions()
 			.configure(JavaPluginExtension.class,
 					(java) -> java.getToolchain().getLanguageVersion().set(JavaLanguageVersion.of(buildVersion)));

@@ -28,6 +28,9 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.v31bank.build.constant.Configurations;
+import org.v31bank.build.constant.Locations;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -121,7 +124,7 @@ class AutoConfigurationMetadataTests {
 			.withProjectDir(this.directory.toFile())
 			.build();
 		AutoConfigurationMetadata task = project.getTasks()
-			.register(AutoConfigurationPlugin.METADATA_NAME, AutoConfigurationMetadata.class)
+			.register(Configurations.AUTO_CONFIGURATION_METADATA, AutoConfigurationMetadata.class)
 			.get();
 		task.getAutoConfigurationImports().set(importsFile().toFile());
 		task.getClassesDirectories().from(classes().toFile());
@@ -162,7 +165,7 @@ class AutoConfigurationMetadataTests {
 	}
 
 	private Path importsFile() {
-		return resources().resolve(AutoConfigurationImports.PATH);
+		return resources().resolve(Locations.AUTO_CONFIGURATION_IMPORTS_FILE);
 	}
 
 	private void writeImports(String... entries) {

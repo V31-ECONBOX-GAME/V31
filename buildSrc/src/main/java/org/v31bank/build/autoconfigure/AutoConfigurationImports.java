@@ -30,17 +30,6 @@ import java.util.List;
  */
 public final class AutoConfigurationImports {
 
-	/**
-	 * Where Spring Boot looks for the file, relative to the root of a jar or of a
-	 * resources directory.
-	 */
-	public static final String PATH = "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports";
-
-	/**
-	 * The file's own name, without the directories it sits in.
-	 */
-	public static final String FILE_NAME = PATH.substring(PATH.lastIndexOf('/') + 1);
-
 	private static final String COMMENT_START = "#";
 
 	private AutoConfigurationImports() {

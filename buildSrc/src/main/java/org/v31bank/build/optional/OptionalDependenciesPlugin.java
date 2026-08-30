@@ -22,6 +22,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.plugins.JavaPlugin;
 
+import org.v31bank.build.constant.Configurations;
 import org.v31bank.build.util.SourceSets;
 
 /**
@@ -53,15 +54,10 @@ import org.v31bank.build.util.SourceSets;
  */
 public class OptionalDependenciesPlugin implements Plugin<Project> {
 
-	/**
-	 * Name of the {@code optional} configuration.
-	 */
-	public static final String OPTIONAL_CONFIGURATION_NAME = "optional";
-
 	@Override
 	public void apply(Project project) {
 		ConfigurationContainer configurations = project.getConfigurations();
-		Configuration optional = configurations.dependencyScope(OPTIONAL_CONFIGURATION_NAME).get();
+		Configuration optional = configurations.dependencyScope(Configurations.OPTIONAL).get();
 		project.getPlugins().withType(JavaPlugin.class, (_) -> SourceSets.of(project).unwrap().all((sourceSet) -> {
 			configurations.getByName(sourceSet.getCompileClasspathConfigurationName()).extendsFrom(optional);
 			configurations.getByName(sourceSet.getRuntimeClasspathConfigurationName()).extendsFrom(optional);

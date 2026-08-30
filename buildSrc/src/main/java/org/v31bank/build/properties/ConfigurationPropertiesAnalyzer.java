@@ -60,7 +60,7 @@ final class ConfigurationPropertiesAnalyzer {
 	void analyzeOrder(Report report) {
 		analyze(report, (metadata) -> {
 			Analysis analysis = new Analysis("Metadata element order:");
-			forEachElementType(metadata, (elementType, names) -> {
+			metadata.forEachElementType((elementType, names) -> {
 				List<String> sorted = names.stream().sorted().toList();
 				for (int i = 0; i < names.size(); i++) {
 					if (!names.get(i).equals(sorted.get(i))) {
@@ -80,7 +80,7 @@ final class ConfigurationPropertiesAnalyzer {
 	void analyzeDuplicates(Report report) {
 		analyze(report, (metadata) -> {
 			Analysis analysis = new Analysis("Metadata element duplicates:");
-			forEachElementType(metadata, (elementType, names) -> {
+			metadata.forEachElementType((elementType, names) -> {
 				Set<String> seen = new HashSet<>();
 				for (int i = 0; i < names.size(); i++) {
 					if (!seen.add(names.get(i))) {
@@ -137,12 +137,6 @@ final class ConfigurationPropertiesAnalyzer {
 		}
 	}
 
-	private void forEachElementType(ConfigurationMetadata metadata, BiConsumerOfNames action) {
-		for (String elementType : ConfigurationMetadata.ELEMENT_TYPES) {
-			action.accept(elementType, metadata.names(elementType));
-		}
-	}
-
 	private boolean isExcluded(List<String> exclusions, String propertyName) {
 		for (String exclusion : exclusions) {
 			if (exclusion.equals(propertyName)) {
@@ -153,13 +147,6 @@ final class ConfigurationPropertiesAnalyzer {
 			}
 		}
 		return false;
-	}
-
-	@FunctionalInterface
-	private interface BiConsumerOfNames {
-
-		void accept(String elementType, List<String> names);
-
 	}
 
 	static final class Report {

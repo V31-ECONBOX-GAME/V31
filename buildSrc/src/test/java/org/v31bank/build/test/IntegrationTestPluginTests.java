@@ -30,6 +30,7 @@ import org.gradle.plugins.ide.idea.model.IdeaModule;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.v31bank.build.constant.Tasks;
 import org.v31bank.build.task.TaskDependencies;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,13 +52,13 @@ class IntegrationTestPluginTests {
 	@org.junit.jupiter.api.Test
 	void addsNothingToAProjectThatCompilesNoJava() {
 		Project project = project();
-		assertThat(project.getTasks().findByName(IntegrationTestPlugin.INT_TEST_TASK_NAME)).isNull();
+		assertThat(project.getTasks().findByName(Tasks.INT_TEST)).isNull();
 	}
 
 	@org.junit.jupiter.api.Test
 	void addsTheSourceSetWhenTheJavaPluginArrivesAfterwards() {
 		Project project = javaProject();
-		assertThat(sourceSets(project).findByName(IntegrationTestPlugin.INT_TEST_SOURCE_SET_NAME)).isNotNull();
+		assertThat(sourceSets(project).findByName(Tasks.INT_TEST)).isNotNull();
 	}
 
 	@org.junit.jupiter.api.Test
@@ -106,7 +107,7 @@ class IntegrationTestPluginTests {
 		Project project = javaProject();
 		assertThat(TaskDependencies
 			.namesOf(project.getTasks().getByName(LifecycleBasePlugin.CHECK_TASK_NAME).getDependsOn()))
-			.contains(IntegrationTestPlugin.INT_TEST_TASK_NAME);
+			.contains(Tasks.INT_TEST);
 	}
 
 	@org.junit.jupiter.api.Test
@@ -142,11 +143,11 @@ class IntegrationTestPluginTests {
 	}
 
 	private static SourceSet intTestSourceSet(Project project) {
-		return sourceSets(project).getByName(IntegrationTestPlugin.INT_TEST_SOURCE_SET_NAME);
+		return sourceSets(project).getByName(Tasks.INT_TEST);
 	}
 
 	private static Test intTestTask(Project project) {
-		return (Test) project.getTasks().getByName(IntegrationTestPlugin.INT_TEST_TASK_NAME);
+		return (Test) project.getTasks().getByName(Tasks.INT_TEST);
 	}
 
 	private Project project() {

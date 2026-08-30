@@ -43,6 +43,7 @@ import org.gradle.api.tasks.VerificationException;
 
 import org.v31bank.build.autoconfigure.AutoConfigurationClass.Attribute;
 import org.v31bank.build.autoconfigure.AutoConfigurationClass.Reference;
+import org.v31bank.build.constant.Locations;
 
 /**
  * Fails when an {@code @AutoConfiguration} class goes unregistered, is misnamed, or
@@ -92,10 +93,11 @@ public abstract class CheckAutoConfigurationClasses extends AutoConfigurationImp
 			boolean unregisteredOnPurpose = omitted.contains(name) || name.endsWith(TEST_CLASS_NAME_SUFFIX);
 			boolean registered = imports.contains(name);
 			if (unregisteredOnPurpose && registered) {
-				problems.add(name, "should not be registered in %s".formatted(AutoConfigurationImports.PATH));
+				problems.add(name,
+						"should not be registered in %s".formatted(Locations.AUTO_CONFIGURATION_IMPORTS_FILE));
 			}
 			else if (!unregisteredOnPurpose && !registered) {
-				problems.add(name, "is not registered in %s".formatted(AutoConfigurationImports.PATH));
+				problems.add(name, "is not registered in %s".formatted(Locations.AUTO_CONFIGURATION_IMPORTS_FILE));
 			}
 		}
 	}

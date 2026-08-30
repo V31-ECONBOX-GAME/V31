@@ -35,6 +35,8 @@ import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 
+import org.v31bank.build.constant.Locations;
+
 /**
  * A check on a module's auto-configuration imports file and the classes it names.
  *
@@ -69,7 +71,8 @@ public abstract class AutoConfigurationImportsTask extends DefaultTask {
 	@SkipWhenEmpty
 	@PathSensitive(PathSensitivity.RELATIVE)
 	public FileTree getSource() {
-		return getResources().getAsFileTree().matching((filter) -> filter.include(AutoConfigurationImports.PATH));
+		return getResources().getAsFileTree()
+			.matching((filter) -> filter.include(Locations.AUTO_CONFIGURATION_IMPORTS_FILE));
 	}
 
 	@Classpath

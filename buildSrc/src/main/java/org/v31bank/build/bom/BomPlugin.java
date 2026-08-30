@@ -23,6 +23,8 @@ import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.plugins.JavaPlatformExtension;
 import org.gradle.api.plugins.JavaPlatformPlugin;
 
+import org.v31bank.build.constant.Configurations;
+
 /**
  * Plugin for defining a bom.
  * <p>
@@ -43,14 +45,6 @@ import org.gradle.api.plugins.JavaPlatformPlugin;
  */
 public class BomPlugin implements Plugin<Project> {
 
-	/**
-	 * Holds what a consumer asking for an enforced platform gets. Declared here rather
-	 * than by the project, because a project cannot add to the enforced variants
-	 * directly: they are consumable, and only a configuration they extend can be declared
-	 * into.
-	 */
-	static final String API_ENFORCED_CONFIGURATION_NAME = "apiEnforced";
-
 	@Override
 	public void apply(Project project) {
 		project.getPluginManager().apply(JavaPlatformPlugin.class);
@@ -61,7 +55,7 @@ public class BomPlugin implements Plugin<Project> {
 
 	private void createApiEnforcedConfiguration(Project project) {
 		ConfigurationContainer configurations = project.getConfigurations();
-		Configuration apiEnforced = configurations.dependencyScope(API_ENFORCED_CONFIGURATION_NAME).get();
+		Configuration apiEnforced = configurations.dependencyScope(Configurations.API_ENFORCED).get();
 		configurations.named(JavaPlatformPlugin.ENFORCED_API_ELEMENTS_CONFIGURATION_NAME,
 				(configuration) -> configuration.extendsFrom(apiEnforced));
 		configurations.named(JavaPlatformPlugin.ENFORCED_RUNTIME_ELEMENTS_CONFIGURATION_NAME,

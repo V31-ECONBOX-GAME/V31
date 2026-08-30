@@ -28,6 +28,11 @@ package org.v31bank.build.constant;
 public final class Projects {
 
 	/**
+	 * The root project, which holds what the whole build shares.
+	 */
+	public static final String ROOT = ":";
+
+	/**
 	 * The published BOM, which constrains every published V31 artifact.
 	 */
 	public static final String DEPENDENCIES = ":platform:V31-dependencies";

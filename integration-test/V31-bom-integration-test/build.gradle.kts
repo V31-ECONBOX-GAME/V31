@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import org.gradle.language.base.plugins.LifecycleBasePlugin
-
 plugins {
     java
     id("org.v31bank.integration-test")
@@ -69,7 +67,7 @@ val syncTestRepository = tasks.register<Sync>("syncTestRepository") {
 // The committed output of one generator, so that the version stamped into it can be
 // compared with the runtime a consumer resolves. Any API project would do; this is the
 // one that has a .proto.
-val generatedSources = rootProject.layout.projectDirectory.dir("apis/V31-ledger-api/src/main/generated")
+val generatedSources = isolated.rootProject.projectDirectory.dir("apis/V31-ledger-api/src/main/generated")
 
 tasks.named<Test>("intTest") {
     inputs.files(syncTestRepository)

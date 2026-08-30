@@ -32,6 +32,7 @@ import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 import org.gradle.api.tasks.TaskProvider;
 
+import org.v31bank.build.constant.Configurations;
 import org.v31bank.build.util.Directories;
 
 /**
@@ -53,11 +54,6 @@ import org.v31bank.build.util.Directories;
  * @since 0.2.0
  */
 public class MavenRepositoryPlugin implements Plugin<Project> {
-
-	/**
-	 * Name of the configuration a project depends on to resolve against the repository.
-	 */
-	public static final String MAVEN_REPOSITORY_CONFIGURATION_NAME = "mavenRepository";
 
 	/** What {@link DeployedPlugin} calls the publication it creates. */
 	private static final String PUBLISH_TASK_NAME = "publishV31PublicationToProjectRepository";
@@ -87,7 +83,7 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 	private void setUpProjectRepository(Project project, Task publishTask, File location) {
 		// Emptied first, so a rename or a removal leaves no stale artifact to resolve
 		publishTask.doFirst(new CleanAction(location));
-		Configuration repository = project.getConfigurations().create(MAVEN_REPOSITORY_CONFIGURATION_NAME);
+		Configuration repository = project.getConfigurations().create(Configurations.MAVEN_REPOSITORY);
 		// Taken from the task, not the layout, so the artifact carries what builds it
 		TaskProvider<Task> publish = project.getTasks().named(publishTask.getName());
 		project.getArtifacts().add(repository.getName(), publish.map((_) -> location));
@@ -114,7 +110,7 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 			.all((dependency) -> {
 				ProjectDependency copy = dependency.copy();
 				if (copy.getAttributes().isEmpty()) {
-					copy.setTargetConfiguration(MAVEN_REPOSITORY_CONFIGURATION_NAME);
+					copy.setTargetConfiguration(Configurations.MAVEN_REPOSITORY);
 				}
 				contents.add(copy);
 			});

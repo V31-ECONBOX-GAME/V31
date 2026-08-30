@@ -34,8 +34,10 @@ gradlePlugin {
 ```
 
 That generates `META-INF/gradle-plugins/<id>.properties` inside the jar, which is what
-`apply(plugin = "...")` resolves against. The root build applies the conventions plugin
-to every subproject, and the plugin decides for itself what each one needs by reacting
+`apply(plugin = "...")` resolves against. `settings.gradle.kts` applies the conventions
+plugin to every project — from a lifecycle action rather than from a `subprojects` block,
+because no project may configure another — and the plugin decides for itself what each
+one needs by reacting
 to the plugins that project has — so a `java-platform`, a plain library and a Spring
 Boot application can all be handed the same treatment without being special-cased.
 

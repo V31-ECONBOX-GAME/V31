@@ -30,6 +30,11 @@ import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 
+import org.v31bank.build.constant.Configurations;
+import org.v31bank.build.constant.Coordinates;
+import org.v31bank.build.constant.Locations;
+import org.v31bank.build.constant.Tasks;
+import org.v31bank.build.util.Directories;
 import org.v31bank.build.util.SourceSets;
 
 /**
@@ -50,29 +55,6 @@ import org.v31bank.build.util.SourceSets;
  */
 public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 
-	/**
-	 * Name of the configuration the generated metadata is offered through.
-	 */
-	public static final String METADATA_CONFIGURATION_NAME = "configurationPropertiesMetadata";
-
-	/**
-	 * Name of the task that checks the generated metadata.
-	 */
-	public static final String CHECK_METADATA_TASK_NAME = "checkSpringConfigurationMetadata";
-
-	/**
-	 * Name of the task that checks the hand-written metadata.
-	 */
-	public static final String CHECK_ADDITIONAL_METADATA_TASK_NAME = "checkAdditionalSpringConfigurationMetadata";
-
-	static final String METADATA_FILE = "META-INF/spring-configuration-metadata.json";
-
-	static final String ADDITIONAL_METADATA_FILE = "META-INF/additional-spring-configuration-metadata.json";
-
-	static final String METADATA_USAGE = "configuration-properties-metadata";
-
-	private static final String CONFIGURATION_PROCESSOR = "org.springframework.boot:spring-boot-configuration-processor";
-
 	private static final String ADDITIONAL_LOCATIONS_ARGUMENT = "-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations=";
 
 	@Override
@@ -90,7 +72,8 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 	}
 
 	private void addAnnotationProcessor(Project project) {
-		project.getDependencies().add(JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME, CONFIGURATION_PROCESSOR);
+		project.getDependencies()
+			.add(JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME, Coordinates.CONFIGURATION_PROCESSOR);
 	}
 
 	/**
@@ -122,19 +105,20 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 	}
 
 	private String locations(Project project, SourceSet main) {
-		return String.join(",", SourceSets.of(main).resources().relativeTo(project.getRootProject()));
+		return String.join(",", SourceSets.of(main).resources().relativeTo(Directories.rootOf(project)));
 	}
 
 	private void registerChecks(Project project, SourceSet main) {
 		TaskProvider<CheckAdditionalSpringConfigurationMetadata> checkAdditional = project.getTasks()
-			.register(CHECK_ADDITIONAL_METADATA_TASK_NAME, CheckAdditionalSpringConfigurationMetadata.class, (task) -> {
-				task.setDescription("Checks the hand-written configuration metadata of the main source set.");
-				task.setSource(SourceSets.of(main).resources().unwrap());
-				task.include(ADDITIONAL_METADATA_FILE);
-				task.getReportLocation().set(report(project, "additional-spring-configuration-metadata"));
-			});
+			.register(Tasks.CHECK_ADDITIONAL_CONFIGURATION_METADATA, CheckAdditionalSpringConfigurationMetadata.class,
+					(task) -> {
+						task.setDescription("Checks the hand-written configuration metadata of the main source set.");
+						task.setSource(SourceSets.of(main).resources().unwrap());
+						task.include(Locations.ADDITIONAL_CONFIGURATION_METADATA_FILE);
+						task.getReportLocation().set(report(project, "additional-spring-configuration-metadata"));
+					});
 		TaskProvider<CheckSpringConfigurationMetadata> checkGenerated = project.getTasks()
-			.register(CHECK_METADATA_TASK_NAME, CheckSpringConfigurationMetadata.class, (task) -> {
+			.register(Tasks.CHECK_CONFIGURATION_METADATA, CheckSpringConfigurationMetadata.class, (task) -> {
 				task.setDescription("Checks the generated configuration metadata of the main source set.");
 				task.getMetadataLocation().set(generatedMetadata(project, main));
 				task.getReportLocation().set(report(project, "spring-configuration-metadata"));
@@ -147,12 +131,14 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 	private void offerMetadata(Project project, SourceSet main) {
 		ObjectFactory objects = project.getObjects();
 		project.getConfigurations()
-			.consumable(METADATA_CONFIGURATION_NAME, (configuration) -> configuration.attributes((attributes) -> {
-				attributes.attribute(Category.CATEGORY_ATTRIBUTE,
-						objects.named(Category.class, Category.DOCUMENTATION));
-				attributes.attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.class, METADATA_USAGE));
-			}));
-		project.getArtifacts().add(METADATA_CONFIGURATION_NAME, generatedMetadata(project, main));
+			.consumable(Configurations.CONFIGURATION_PROPERTIES_METADATA,
+					(configuration) -> configuration.attributes((attributes) -> {
+						attributes.attribute(Category.CATEGORY_ATTRIBUTE,
+								objects.named(Category.class, Category.DOCUMENTATION));
+						attributes.attribute(Usage.USAGE_ATTRIBUTE,
+								objects.named(Usage.class, Configurations.CONFIGURATION_PROPERTIES_METADATA_USAGE));
+					}));
+		project.getArtifacts().add(Configurations.CONFIGURATION_PROPERTIES_METADATA, generatedMetadata(project, main));
 	}
 
 	/**
@@ -164,7 +150,7 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 	private Provider<RegularFile> generatedMetadata(Project project, SourceSet main) {
 		return project.getTasks()
 			.named(main.getCompileJavaTaskName(), JavaCompile.class)
-			.flatMap((compile) -> compile.getDestinationDirectory().file(METADATA_FILE));
+			.flatMap((compile) -> compile.getDestinationDirectory().file(Locations.CONFIGURATION_METADATA_FILE));
 	}
 
 	private Provider<RegularFile> report(Project project, String name) {

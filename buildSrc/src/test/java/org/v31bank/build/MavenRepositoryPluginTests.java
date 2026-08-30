@@ -37,6 +37,7 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.v31bank.build.constant.Configurations;
 import org.v31bank.build.task.TaskDependencies;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,15 +76,13 @@ class MavenRepositoryPluginTests {
 	void offersNothingUntilThereIsAPublicationToPut() {
 		Project project = project();
 		assertThat(project.getTasks().findByName(PUBLISH_TASK_NAME)).isNull();
-		assertThat(project.getConfigurations().findByName(MavenRepositoryPlugin.MAVEN_REPOSITORY_CONFIGURATION_NAME))
-			.isNull();
+		assertThat(project.getConfigurations().findByName(Configurations.MAVEN_REPOSITORY)).isNull();
 	}
 
 	@Test
 	void offersTheRepositoryThroughAConfigurationOfItsOwn() {
 		Project project = deployedProject();
-		assertThat(project.getConfigurations().findByName(MavenRepositoryPlugin.MAVEN_REPOSITORY_CONFIGURATION_NAME))
-			.isNotNull();
+		assertThat(project.getConfigurations().findByName(Configurations.MAVEN_REPOSITORY)).isNotNull();
 	}
 
 	@Test
@@ -103,8 +102,7 @@ class MavenRepositoryPluginTests {
 			.asInstanceOf(InstanceOfAssertFactories.type(ProjectDependency.class))
 			.satisfies((dependency) -> {
 				assertThat(dependency.getPath()).isEqualTo(":V31-core");
-				assertThat(dependency.getTargetConfiguration())
-					.isEqualTo(MavenRepositoryPlugin.MAVEN_REPOSITORY_CONFIGURATION_NAME);
+				assertThat(dependency.getTargetConfiguration()).isEqualTo(Configurations.MAVEN_REPOSITORY);
 			});
 	}
 
@@ -135,8 +133,7 @@ class MavenRepositoryPluginTests {
 			.getPublications()
 			.create("pluginMaven", MavenPublication.class);
 		assertThat(project.getTasks().findByName("publishPluginMavenPublicationToProjectRepository")).isNotNull();
-		assertThat(project.getConfigurations().findByName(MavenRepositoryPlugin.MAVEN_REPOSITORY_CONFIGURATION_NAME))
-			.isNotNull();
+		assertThat(project.getConfigurations().findByName(Configurations.MAVEN_REPOSITORY)).isNotNull();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -151,7 +148,7 @@ class MavenRepositoryPluginTests {
 	}
 
 	private static Configuration mavenRepository(Project project) {
-		return project.getConfigurations().getByName(MavenRepositoryPlugin.MAVEN_REPOSITORY_CONFIGURATION_NAME);
+		return project.getConfigurations().getByName(Configurations.MAVEN_REPOSITORY);
 	}
 
 	private static File buildDirectory(Project project, String path) {

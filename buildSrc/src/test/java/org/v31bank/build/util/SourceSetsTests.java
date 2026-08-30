@@ -86,7 +86,8 @@ class SourceSetsTests {
 	@Test
 	void saysWhereItIsRootedRelativeToWhateverIsAsked() {
 		mainJava().unwrap().srcDir(GENERATED);
-		assertThat(mainJava().relativeTo(this.project)).containsExactly("src/main/java", GENERATED);
+		assertThat(mainJava().relativeTo(this.project.getLayout().getProjectDirectory()))
+			.containsExactly("src/main/java", GENERATED);
 	}
 
 	@Test

@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import org.v31bank.build.util.JsonFiles;
 
@@ -32,7 +33,10 @@ import org.v31bank.build.util.JsonFiles;
  */
 final class ConfigurationMetadata {
 
-	static final List<String> ELEMENT_TYPES = List.of("groups", "properties", "hints");
+	/**
+	 * The kinds of element the file is made of, in the order it has to list them in.
+	 */
+	private static final List<String> ELEMENT_TYPES = List.of("groups", "properties", "hints");
 
 	private final File file;
 
@@ -84,6 +88,17 @@ final class ConfigurationMetadata {
 		Map<String, Object> object = new LinkedHashMap<>();
 		map.forEach((key, value) -> object.put(String.valueOf(key), value));
 		return object;
+	}
+
+	/**
+	 * Walks every kind of element the file holds. The shape of the file is this class's
+	 * business, so a caller that only wants the names does not have to know it.
+	 * @param action what to do with each kind and the names it lists
+	 */
+	void forEachElementType(BiConsumer<String, List<String>> action) {
+		for (String elementType : ELEMENT_TYPES) {
+			action.accept(elementType, names(elementType));
+		}
 	}
 
 	List<String> names(String elementType) {

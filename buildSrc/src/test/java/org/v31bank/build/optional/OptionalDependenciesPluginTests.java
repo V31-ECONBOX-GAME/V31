@@ -29,6 +29,7 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.v31bank.build.constant.Configurations;
 import org.v31bank.build.util.SourceSets;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class OptionalDependenciesPluginTests {
 
-	private static final String OPTIONAL = OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME;
+	private static final String OPTIONAL = Configurations.OPTIONAL;
 
 	private static final String DEPENDENCY = "widget";
 

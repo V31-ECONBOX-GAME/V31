@@ -32,6 +32,8 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.v31bank.build.constant.Configurations;
+import org.v31bank.build.constant.Tasks;
 import org.v31bank.build.task.TaskDependencies;
 import org.v31bank.build.util.SourceSets;
 
@@ -53,7 +55,7 @@ class ConfigurationPropertiesPluginTests {
 		Project project = bareProject();
 		project.getPlugins().apply(ConfigurationPropertiesPlugin.class);
 		assertThat(project.getPlugins().hasPlugin(JavaPlugin.class)).isFalse();
-		assertThat(project.getTasks().findByName(ConfigurationPropertiesPlugin.CHECK_METADATA_TASK_NAME)).isNull();
+		assertThat(project.getTasks().findByName(Tasks.CHECK_CONFIGURATION_METADATA)).isNull();
 	}
 
 	@Test
@@ -99,25 +101,23 @@ class ConfigurationPropertiesPluginTests {
 	@Test
 	void registersACheckOfTheGeneratedMetadataAndOneOfTheHandWrittenOne() {
 		Project project = project();
-		assertThat(project.getTasks().findByName(ConfigurationPropertiesPlugin.CHECK_METADATA_TASK_NAME))
+		assertThat(project.getTasks().findByName(Tasks.CHECK_CONFIGURATION_METADATA))
 			.isInstanceOf(CheckSpringConfigurationMetadata.class);
-		assertThat(project.getTasks().findByName(ConfigurationPropertiesPlugin.CHECK_ADDITIONAL_METADATA_TASK_NAME))
+		assertThat(project.getTasks().findByName(Tasks.CHECK_ADDITIONAL_CONFIGURATION_METADATA))
 			.isInstanceOf(CheckAdditionalSpringConfigurationMetadata.class);
 	}
 
 	@Test
 	void runsBothChecksAsPartOfCheck() {
 		Task check = project().getTasks().getByName(LifecycleBasePlugin.CHECK_TASK_NAME);
-		assertThat(TaskDependencies.namesOf(check.getDependsOn())).contains(
-				ConfigurationPropertiesPlugin.CHECK_METADATA_TASK_NAME,
-				ConfigurationPropertiesPlugin.CHECK_ADDITIONAL_METADATA_TASK_NAME);
+		assertThat(TaskDependencies.namesOf(check.getDependsOn())).contains(Tasks.CHECK_CONFIGURATION_METADATA,
+				Tasks.CHECK_ADDITIONAL_CONFIGURATION_METADATA);
 	}
 
 	@Test
 	void presentsBothChecksAsVerificationTasks() {
 		Project project = project();
-		for (String name : List.of(ConfigurationPropertiesPlugin.CHECK_METADATA_TASK_NAME,
-				ConfigurationPropertiesPlugin.CHECK_ADDITIONAL_METADATA_TASK_NAME)) {
+		for (String name : List.of(Tasks.CHECK_CONFIGURATION_METADATA, Tasks.CHECK_ADDITIONAL_CONFIGURATION_METADATA)) {
 			assertThat(project.getTasks().getByName(name).getGroup()).as(name)
 				.isEqualTo(LifecycleBasePlugin.VERIFICATION_GROUP);
 		}
@@ -127,7 +127,7 @@ class ConfigurationPropertiesPluginTests {
 	void checksTheMetadataWhereTheCompilerWroteIt() {
 		Project project = project();
 		CheckSpringConfigurationMetadata check = (CheckSpringConfigurationMetadata) project.getTasks()
-			.getByName(ConfigurationPropertiesPlugin.CHECK_METADATA_TASK_NAME);
+			.getByName(Tasks.CHECK_CONFIGURATION_METADATA);
 		assertThat(check.getMetadataLocation().get().getAsFile()).hasName("spring-configuration-metadata.json")
 			.hasParent(
 					new File(project.getLayout().getBuildDirectory().get().getAsFile(), "classes/java/main/META-INF"));
@@ -141,7 +141,7 @@ class ConfigurationPropertiesPluginTests {
 	void waitsForTheCompilerThatWritesTheMetadata() {
 		Project project = project();
 		CheckSpringConfigurationMetadata check = (CheckSpringConfigurationMetadata) project.getTasks()
-			.getByName(ConfigurationPropertiesPlugin.CHECK_METADATA_TASK_NAME);
+			.getByName(Tasks.CHECK_CONFIGURATION_METADATA);
 		assertThat(TaskDependencies.namesOf(check.getInputs().getFiles().getBuildDependencies().getDependencies(check)))
 			.contains(JavaPlugin.COMPILE_JAVA_TASK_NAME);
 	}
@@ -150,7 +150,7 @@ class ConfigurationPropertiesPluginTests {
 	void offersTheMetadataThroughAConfigurationThatSaysWhatItIs() {
 		Project project = project();
 		Configuration metadata = project.getConfigurations()
-			.getByName(ConfigurationPropertiesPlugin.METADATA_CONFIGURATION_NAME);
+			.getByName(Configurations.CONFIGURATION_PROPERTIES_METADATA);
 		assertThat(metadata.isCanBeConsumed()).isTrue();
 		assertThat(metadata.isCanBeResolved()).isFalse();
 		assertThat(metadata.getAttributes().getAttribute(Category.CATEGORY_ATTRIBUTE)).extracting(Category::getName)

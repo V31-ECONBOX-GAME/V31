@@ -28,6 +28,10 @@ import org.gradle.api.tasks.TaskProvider;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 
 import org.v31bank.build.DeployedPlugin;
+import org.v31bank.build.constant.Configurations;
+import org.v31bank.build.constant.Coordinates;
+import org.v31bank.build.constant.Locations;
+import org.v31bank.build.constant.Tasks;
 import org.v31bank.build.optional.OptionalDependenciesPlugin;
 import org.v31bank.build.util.SourceSets;
 
@@ -50,38 +54,6 @@ import org.v31bank.build.util.SourceSets;
  */
 public class AutoConfigurationPlugin implements Plugin<Project> {
 
-	/**
-	 * Name of both the metadata task and the configuration it is offered through.
-	 */
-	public static final String METADATA_NAME = "autoConfigurationMetadata";
-
-	/**
-	 * Name of the task that checks the imports file.
-	 */
-	public static final String CHECK_IMPORTS_TASK_NAME = "checkAutoConfigurationImports";
-
-	/**
-	 * Name of the task that checks the annotated classes.
-	 */
-	public static final String CHECK_CLASSES_TASK_NAME = "checkAutoConfigurationClasses";
-
-	/**
-	 * Name of the configuration holding what the module resolves whatever a consumer asks
-	 * for.
-	 */
-	public static final String REQUIRED_CLASSPATH_CONFIGURATION_NAME = "autoConfigurationRequiredClasspath";
-
-	/**
-	 * Name of the configuration holding what only an optional dependency brings in.
-	 */
-	public static final String OPTIONAL_CLASSPATH_CONFIGURATION_NAME = "autoConfigurationOptionalClasspath";
-
-	private static final String METADATA_USAGE = "auto-configuration-metadata";
-
-	private static final String METADATA_FILE = "auto-configuration-metadata.properties";
-
-	private static final String AUTO_CONFIGURATION_PROCESSOR = "org.springframework.boot:spring-boot-autoconfigure-processor";
-
 	@Override
 	public void apply(Project project) {
 		project.getPluginManager().apply(DeployedPlugin.class);
@@ -96,35 +68,40 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 	}
 
 	private void addAnnotationProcessors(Project project) {
-		project.getDependencies().add(JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME, AUTO_CONFIGURATION_PROCESSOR);
+		project.getDependencies()
+			.add(JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME, Coordinates.AUTO_CONFIGURATION_PROCESSOR);
 	}
 
 	private void registerMetadata(Project project, SourceSet main) {
 		project.getConfigurations()
-			.consumable(METADATA_NAME, (configuration) -> configuration.attributes((attributes) -> {
-				attributes.attribute(Category.CATEGORY_ATTRIBUTE,
-						project.getObjects().named(Category.class, Category.DOCUMENTATION));
-				attributes.attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, METADATA_USAGE));
-			}));
+			.consumable(Configurations.AUTO_CONFIGURATION_METADATA,
+					(configuration) -> configuration.attributes((attributes) -> {
+						attributes.attribute(Category.CATEGORY_ATTRIBUTE,
+								project.getObjects().named(Category.class, Category.DOCUMENTATION));
+						attributes.attribute(Usage.USAGE_ATTRIBUTE, project.getObjects()
+							.named(Usage.class, Configurations.AUTO_CONFIGURATION_METADATA_USAGE));
+					}));
 		TaskProvider<AutoConfigurationMetadata> metadata = project.getTasks()
-			.register(METADATA_NAME, AutoConfigurationMetadata.class, (task) -> {
+			.register(Configurations.AUTO_CONFIGURATION_METADATA, AutoConfigurationMetadata.class, (task) -> {
 				task.setDescription("Generates metadata describing the module's auto-configurations.");
 				task.setSourceSet(main);
 				task.dependsOn(main.getClassesTaskName());
-				task.getOutputFile().set(project.getLayout().getBuildDirectory().file(METADATA_FILE));
+				task.getOutputFile()
+					.set(project.getLayout().getBuildDirectory().file(Locations.AUTO_CONFIGURATION_METADATA_FILE));
 			});
-		project.getArtifacts().add(METADATA_NAME, metadata.map(AutoConfigurationMetadata::getOutputFile));
+		project.getArtifacts()
+			.add(Configurations.AUTO_CONFIGURATION_METADATA, metadata.map(AutoConfigurationMetadata::getOutputFile));
 	}
 
 	private void registerChecks(Project project, SourceSet main) {
 		TaskProvider<CheckAutoConfigurationImports> checkImports = project.getTasks()
-			.register(CHECK_IMPORTS_TASK_NAME, CheckAutoConfigurationImports.class, (task) -> {
-				task.setDescription(
-						"Checks the %s file of the main source set.".formatted(AutoConfigurationImports.PATH));
+			.register(Tasks.CHECK_AUTO_CONFIGURATION_IMPORTS, CheckAutoConfigurationImports.class, (task) -> {
+				task.setDescription("Checks the %s file of the main source set."
+					.formatted(Locations.AUTO_CONFIGURATION_IMPORTS_FILE));
 				readMainSourceSet(task, main);
 			});
 		TaskProvider<CheckAutoConfigurationClasses> checkClasses = project.getTasks()
-			.register(CHECK_CLASSES_TASK_NAME, CheckAutoConfigurationClasses.class, (task) -> {
+			.register(Tasks.CHECK_AUTO_CONFIGURATION_CLASSES, CheckAutoConfigurationClasses.class, (task) -> {
 				task.setDescription("Checks the auto-configuration classes of the main source set.");
 				readMainSourceSet(task, main);
 				task.getRequiredDependencies().from(requiredClasspath(project, main));
@@ -156,7 +133,7 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 	 */
 	private Configuration requiredClasspath(Project project, SourceSet main) {
 		ConfigurationContainer configurations = project.getConfigurations();
-		return configurations.resolvable(REQUIRED_CLASSPATH_CONFIGURATION_NAME,
+		return configurations.resolvable(Configurations.AUTO_CONFIGURATION_REQUIRED_CLASSPATH,
 				(configuration) -> configuration.extendsFrom(
 						configurations.getByName(main.getImplementationConfigurationName()),
 						configurations.getByName(main.getRuntimeOnlyConfigurationName())))
@@ -171,9 +148,10 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 	 */
 	private Configuration optionalClasspath(Project project) {
 		ConfigurationContainer configurations = project.getConfigurations();
-		Configuration optional = configurations.getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME);
+		Configuration optional = configurations.getByName(Configurations.OPTIONAL);
 		return configurations
-			.resolvable(OPTIONAL_CLASSPATH_CONFIGURATION_NAME, (configuration) -> configuration.extendsFrom(optional))
+			.resolvable(Configurations.AUTO_CONFIGURATION_OPTIONAL_CLASSPATH,
+					(configuration) -> configuration.extendsFrom(optional))
 			.get();
 	}
 

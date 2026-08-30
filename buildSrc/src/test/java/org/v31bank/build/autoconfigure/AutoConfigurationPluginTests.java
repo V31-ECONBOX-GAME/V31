@@ -36,6 +36,8 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.v31bank.build.ConventionsPlugin;
 import org.v31bank.build.DeployedPlugin;
+import org.v31bank.build.constant.Configurations;
+import org.v31bank.build.constant.Tasks;
 import org.v31bank.build.optional.OptionalDependenciesPlugin;
 import org.v31bank.build.task.TaskDependencies;
 import org.v31bank.build.util.SourceSets;
@@ -74,18 +76,17 @@ class AutoConfigurationPluginTests {
 		project.getPlugins().apply(AutoConfigurationPlugin.class);
 		assertThat(project.getPlugins().hasPlugin(JavaPlugin.class)).isFalse();
 		assertThat(project.getPlugins().hasPlugin(DeployedPlugin.class)).isTrue();
-		assertThat(project.getTasks().findByName(AutoConfigurationPlugin.CHECK_IMPORTS_TASK_NAME)).isNull();
-		assertThat(project.getTasks().findByName(AutoConfigurationPlugin.CHECK_CLASSES_TASK_NAME)).isNull();
-		assertThat(project.getTasks().findByName(AutoConfigurationPlugin.METADATA_NAME)).isNull();
+		assertThat(project.getTasks().findByName(Tasks.CHECK_AUTO_CONFIGURATION_IMPORTS)).isNull();
+		assertThat(project.getTasks().findByName(Tasks.CHECK_AUTO_CONFIGURATION_CLASSES)).isNull();
+		assertThat(project.getTasks().findByName(Configurations.AUTO_CONFIGURATION_METADATA)).isNull();
 	}
 
 	@Test
 	void configuresAModuleBuiltWithPlainJava() {
 		Project project = moduleBuiltWith("java");
-		assertThat(project.getTasks().findByName(AutoConfigurationPlugin.CHECK_IMPORTS_TASK_NAME)).isNotNull();
-		assertThat(project.getTasks().findByName(AutoConfigurationPlugin.METADATA_NAME)).isNotNull();
-		assertThat(
-				project.getConfigurations().findByName(AutoConfigurationPlugin.REQUIRED_CLASSPATH_CONFIGURATION_NAME))
+		assertThat(project.getTasks().findByName(Tasks.CHECK_AUTO_CONFIGURATION_IMPORTS)).isNotNull();
+		assertThat(project.getTasks().findByName(Configurations.AUTO_CONFIGURATION_METADATA)).isNotNull();
+		assertThat(project.getConfigurations().findByName(Configurations.AUTO_CONFIGURATION_REQUIRED_CLASSPATH))
 			.isNotNull();
 	}
 
@@ -94,7 +95,7 @@ class AutoConfigurationPluginTests {
 		Project project = module();
 		project.getPlugins().apply(AutoConfigurationPlugin.class);
 		project.getPlugins().apply("java-library");
-		assertThat(project.getTasks().findByName(AutoConfigurationPlugin.CHECK_CLASSES_TASK_NAME)).isNotNull();
+		assertThat(project.getTasks().findByName(Tasks.CHECK_AUTO_CONFIGURATION_CLASSES)).isNotNull();
 	}
 
 	/**
@@ -116,9 +117,9 @@ class AutoConfigurationPluginTests {
 	@Test
 	void registersACheckOfTheFileAndACheckOfTheClasses() {
 		Project project = project();
-		assertThat(project.getTasks().findByName(AutoConfigurationPlugin.CHECK_IMPORTS_TASK_NAME))
+		assertThat(project.getTasks().findByName(Tasks.CHECK_AUTO_CONFIGURATION_IMPORTS))
 			.isInstanceOf(CheckAutoConfigurationImports.class);
-		assertThat(project.getTasks().findByName(AutoConfigurationPlugin.CHECK_CLASSES_TASK_NAME))
+		assertThat(project.getTasks().findByName(Tasks.CHECK_AUTO_CONFIGURATION_CLASSES))
 			.isInstanceOf(CheckAutoConfigurationClasses.class);
 	}
 
@@ -126,15 +127,14 @@ class AutoConfigurationPluginTests {
 	void runsBothChecksAsPartOfCheck() {
 		Project project = project();
 		Task check = project.getTasks().getByName(LifecycleBasePlugin.CHECK_TASK_NAME);
-		assertThat(TaskDependencies.namesOf(check.getDependsOn()))
-			.contains(AutoConfigurationPlugin.CHECK_IMPORTS_TASK_NAME, AutoConfigurationPlugin.CHECK_CLASSES_TASK_NAME);
+		assertThat(TaskDependencies.namesOf(check.getDependsOn())).contains(Tasks.CHECK_AUTO_CONFIGURATION_IMPORTS,
+				Tasks.CHECK_AUTO_CONFIGURATION_CLASSES);
 	}
 
 	@Test
 	void presentsBothChecksAsVerificationTasks() {
 		Project project = project();
-		for (String name : List.of(AutoConfigurationPlugin.CHECK_IMPORTS_TASK_NAME,
-				AutoConfigurationPlugin.CHECK_CLASSES_TASK_NAME)) {
+		for (String name : List.of(Tasks.CHECK_AUTO_CONFIGURATION_IMPORTS, Tasks.CHECK_AUTO_CONFIGURATION_CLASSES)) {
 			assertThat(project.getTasks().getByName(name).getGroup()).as(name)
 				.isEqualTo(LifecycleBasePlugin.VERIFICATION_GROUP);
 		}
@@ -149,8 +149,7 @@ class AutoConfigurationPluginTests {
 	void readsTheMainSourceSetOfTheProject() {
 		Project project = project();
 		SourceSet main = SourceSets.of(project).main().unwrap();
-		for (String name : List.of(AutoConfigurationPlugin.CHECK_IMPORTS_TASK_NAME,
-				AutoConfigurationPlugin.CHECK_CLASSES_TASK_NAME)) {
+		for (String name : List.of(Tasks.CHECK_AUTO_CONFIGURATION_IMPORTS, Tasks.CHECK_AUTO_CONFIGURATION_CLASSES)) {
 			AutoConfigurationImportsTask task = (AutoConfigurationImportsTask) project.getTasks().getByName(name);
 			assertThat(task.getClasspath().getFiles()).as(name)
 				.containsExactlyInAnyOrderElementsOf(main.getOutput().getClassesDirs().getFiles());
@@ -169,7 +168,7 @@ class AutoConfigurationPluginTests {
 		Project project = project();
 		SourceSet main = SourceSets.of(project).main().unwrap();
 		Configuration required = project.getConfigurations()
-			.getByName(AutoConfigurationPlugin.REQUIRED_CLASSPATH_CONFIGURATION_NAME);
+			.getByName(Configurations.AUTO_CONFIGURATION_REQUIRED_CLASSPATH);
 		assertThat(required.isCanBeResolved()).isTrue();
 		assertThat(required.isCanBeConsumed()).isFalse();
 		assertThat(required.isCanBeDeclared()).isFalse();
@@ -200,8 +199,8 @@ class AutoConfigurationPluginTests {
 	void namesTheDerivedClasspathsSoThatTheyCarryThePlatform() {
 		Project project = project();
 		project.getPlugins().apply(OptionalDependenciesPlugin.class);
-		for (String name : List.of(AutoConfigurationPlugin.REQUIRED_CLASSPATH_CONFIGURATION_NAME,
-				AutoConfigurationPlugin.OPTIONAL_CLASSPATH_CONFIGURATION_NAME)) {
+		for (String name : List.of(Configurations.AUTO_CONFIGURATION_REQUIRED_CLASSPATH,
+				Configurations.AUTO_CONFIGURATION_OPTIONAL_CLASSPATH)) {
 			assertThat(name).endsWith("Classpath");
 			assertThat(parentNames(project.getConfigurations().getByName(name))).as(name)
 				.contains(DEPENDENCY_MANAGEMENT);
@@ -211,14 +210,13 @@ class AutoConfigurationPluginTests {
 	@Test
 	void asksAboutOptionalDependenciesOnlyWhenTheModuleHasSome() {
 		Project project = project();
-		assertThat(
-				project.getConfigurations().findByName(AutoConfigurationPlugin.OPTIONAL_CLASSPATH_CONFIGURATION_NAME))
+		assertThat(project.getConfigurations().findByName(Configurations.AUTO_CONFIGURATION_OPTIONAL_CLASSPATH))
 			.isNull();
 		project.getPlugins().apply(OptionalDependenciesPlugin.class);
 		Configuration optional = project.getConfigurations()
-			.getByName(AutoConfigurationPlugin.OPTIONAL_CLASSPATH_CONFIGURATION_NAME);
+			.getByName(Configurations.AUTO_CONFIGURATION_OPTIONAL_CLASSPATH);
 		assertThat(optional.isCanBeResolved()).isTrue();
-		assertThat(parentNames(optional)).contains(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME);
+		assertThat(parentNames(optional)).contains(Configurations.OPTIONAL);
 	}
 
 	@Test
@@ -226,32 +224,32 @@ class AutoConfigurationPluginTests {
 		Project project = project();
 		project.getPlugins().apply(OptionalDependenciesPlugin.class);
 		CheckAutoConfigurationClasses check = (CheckAutoConfigurationClasses) project.getTasks()
-			.getByName(AutoConfigurationPlugin.CHECK_CLASSES_TASK_NAME);
+			.getByName(Tasks.CHECK_AUTO_CONFIGURATION_CLASSES);
 		assertThat(check.getOptionalDependencies().getFrom()).isNotEmpty();
 	}
 
 	@Test
 	void registersTheMetadataTask() {
-		assertThat(project().getTasks().findByName(AutoConfigurationPlugin.METADATA_NAME))
+		assertThat(project().getTasks().findByName(Configurations.AUTO_CONFIGURATION_METADATA))
 			.isInstanceOf(AutoConfigurationMetadata.class);
 	}
 
 	@Test
 	void offersTheMetadataThroughAConfigurationOfItsOwn() {
 		Project project = project();
-		assertThat(project.getConfigurations().findByName(AutoConfigurationPlugin.METADATA_NAME)).isNotNull();
-		assertThat(project.getConfigurations().getByName(AutoConfigurationPlugin.METADATA_NAME).getArtifacts())
+		assertThat(project.getConfigurations().findByName(Configurations.AUTO_CONFIGURATION_METADATA)).isNotNull();
+		assertThat(project.getConfigurations().getByName(Configurations.AUTO_CONFIGURATION_METADATA).getArtifacts())
 			.singleElement()
 			.satisfies((artifact) -> assertThat(
 					TaskDependencies.namesOf(artifact.getBuildDependencies().getDependencies(null)))
-				.contains(AutoConfigurationPlugin.METADATA_NAME));
+				.contains(Configurations.AUTO_CONFIGURATION_METADATA));
 	}
 
 	@Test
 	void keepsTheMetadataOutOfTheModuleItDescribes() {
 		Project project = project();
 		AutoConfigurationMetadata metadata = (AutoConfigurationMetadata) project.getTasks()
-			.getByName(AutoConfigurationPlugin.METADATA_NAME);
+			.getByName(Configurations.AUTO_CONFIGURATION_METADATA);
 		assertThat(metadata.getOutputFile().get().getAsFile()).hasName("auto-configuration-metadata.properties")
 			.hasParent(project.getLayout().getBuildDirectory().get().getAsFile());
 	}
@@ -265,9 +263,9 @@ class AutoConfigurationPluginTests {
 		Project project = project();
 		SourceSet main = SourceSets.of(project).main().unwrap();
 		AutoConfigurationMetadata metadata = (AutoConfigurationMetadata) project.getTasks()
-			.getByName(AutoConfigurationPlugin.METADATA_NAME);
+			.getByName(Configurations.AUTO_CONFIGURATION_METADATA);
 		AutoConfigurationImportsTask check = (AutoConfigurationImportsTask) project.getTasks()
-			.getByName(AutoConfigurationPlugin.CHECK_IMPORTS_TASK_NAME);
+			.getByName(Tasks.CHECK_AUTO_CONFIGURATION_IMPORTS);
 		assertThat(metadata.getAutoConfigurationImports().get().getAsFile())
 			.hasParent(new File(main.getOutput().getResourcesDir(), "META-INF/spring"));
 		assertThat(check.getResources().getFrom()).containsExactly(main.getResources());
@@ -279,7 +277,7 @@ class AutoConfigurationPluginTests {
 	 */
 	@Test
 	void saysWhatTheMetadataIsSoThatItCanBeCollected() {
-		Configuration metadata = project().getConfigurations().getByName(AutoConfigurationPlugin.METADATA_NAME);
+		Configuration metadata = project().getConfigurations().getByName(Configurations.AUTO_CONFIGURATION_METADATA);
 		assertThat(metadata.isCanBeConsumed()).isTrue();
 		assertThat(metadata.isCanBeResolved()).isFalse();
 		assertThat(metadata.getAttributes().getAttribute(Category.CATEGORY_ATTRIBUTE)).extracting(Category::getName)

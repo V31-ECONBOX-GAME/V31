@@ -22,6 +22,8 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.plugins.JavaPlatformPlugin;
 
+import org.v31bank.build.constant.Configurations;
+
 /**
  * DSL extensions for {@link BomPlugin}.
  *
@@ -40,7 +42,7 @@ public class BomExtension {
 	public void imports(String coordinate) {
 		DependencyHandler dependencies = this.project.getDependencies();
 		dependencies.add(JavaPlatformPlugin.API_CONFIGURATION_NAME, dependencies.platform(coordinate));
-		dependencies.add(BomPlugin.API_ENFORCED_CONFIGURATION_NAME, dependencies.enforcedPlatform(coordinate));
+		dependencies.add(Configurations.API_ENFORCED, dependencies.enforcedPlatform(coordinate));
 	}
 
 }

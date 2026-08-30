@@ -17,6 +17,7 @@
 package org.v31bank.build.util;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -30,6 +31,8 @@ import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 
+import org.v31bank.build.constant.Locations;
+
 /**
  * A project's source sets, which hang off the java extension rather than off the project.
  * <p>
@@ -38,7 +41,7 @@ import org.gradle.api.tasks.SourceSetContainer;
  * <pre class="code">
  * SourceSets.of(project).main().java().directory()
  * SourceSets.of(project).named("intTest").resources().srcDirs()
- * SourceSets.of(sourceSet).resources().relativeTo(project.getRootProject())
+ * SourceSets.of(sourceSet).resources().relativeTo(Directories.rootOf(project))
  * </pre>
  *
  * Every step answers {@code unwrap()} with the Gradle type it stands for, so anything not
@@ -48,12 +51,6 @@ import org.gradle.api.tasks.SourceSetContainer;
  * @since 0.2.0
  */
 public final class SourceSets {
-
-	/**
-	 * The source root a generator owns, kept apart from handwritten code so that the
-	 * checks and the formatter can skip it by path.
-	 */
-	public static final String GENERATED_SOURCES = "src/main/generated/sources";
 
 	private final Project project;
 
@@ -89,7 +86,7 @@ public final class SourceSets {
 	}
 
 	public Directory generatedSources() {
-		return this.project.getLayout().getProjectDirectory().dir(GENERATED_SOURCES);
+		return this.project.getLayout().getProjectDirectory().dir(Locations.GENERATED_SOURCES_DIRECTORY);
 	}
 
 	public Sources named(String name) {
@@ -173,11 +170,12 @@ public final class SourceSets {
 
 		/**
 		 * Where this kind of source is rooted, as paths rather than as files.
-		 * @param base what the paths are relative to, usually the root project
+		 * @param base what the paths are relative to, usually the root of the build
 		 * @return the directories in the order they were declared
 		 */
-		public List<String> relativeTo(Project base) {
-			return srcDirs().stream().map(base::relativePath).toList();
+		public List<String> relativeTo(Directory base) {
+			Path root = base.getAsFile().toPath();
+			return srcDirs().stream().map((directory) -> root.relativize(directory.toPath()).toString()).toList();
 		}
 
 		/**

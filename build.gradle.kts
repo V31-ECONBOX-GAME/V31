@@ -15,12 +15,8 @@
  */
 
 plugins {
-    base
+	id("org.v31bank.proto-toolchain")
 }
 
 description = "V31 Digital Bank"
-
-subprojects {
-    apply(plugin = "org.v31bank.conventions")
-}
 

@@ -27,6 +27,9 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.v31bank.build.constant.Locations;
+import org.v31bank.build.constant.Tasks;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -263,7 +266,7 @@ class CheckAutoConfigurationClassesTests {
 	private CheckAutoConfigurationClasses task() {
 		Project project = ProjectBuilder.builder().withProjectDir(this.directory.toFile()).build();
 		CheckAutoConfigurationClasses task = project.getTasks()
-			.register(AutoConfigurationPlugin.CHECK_CLASSES_TASK_NAME, CheckAutoConfigurationClasses.class)
+			.register(Tasks.CHECK_AUTO_CONFIGURATION_CLASSES, CheckAutoConfigurationClasses.class)
 			.get();
 		task.getResources().from(resources().toFile());
 		task.getClasspath().from(classes().toFile());
@@ -298,7 +301,7 @@ class CheckAutoConfigurationClassesTests {
 	}
 
 	private void writeImports(String... entries) {
-		write(resources().resolve(AutoConfigurationImports.PATH),
+		write(resources().resolve(Locations.AUTO_CONFIGURATION_IMPORTS_FILE),
 				String.join(System.lineSeparator(), entries) + System.lineSeparator());
 	}
 

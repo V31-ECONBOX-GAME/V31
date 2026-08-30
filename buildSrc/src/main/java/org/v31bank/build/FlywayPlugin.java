@@ -29,6 +29,8 @@ import org.gradle.api.tasks.TaskProvider;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 
+import org.v31bank.build.constant.Coordinates;
+import org.v31bank.build.constant.Tasks;
 import org.v31bank.build.util.SourceSets;
 
 /**
@@ -53,8 +55,8 @@ public class FlywayPlugin implements Plugin<Project> {
 
 	private static final String MIGRATIONS = "db/migration/**/*.sql";
 
-	private static final List<String> RUNTIME = List.of("org.springframework.boot:spring-boot-flyway",
-			"org.flywaydb:flyway-database-postgresql", "org.postgresql:postgresql");
+	private static final List<String> RUNTIME = List.of(Coordinates.FLYWAY, Coordinates.FLYWAY_POSTGRESQL,
+			Coordinates.POSTGRESQL);
 
 	@Override
 	public void apply(Project project) {
@@ -81,7 +83,7 @@ public class FlywayPlugin implements Plugin<Project> {
 	}
 
 	private TaskProvider<ValidateMigrationNames> registerValidateMigrationNames(Project project) {
-		return project.getTasks().register("validateMigrationNames", ValidateMigrationNames.class, (task) -> {
+		return project.getTasks().register(Tasks.VALIDATE_MIGRATION_NAMES, ValidateMigrationNames.class, (task) -> {
 			task.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
 			task.setDescription("Checks migration file names against db/migration/README.md.");
 			task.getMigrations().from(migrations(project));

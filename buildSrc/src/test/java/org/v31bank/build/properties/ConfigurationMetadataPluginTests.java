@@ -29,6 +29,8 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.v31bank.build.constant.Configurations;
+import org.v31bank.build.constant.Tasks;
 import org.v31bank.build.task.TaskDependencies;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,7 +50,7 @@ class ConfigurationMetadataPluginTests {
 	void decidesNothingAboutHowTheProjectIsBuilt() {
 		Project project = bareProject();
 		project.getPlugins().apply(ConfigurationMetadataPlugin.class);
-		assertThat(project.getTasks().findByName(ConfigurationMetadataPlugin.CHECK_METADATA_TASK_NAME)).isNull();
+		assertThat(project.getTasks().findByName(Tasks.CHECK_MANUAL_CONFIGURATION_METADATA)).isNull();
 	}
 
 	/**
@@ -65,17 +67,16 @@ class ConfigurationMetadataPluginTests {
 	@Test
 	void registersACheckOfTheHandWrittenMetadata() {
 		Project project = project();
-		assertThat(project.getTasks().findByName(ConfigurationMetadataPlugin.CHECK_METADATA_TASK_NAME))
+		assertThat(project.getTasks().findByName(Tasks.CHECK_MANUAL_CONFIGURATION_METADATA))
 			.isInstanceOf(CheckManualSpringConfigurationMetadata.class);
-		assertThat(project.getTasks().getByName(ConfigurationMetadataPlugin.CHECK_METADATA_TASK_NAME).getGroup())
+		assertThat(project.getTasks().getByName(Tasks.CHECK_MANUAL_CONFIGURATION_METADATA).getGroup())
 			.isEqualTo(LifecycleBasePlugin.VERIFICATION_GROUP);
 	}
 
 	@Test
 	void runsTheCheckAsPartOfCheck() {
 		Task check = project().getTasks().getByName(LifecycleBasePlugin.CHECK_TASK_NAME);
-		assertThat(TaskDependencies.namesOf(check.getDependsOn()))
-			.contains(ConfigurationMetadataPlugin.CHECK_METADATA_TASK_NAME);
+		assertThat(TaskDependencies.namesOf(check.getDependsOn())).contains(Tasks.CHECK_MANUAL_CONFIGURATION_METADATA);
 	}
 
 	/**
@@ -86,7 +87,7 @@ class ConfigurationMetadataPluginTests {
 	void checksTheMetadataWhereItShips() {
 		Project project = project();
 		CheckManualSpringConfigurationMetadata check = (CheckManualSpringConfigurationMetadata) project.getTasks()
-			.getByName(ConfigurationMetadataPlugin.CHECK_METADATA_TASK_NAME);
+			.getByName(Tasks.CHECK_MANUAL_CONFIGURATION_METADATA);
 		assertThat(check.getMetadataLocation().get()).hasName("spring-configuration-metadata.json")
 			.hasParent(new File(project.getLayout().getBuildDirectory().get().getAsFile(), "resources/main/META-INF"));
 	}
@@ -94,7 +95,7 @@ class ConfigurationMetadataPluginTests {
 	@Test
 	void offersTheMetadataThroughAConfigurationThatSaysWhatItIs() {
 		Configuration metadata = project().getConfigurations()
-			.getByName(ConfigurationPropertiesPlugin.METADATA_CONFIGURATION_NAME);
+			.getByName(Configurations.CONFIGURATION_PROPERTIES_METADATA);
 		assertThat(metadata.isCanBeConsumed()).isTrue();
 		assertThat(metadata.getAttributes().getAttribute(Category.CATEGORY_ATTRIBUTE)).extracting(Category::getName)
 			.isEqualTo(Category.DOCUMENTATION);

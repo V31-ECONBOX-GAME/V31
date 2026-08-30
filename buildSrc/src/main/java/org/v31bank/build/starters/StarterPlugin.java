@@ -29,6 +29,8 @@ import org.v31bank.build.classpath.CheckClasspathForConflicts;
 import org.v31bank.build.classpath.CheckClasspathForUnconstrainedDirectDependencies;
 import org.v31bank.build.classpath.CheckClasspathForUnnecessaryExclusions;
 import org.v31bank.build.classpath.ClasspathCheck;
+import org.v31bank.build.constant.Configurations;
+import org.v31bank.build.constant.Locations;
 
 /**
  * Configures a project as a V31 starter: published, exporting its dependencies rather
@@ -50,8 +52,6 @@ import org.v31bank.build.classpath.ClasspathCheck;
  * @since 0.2.0
  */
 public class StarterPlugin implements Plugin<Project> {
-
-	private static final String STARTER_METADATA = "starterMetadata";
 
 	@Override
 	public void apply(Project project) {
@@ -76,13 +76,14 @@ public class StarterPlugin implements Plugin<Project> {
 	 */
 	private void registerMetadata(Project project, Configuration runtimeClasspath) {
 		TaskProvider<StarterMetadata> metadata = project.getTasks()
-			.register(STARTER_METADATA, StarterMetadata.class, (task) -> {
+			.register(Configurations.STARTER_METADATA, StarterMetadata.class, (task) -> {
 				task.setDescription("Generates metadata describing the starter.");
 				task.setDependencies(runtimeClasspath);
-				task.getDestination().set(project.getLayout().getBuildDirectory().file("starter-metadata.properties"));
+				task.getDestination()
+					.set(project.getLayout().getBuildDirectory().file(Locations.STARTER_METADATA_FILE));
 			});
-		project.getConfigurations().consumable(STARTER_METADATA).get();
-		project.getArtifacts().add(STARTER_METADATA, metadata.map(StarterMetadata::getDestination));
+		project.getConfigurations().consumable(Configurations.STARTER_METADATA);
+		project.getArtifacts().add(Configurations.STARTER_METADATA, metadata.map(StarterMetadata::getDestination));
 	}
 
 	/**
