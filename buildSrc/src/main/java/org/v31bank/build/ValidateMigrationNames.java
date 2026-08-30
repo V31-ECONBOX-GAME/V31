@@ -62,7 +62,7 @@ public abstract class ValidateMigrationNames extends DefaultTask {
 	public abstract ConfigurableFileCollection getMigrations();
 
 	/**
-	 * A marker written when the names check out, declared only so the task can be up to
+	 * A marker written when the API lints clean, declared only so the task can be up to
 	 * date: Gradle re-runs a task that has no output on every build.
 	 * @return the marker file
 	 */

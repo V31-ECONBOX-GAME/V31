@@ -16,6 +16,11 @@
 
 package org.v31bank.build.proto;
 
+import java.io.IOException;
+import java.nio.file.Files;
+
+import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
 /**
@@ -30,9 +35,19 @@ import org.gradle.api.tasks.TaskAction;
  */
 public abstract class LintProto extends BufTask {
 
+	/**
+	 * A marker written when the API lints clean, declared only so the task can be up to
+	 * date: Gradle re-runs a task that has no output on every build.
+	 * @return the marker file
+	 */
+	@OutputFile
+	public abstract RegularFileProperty getReport();
+
 	@TaskAction
-	void lint() {
+	void lint() throws IOException {
 		buf("lint", "--path", getApi().get());
+		Files.writeString(getReport().get().getAsFile().toPath(),
+				getApi().get() + " lints clean" + System.lineSeparator());
 	}
 
 }

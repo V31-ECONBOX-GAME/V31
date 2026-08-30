@@ -171,6 +171,7 @@ public class ProtobufPlugin implements Plugin<Project> {
 		TaskProvider<LintProto> lint = bufTask(project, LINT_TASK_NAME, LintProto.class, api, buf, (task) -> {
 			task.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
 			task.setDescription("Checks the " + api.name() + " API against the rules in buf.yaml.");
+			task.getReport().set(project.getLayout().getBuildDirectory().file("proto/lint-report.txt"));
 		});
 		project.getTasks().named(LifecycleBasePlugin.CHECK_TASK_NAME).configure((check) -> check.dependsOn(lint));
 	}
