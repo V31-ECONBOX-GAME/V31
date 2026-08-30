@@ -37,10 +37,11 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 
+import org.v31bank.build.constant.Locations;
+
 /**
- * Fails the build on a migration whose name does not follow the convention in
- * {@code :V31-customer-service:db/migration/README.md}, or that reuses a version another
- * migration already took.
+ * Fails the build on a migration whose name does not follow the naming convention, or
+ * that reuses a version another migration already took.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -62,7 +63,7 @@ public abstract class ValidateMigrationNames extends DefaultTask {
 	public abstract ConfigurableFileCollection getMigrations();
 
 	/**
-	 * A marker written when the API lints clean, declared only so the task can be up to
+	 * A marker written when every name checks out, declared only so the task can be up to
 	 * date: Gradle re-runs a task that has no output on every build.
 	 * @return the marker file
 	 */
@@ -98,7 +99,8 @@ public abstract class ValidateMigrationNames extends DefaultTask {
 			if (!year.equals(directory)) {
 				// Flyway orders by version alone, so this only breaks reading: the year
 				// directory is how the history gets browsed.
-				problems.add(name + " — a versioned migration lives in db/migration/" + year + ", not " + directory);
+				problems.add(name + " — a versioned migration lives in " + Locations.MIGRATIONS_DIRECTORY + "/" + year
+						+ ", not " + directory);
 			}
 			String taken = byVersion.putIfAbsent(version, name);
 			if (taken != null) {
@@ -108,8 +110,8 @@ public abstract class ValidateMigrationNames extends DefaultTask {
 			}
 		}
 		if (!problems.isEmpty()) {
-			throw new GradleException("Migration names do not follow :V31-customer-service:db/migration/README.md:"
-					+ System.lineSeparator() + "  " + String.join(System.lineSeparator() + "  ", problems));
+			throw new GradleException("Migration names do not follow the convention:" + System.lineSeparator() + "  "
+					+ String.join(System.lineSeparator() + "  ", problems));
 		}
 		Files.writeString(getReport().get().getAsFile().toPath(),
 				byVersion.size() + " migrations checked" + System.lineSeparator());

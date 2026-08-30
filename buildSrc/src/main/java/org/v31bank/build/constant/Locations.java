@@ -60,6 +60,12 @@ public final class Locations {
 	public static final String STARTER_METADATA_FILE = "starter-metadata.properties";
 
 	/**
+	 * Where a service's Flyway migrations live, beneath its own resources. Relative,
+	 * because every service that owns a schema has one.
+	 */
+	public static final String MIGRATIONS_DIRECTORY = "db/migration";
+
+	/**
 	 * The source root a generator owns, kept apart from handwritten code so that the
 	 * checks and the formatter can skip it by path.
 	 */

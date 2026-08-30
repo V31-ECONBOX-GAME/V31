@@ -30,6 +30,7 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 
 import org.v31bank.build.constant.Coordinates;
+import org.v31bank.build.constant.Locations;
 import org.v31bank.build.constant.Tasks;
 import org.v31bank.build.util.SourceSets;
 
@@ -53,7 +54,7 @@ import org.v31bank.build.util.SourceSets;
  */
 public class FlywayPlugin implements Plugin<Project> {
 
-	private static final String MIGRATIONS = "db/migration/**/*.sql";
+	private static final String MIGRATIONS = Locations.MIGRATIONS_DIRECTORY + "/**/*.sql";
 
 	private static final List<String> RUNTIME = List.of(Coordinates.FLYWAY, Coordinates.FLYWAY_POSTGRESQL,
 			Coordinates.POSTGRESQL);
