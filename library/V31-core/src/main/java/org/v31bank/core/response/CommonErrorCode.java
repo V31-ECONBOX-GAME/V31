@@ -21,7 +21,7 @@ import java.util.Optional;
 /**
  * The failures any service can report, independent of what it does.
  * <p>
- * Failures specific to a domain — an insufficient balance, a frozen wallet, a sanctions
+ * Failures specific to a domain — an insufficient balance, a frozen account, a sanctions
  * hit — belong in that service's own {@link ErrorCode} enum rather than here.
  *
  * @author Xander Wang

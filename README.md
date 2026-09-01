@@ -69,8 +69,9 @@ meaningful with every framework stripped away.
 
 ```
 domain
-├── model          Entities and aggregate roots. Each guards its own invariants — a wallet
-│                  refuses to go negative rather than trusting its callers to check.
+├── model          Entities and aggregate roots. Each guards its own invariants — an
+│                  account refuses to go past its overdraft rather than trusting its
+│                  callers to check.
 ├── valueobject    Immutable, identity-free types compared by value: Money, Email,
 │                  AccountNumber. They carry behaviour, unlike DTOs.
 ├── constant       Enums naming the states and kinds the rules branch on: CustomerStatus,

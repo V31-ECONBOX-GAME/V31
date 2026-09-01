@@ -34,71 +34,59 @@ class AssetTests {
 	@Test
 	void knowsWhatEachAssetDividesInto() {
 		assertThat(Asset.USD.scale()).isEqualTo(2);
+		assertThat(Asset.CNY.scale()).isEqualTo(2);
 		assertThat(Asset.JPY.scale()).isZero();
-		assertThat(Asset.BTC.scale()).isEqualTo(8);
-		assertThat(Asset.ETH.scale()).isEqualTo(18);
-		assertThat(Asset.USDC.scale()).isEqualTo(6);
-	}
-
-	@Test
-	void separatesOnChainAssetsFromFiat() {
-		assertThat(Asset.USD.isOnChain()).isFalse();
-		assertThat(Asset.BTC.isOnChain()).isTrue();
-		assertThat(Asset.USDC.isOnChain()).isTrue();
-		assertThat(Asset.USDC.type()).isEqualTo(AssetType.STABLECOIN);
 	}
 
 	@Test
 	void normalisesTheCode() {
-		assertThat(new Asset(" btc ", AssetType.CRYPTO, 8)).isEqualTo(Asset.BTC);
-		assertThat(Asset.of("btc")).isEqualTo(Asset.BTC);
+		assertThat(new Asset(" usd ", 2)).isEqualTo(Asset.USD);
+		assertThat(Asset.of("usd")).isEqualTo(Asset.USD);
 	}
 
 	@Test
-	void rejectsCodesThatAreNotTickers() {
-		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Asset("B", AssetType.CRYPTO, 8));
-		assertThatExceptionOfType(IllegalArgumentException.class)
-			.isThrownBy(() -> new Asset("BTC-USD", AssetType.CRYPTO, 8));
-		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Asset("", AssetType.CRYPTO, 8));
+	void rejectsCodesThatAreNotCurrencyCodes() {
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Asset("U", 2));
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Asset("EUR-USD", 2));
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Asset("", 2));
 	}
 
 	@Test
 	void rejectsImpossiblePrecision() {
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Asset("XYZ", -1));
 		assertThatExceptionOfType(IllegalArgumentException.class)
-			.isThrownBy(() -> new Asset("XYZ", AssetType.CRYPTO, -1));
-		assertThatExceptionOfType(IllegalArgumentException.class)
-			.isThrownBy(() -> new Asset("XYZ", AssetType.CRYPTO, Asset.MAX_SCALE + 1));
+			.isThrownBy(() -> new Asset("XYZ", Asset.MAX_SCALE + 1));
 	}
 
 	@Test
-	void allowsATokenItDoesNotList() {
-		Asset token = new Asset("PEPE", AssetType.CRYPTO, 18);
-		assertThat(token.code()).isEqualTo("PEPE");
-		assertThat(Asset.known()).doesNotContain(token);
+	void allowsACurrencyItDoesNotList() {
+		Asset dinar = new Asset("KWD", 3);
+		assertThat(dinar.code()).isEqualTo("KWD");
+		assertThat(Asset.known()).doesNotContain(dinar);
 	}
 
 	@Test
 	void refusesToGuessAtAnUnknownCode() {
-		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> Asset.of("PEPE"))
-			.withMessageContaining("No asset is known by the code 'PEPE'");
-		assertThat(Asset.find("PEPE")).isEmpty();
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> Asset.of("KWD"))
+			.withMessageContaining("No asset is known by the code 'KWD'");
+		assertThat(Asset.find("KWD")).isEmpty();
 		assertThat(Asset.find(null)).isEmpty();
 	}
 
 	@Test
 	void treatsPrecisionAsPartOfIdentity() {
-		assertThat(new Asset("USDC", AssetType.STABLECOIN, 18)).isNotEqualTo(Asset.USDC);
+		assertThat(new Asset("USD", 6)).isNotEqualTo(Asset.USD);
 	}
 
 	@Test
 	void reportsItsSmallestUnit() {
-		assertThat(Asset.BTC.minorUnit()).isEqualTo(new BigDecimal("0.00000001"));
+		assertThat(Asset.USD.minorUnit()).isEqualTo(new BigDecimal("0.01"));
 		assertThat(Asset.JPY.minorUnit()).isEqualTo(BigDecimal.ONE);
 	}
 
 	@Test
-	void readsAsItsTicker() {
-		assertThat(Asset.BTC).hasToString("BTC");
+	void readsAsItsCode() {
+		assertThat(Asset.USD).hasToString("USD");
 	}
 
 }

@@ -45,7 +45,7 @@ class BomIntegrationTests {
 	 * comes from would make the two agree by construction and test nothing.
 	 */
 	private static final List<String> ARTIFACTS = List.of("V31-cbs-api", "V31-compliance-api", "V31-customer-api",
-			"V31-ledger-api", "V31-notification-api", "V31-risk-api", "V31-transfer-api", "V31-wallet-api", "V31-core",
+			"V31-ledger-api", "V31-notification-api", "V31-risk-api", "V31-transfer-api", "V31-core",
 			"V31-data-jpa-spring-boot", "V31-data-valkey-spring-boot", "V31-grpc-spring-boot", "V31-jooq-spring-boot",
 			"V31-web-spring-boot", "V31-data-jpa-spring-boot-starter", "V31-data-valkey-spring-boot-starter",
 			"V31-grpc-spring-boot-starter", "V31-jooq-spring-boot-starter", "V31-web-spring-boot-starter");

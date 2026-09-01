@@ -113,17 +113,17 @@ class ValidateMigrationNamesTests {
 
 	@Test
 	void rejectsTwoMigrationsClaimingTheSameVersion() {
-		givenMigrations("V20260730093000__customer_create.sql", "V20260730093000__wallet_create.sql");
+		givenMigrations("V20260730093000__customer_create.sql", "V20260730093000__account_create.sql");
 		String message = failure();
 		assertThat(message).contains("is already taken by");
 		assertThat(message).contains("V20260730093000__customer_create.sql");
-		assertThat(message).contains("V20260730093000__wallet_create.sql");
+		assertThat(message).contains("V20260730093000__account_create.sql");
 	}
 
 	@Test
 	void reportsEveryProblemAtOnce() {
 		givenMigrations("V20260730093000__Customer_create.sql", "R__customer_summary_table.sql",
-				"V99999999999999__wallet_create.sql");
+				"V99999999999999__account_create.sql");
 		String message = failure();
 		assertThat(message).contains("a versioned migration is named");
 		assertThat(message).contains("a repeatable migration is named");
@@ -138,7 +138,7 @@ class ValidateMigrationNamesTests {
 
 	@Test
 	void writesTheReportWhenTheNamesCheckOut() throws IOException {
-		givenMigrations("V20260730093000__customer_create.sql", "V20260730093001__wallet_create.sql");
+		givenMigrations("V20260730093000__customer_create.sql", "V20260730093001__account_create.sql");
 		validate();
 		assertThat(Files.readString(this.report.toPath()).strip()).isEqualTo("2 migrations checked");
 	}

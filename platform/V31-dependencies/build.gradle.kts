@@ -45,7 +45,6 @@ dependencies {
         api(project(":apis:V31-notification-api"))
         api(project(":apis:V31-risk-api"))
         api(project(":apis:V31-transfer-api"))
-        api(project(":apis:V31-wallet-api"))
 
         api(project(":library:V31-core"))
 

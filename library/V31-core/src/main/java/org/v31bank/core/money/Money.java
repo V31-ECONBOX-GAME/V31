@@ -28,12 +28,12 @@ import java.util.Objects;
  * An amount of one {@link Asset}, held exactly.
  * <p>
  * Every amount is kept at exactly the asset's {@link Asset#scale() scale}, so a balance
- * can only ever be a whole number of satoshis, wei or cents. Amounts that do not land on
- * that granularity are refused rather than quietly rounded:
- * {@code Money.of(Asset.USD, new BigDecimal("1.005"))} throws, because rounding money
- * without being asked to is how a system loses a fraction of every transaction. Where
- * rounding is the intent, it is requested explicitly and the {@link RoundingMode} is part
- * of the call.
+ * can only ever be a whole number of cents, of yen, or of whatever else the asset divides
+ * into. Amounts that do not land on that granularity are refused rather than quietly
+ * rounded: {@code Money.of(Asset.USD, new BigDecimal("1.005"))} throws, because rounding
+ * money without being asked to is how a system loses a fraction of every transaction.
+ * Where rounding is the intent, it is requested explicitly and the {@link RoundingMode}
+ * is part of the call.
  * <p>
  * Amounts are signed. A ledger needs both directions — a debit and its matching credit, a
  * balance overdrawn against a credit line — so the rule that a customer balance cannot go
@@ -131,10 +131,10 @@ public final class Money implements Comparable<Money> {
 	}
 
 	/**
-	 * Create an amount from a count of the asset's smallest units, the form blockchains
-	 * and card networks use.
+	 * Create an amount from a count of the asset's smallest units, the form card networks
+	 * and payment messages carry.
 	 * @param asset the asset the amount is denominated in
-	 * @param minorUnits the number of satoshis, cents, or whatever the asset divides into
+	 * @param minorUnits the number of cents, or of whatever the asset divides into
 	 * @return the amount
 	 */
 	public static Money ofMinorUnits(Asset asset, long minorUnits) {
@@ -143,7 +143,8 @@ public final class Money implements Comparable<Money> {
 
 	/**
 	 * Create an amount from a count of the asset's smallest units, taken as a
-	 * {@link BigInteger} because a balance in wei does not fit in a {@code long}.
+	 * {@link BigInteger} because a total struck across a whole book, in a currency that
+	 * divides finely, runs past what a {@code long} holds.
 	 * @param asset the asset the amount is denominated in
 	 * @param minorUnits the number of smallest units
 	 * @return the amount
@@ -287,8 +288,8 @@ public final class Money implements Comparable<Money> {
 	}
 
 	/**
-	 * Return this amount as a count of the asset's smallest units — satoshis for bitcoin,
-	 * wei for ether — which is the form a blockchain expects.
+	 * Return this amount as a count of the asset's smallest units — cents for a dollar,
+	 * fils for a dinar — which is the form a payment message carries.
 	 * @return the amount in minor units
 	 */
 	public BigInteger toMinorUnits() {
@@ -361,8 +362,9 @@ public final class Money implements Comparable<Money> {
 	}
 
 	/**
-	 * Return the amount and its asset, never in scientific notation, so that a log line
-	 * reads {@code 0.00012345 BTC} rather than {@code 1.2345E-4 BTC}.
+	 * Return the amount and its asset, never in scientific notation, so that an amount
+	 * booked at a fine scale reads {@code 0.000000012500 USD} in a log line rather than
+	 * {@code 1.25E-8 USD}.
 	 * @return the amount as text
 	 */
 	@Override

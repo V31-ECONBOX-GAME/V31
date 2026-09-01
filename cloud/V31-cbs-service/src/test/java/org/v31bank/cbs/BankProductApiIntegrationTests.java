@@ -82,7 +82,7 @@ class BankProductApiIntegrationTests {
 	void addsAProductAndSaysWhereItWent() {
 		Map<String, Object> body = this.client.post()
 			.uri(PATH)
-			.body(request("SAV-BTC-01", "SAVINGS"))
+			.body(request("SAV-USD-01", "SAVINGS"))
 			.exchange()
 			.expectStatus()
 			.isCreated()
@@ -90,7 +90,7 @@ class BankProductApiIntegrationTests {
 			.returnResult()
 			.getResponseBody();
 		assertThat(body).containsEntry("success", true);
-		assertThat(data(body)).containsEntry("code", "SAV-BTC-01")
+		assertThat(data(body)).containsEntry("code", "SAV-USD-01")
 			.containsEntry("category", "SAVINGS")
 			.containsEntry("status", "DRAFT");
 	}
@@ -102,8 +102,8 @@ class BankProductApiIntegrationTests {
 	 */
 	@Test
 	void keepsTheRateExact() {
-		create("SAV-BTC-01", "SAVINGS");
-		assertThat(data(get(PATH + "?code=SAV-BTC-01")).get("records")).asInstanceOf(InstanceOfAssertFactories.LIST)
+		create("SAV-USD-01", "SAVINGS");
+		assertThat(data(get(PATH + "?code=SAV-USD-01")).get("records")).asInstanceOf(InstanceOfAssertFactories.LIST)
 			.first()
 			.extracting("interestRate")
 			.asString()
@@ -112,8 +112,8 @@ class BankProductApiIntegrationTests {
 
 	@Test
 	void writesTheProductAndItsIndexesWhereTheyCanBeRead() {
-		String id = (String) create("SAV-BTC-01", "SAVINGS").get("id");
-		assertThat(this.valkey.opsForValue().get("v31it:cbs:product:code:SAV-BTC-01"))
+		String id = (String) create("SAV-USD-01", "SAVINGS").get("id");
+		assertThat(this.valkey.opsForValue().get("v31it:cbs:product:code:SAV-USD-01"))
 			.as("the claim holds the identifier as plain text, not quoted JSON")
 			.isEqualTo(id);
 		assertThat(this.valkey.opsForZSet().range("v31it:cbs:product:index", 0, -1)).containsExactly(id);
@@ -124,10 +124,10 @@ class BankProductApiIntegrationTests {
 
 	@Test
 	void refusesADuplicateCode() {
-		create("SAV-BTC-01", "SAVINGS");
+		create("SAV-USD-01", "SAVINGS");
 		this.client.post()
 			.uri(PATH)
-			.body(request("SAV-BTC-01", "CURRENT"))
+			.body(request("SAV-USD-01", "CURRENT"))
 			.exchange()
 			.expectStatus()
 			.isEqualTo(HttpStatus.CONFLICT);
@@ -200,18 +200,18 @@ class BankProductApiIntegrationTests {
 
 	@Test
 	void updatesAProductAndMovesItBetweenIndexes() {
-		String id = (String) create("SAV-BTC-01", "SAVINGS").get("id");
+		String id = (String) create("SAV-USD-01", "SAVINGS").get("id");
 		this.client.put()
 			.uri(PATH + "/" + id)
-			.body(Map.of("code", "SAV-BTC-02", "name", "Renamed", "category", "TERM_DEPOSIT", "status", "ACTIVE",
+			.body(Map.of("code", "SAV-USD-02", "name", "Renamed", "category", "TERM_DEPOSIT", "status", "ACTIVE",
 					"interestRate", "0.0275"))
 			.exchange()
 			.expectStatus()
 			.isOk();
-		assertThat(this.valkey.hasKey("v31it:cbs:product:code:SAV-BTC-01"))
+		assertThat(this.valkey.hasKey("v31it:cbs:product:code:SAV-USD-01"))
 			.as("the code it gave up has to be free for another product")
 			.isFalse();
-		assertThat(this.valkey.opsForValue().get("v31it:cbs:product:code:SAV-BTC-02")).isEqualTo(id);
+		assertThat(this.valkey.opsForValue().get("v31it:cbs:product:code:SAV-USD-02")).isEqualTo(id);
 		assertThat(this.valkey.opsForZSet().score("v31it:cbs:product:index:status:DRAFT", id)).isNull();
 		assertThat(this.valkey.opsForZSet().score("v31it:cbs:product:index:status:ACTIVE", id)).isNotNull();
 	}
@@ -223,10 +223,10 @@ class BankProductApiIntegrationTests {
 	 */
 	@Test
 	void refusesToDeleteAProductThatHasBeenOffered() {
-		String id = (String) create("SAV-BTC-01", "SAVINGS").get("id");
+		String id = (String) create("SAV-USD-01", "SAVINGS").get("id");
 		this.client.put()
 			.uri(PATH + "/" + id)
-			.body(Map.of("code", "SAV-BTC-01", "name", "Live", "category", "SAVINGS", "status", "ACTIVE",
+			.body(Map.of("code", "SAV-USD-01", "name", "Live", "category", "SAVINGS", "status", "ACTIVE",
 					"interestRate", "0.0275"))
 			.exchange()
 			.expectStatus()
@@ -237,7 +237,7 @@ class BankProductApiIntegrationTests {
 
 	@Test
 	void deletesADraftAndLeavesNoKeyBehind() {
-		String id = (String) create("SAV-BTC-01", "SAVINGS").get("id");
+		String id = (String) create("SAV-USD-01", "SAVINGS").get("id");
 		this.client.delete().uri(PATH + "/" + id).exchange().expectStatus().isOk();
 		assertThat(this.valkey.keys("v31it:cbs:product*")).isEmpty();
 	}

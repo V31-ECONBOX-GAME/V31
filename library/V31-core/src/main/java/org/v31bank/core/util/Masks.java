@@ -42,9 +42,9 @@ public final class Masks {
 
 	private static final int MIN_HIDDEN = 4;
 
-	private static final int ADDRESS_PREFIX = 6;
+	private static final int IBAN_PREFIX = 4;
 
-	private static final int ADDRESS_SUFFIX = 4;
+	private static final int IBAN_SUFFIX = 4;
 
 	private Masks() {
 	}
@@ -105,25 +105,24 @@ public final class Masks {
 	}
 
 	/**
-	 * Shorten a blockchain address the way a wallet does, keeping both ends so it can be
-	 * recognised at a glance.
+	 * Shorten an IBAN, keeping the country and check digits it opens with along with its
+	 * last four characters, so that two accounts can be told apart at a glance.
 	 * <p>
-	 * An address is public, so this is for readability rather than secrecy — a full
-	 * address is forty odd characters of noise that makes a log line unreadable. It is
-	 * not a substitute for the care an address deserves elsewhere: the middle is exactly
-	 * where an address-swapping attack hides, so an address a customer is asked to verify
-	 * must be shown in full.
-	 * @param value the address to shorten, which may be {@code null}
-	 * @return the shortened address, for example {@code bc1qar****5mdq}
+	 * Thirty-four characters of account number make a log line unreadable, and the middle
+	 * of them is what identifies the account. This is for logs alone: the middle is also
+	 * exactly where a substituted account number hides, so an IBAN a customer is asked to
+	 * verify must be shown in full.
+	 * @param value the IBAN to shorten, which may be {@code null}
+	 * @return the shortened IBAN, for example {@code DE89****3000}
 	 */
-	public static String cryptoAddress(String value) {
+	public static String iban(String value) {
 		if (value == null) {
 			return null;
 		}
-		if (value.length() < ADDRESS_PREFIX + ADDRESS_SUFFIX + MIN_HIDDEN) {
+		if (value.length() < IBAN_PREFIX + IBAN_SUFFIX + MIN_HIDDEN) {
 			return MASK;
 		}
-		return value.substring(0, ADDRESS_PREFIX) + MASK + value.substring(value.length() - ADDRESS_SUFFIX);
+		return value.substring(0, IBAN_PREFIX) + MASK + value.substring(value.length() - IBAN_SUFFIX);
 	}
 
 	/**

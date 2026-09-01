@@ -94,16 +94,16 @@ class V31ValkeyAutoConfigurationTests {
 
 	@Test
 	void appliesTheConfiguredKeyPrefix() {
-		this.runner.withPropertyValues("v31.data.valkey.key-prefix=wallet")
-			.run((context) -> assertThat(context.getBean(ValkeyKeys.class).of("balance")).isEqualTo("wallet:balance"));
+		this.runner.withPropertyValues("v31.data.valkey.key-prefix=ledger")
+			.run((context) -> assertThat(context.getBean(ValkeyKeys.class).of("balance")).isEqualTo("ledger:balance"));
 	}
 
 	@Test
 	void readsBackAValueOfATrustedType() {
 		this.runner.run((context) -> {
 			RedisSerializer<Object> serializer = serializer(context.getBean(RedisSerializer.class));
-			byte[] written = serializer.serialize(new Balance("BTC", "1.25"));
-			assertThat(serializer.deserialize(written)).isEqualTo(new Balance("BTC", "1.25"));
+			byte[] written = serializer.serialize(new Balance("USD", "1.25"));
+			assertThat(serializer.deserialize(written)).isEqualTo(new Balance("USD", "1.25"));
 		});
 	}
 
@@ -140,7 +140,7 @@ class V31ValkeyAutoConfigurationTests {
 	@Test
 	void refusesToReadBackAValueOfAnUntrustedType() {
 		this.runner.run((context) -> {
-			byte[] written = serializer(context.getBean(RedisSerializer.class)).serialize(new Balance("BTC", "1.25"));
+			byte[] written = serializer(context.getBean(RedisSerializer.class)).serialize(new Balance("USD", "1.25"));
 			RedisSerializer<Object> restricted = new V31ValkeyAutoConfiguration()
 				.valkeyValueSerializer(propertiesTrusting("org.v31bank.nothing.at.all"));
 			assertThatExceptionOfType(SerializationException.class).isThrownBy(() -> restricted.deserialize(written));

@@ -84,7 +84,7 @@ class FlywayPluginTests {
 	@Test
 	void looksInsideTheYearDirectories() {
 		givenAMigration();
-		givenResource("src/main/resources/db/migration/2027/V20270102030405__wallet_create.sql");
+		givenResource("src/main/resources/db/migration/2027/V20270102030405__account_create.sql");
 		assertThat(migrationsOf(springBootProject())).hasSize(2);
 	}
 

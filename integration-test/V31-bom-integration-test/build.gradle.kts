@@ -36,7 +36,6 @@ dependencies {
         ":apis:V31-notification-api",
         ":apis:V31-risk-api",
         ":apis:V31-transfer-api",
-        ":apis:V31-wallet-api",
         ":library:V31-core",
         ":module:V31-data-jpa-spring-boot",
         ":module:V31-data-valkey-spring-boot",

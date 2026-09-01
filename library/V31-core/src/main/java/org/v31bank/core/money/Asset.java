@@ -28,112 +28,102 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Something the bank can hold a balance of, whether it is a currency, a native blockchain
- * asset, or a token.
+ * Something the bank can hold a balance of — a currency it takes deposits in, or a unit
+ * it books a position in.
  * <p>
- * This exists because {@link java.util.Currency} cannot express what this bank holds: it
- * is limited to ISO 4217, so it has no BTC and no ETH, and its notion of precision stops
- * well short of what a native asset needs.
+ * This exists because {@link java.util.Currency} says less than a bank needs. Its minor
+ * unit comes from the JDK's locale data and moves with it, it knows no precision beyond
+ * the one a statement is printed at, and it cannot be given a unit ISO 4217 never named.
+ * How many decimal places a ledger rounds to cannot depend on which JDK it happens to be
+ * running on.
  * <p>
  * The {@link #scale()} is the number of decimal places the asset divides into — 2 for
- * USD, 8 for BTC, 18 for ETH — and it is the whole reason this type is carried around
+ * USD, 0 for JPY, 3 for KWD — and it is the whole reason this type is carried around
  * rather than a bare currency code: it decides what {@link Money} is allowed to
  * represent, and rounding to the wrong one either invents value or destroys it.
  * <p>
- * The scale is part of the identity, deliberately. The same ticker can be issued with
- * different precision on different chains, and comparing only the code would let two
- * balances a factor of a trillion apart look like the same asset.
+ * The scale is part of the identity, deliberately. The same code is booked at different
+ * precision in different places — a customer balance to the cent, a treasury position or
+ * an interest accrual finer than that — and comparing only the code would let two amounts
+ * a factor of a hundred apart look like the same asset.
  * <p>
- * The constants below are the assets this library knows by name. A token it does not list
- * is constructed directly — {@code new Asset("PEPE", AssetType.CRYPTO,
- * 18)} — since the tradeable list belongs in a service's configuration, not in a shared
- * library that would need releasing every time one is added.
+ * The constants below are the assets this library knows by name. One it does not list is
+ * constructed directly — {@code new Asset("KWD", 3)} — since which currencies a bank
+ * deals in belongs in a service's configuration, not in a shared library that would need
+ * releasing every time a market is opened.
  *
- * @param code the ticker, upper case, for example {@code BTC} or {@code USD}
- * @param type what kind of asset it is
+ * @param code the ISO 4217 code, upper case, for example {@code USD}
  * @param scale the number of decimal places it divides into
  * @author Xander Wang
  * @since 0.2.0
  */
-public record Asset(String code, AssetType type, int scale) implements Comparable<Asset> {
+public record Asset(String code, int scale) implements Comparable<Asset> {
 
 	/**
-	 * The largest precision an asset may declare. Eighteen covers every asset in common
-	 * use; the headroom above it is for tokens that chose more.
+	 * The largest precision an asset may declare. No currency divides beyond four decimal
+	 * places; the headroom above that is for the books that carry an amount finer than
+	 * the currency it is denominated in, such as an accrual or an unrounded FX leg.
 	 */
-	public static final int MAX_SCALE = 30;
+	public static final int MAX_SCALE = 12;
 
 	private static final Pattern CODE_PATTERN = Pattern.compile("[A-Z0-9]{2,16}");
 
 	/**
 	 * United States dollar.
 	 */
-	public static final Asset USD = new Asset("USD", AssetType.FIAT, 2);
+	public static final Asset USD = new Asset("USD", 2);
 
 	/**
 	 * Euro.
 	 */
-	public static final Asset EUR = new Asset("EUR", AssetType.FIAT, 2);
+	public static final Asset EUR = new Asset("EUR", 2);
 
 	/**
 	 * Pound sterling.
 	 */
-	public static final Asset GBP = new Asset("GBP", AssetType.FIAT, 2);
+	public static final Asset GBP = new Asset("GBP", 2);
 
 	/**
 	 * Swiss franc.
 	 */
-	public static final Asset CHF = new Asset("CHF", AssetType.FIAT, 2);
+	public static final Asset CHF = new Asset("CHF", 2);
 
 	/**
 	 * Singapore dollar.
 	 */
-	public static final Asset SGD = new Asset("SGD", AssetType.FIAT, 2);
+	public static final Asset SGD = new Asset("SGD", 2);
+
+	/**
+	 * Hong Kong dollar.
+	 */
+	public static final Asset HKD = new Asset("HKD", 2);
+
+	/**
+	 * Chinese yuan renminbi. The code names the currency, not the market it was funded
+	 * in, which a booking that has to tell onshore from offshore carries separately.
+	 */
+	public static final Asset CNY = new Asset("CNY", 2);
+
+	/**
+	 * Australian dollar.
+	 */
+	public static final Asset AUD = new Asset("AUD", 2);
+
+	/**
+	 * Canadian dollar.
+	 */
+	public static final Asset CAD = new Asset("CAD", 2);
 
 	/**
 	 * Japanese yen, which has no minor unit: an amount of yen is a whole number.
 	 */
-	public static final Asset JPY = new Asset("JPY", AssetType.FIAT, 0);
+	public static final Asset JPY = new Asset("JPY", 0);
 
-	/**
-	 * Bitcoin. Its minor unit is the satoshi, one hundred millionth of a bitcoin.
-	 */
-	public static final Asset BTC = new Asset("BTC", AssetType.CRYPTO, 8);
-
-	/**
-	 * Ether. Its minor unit is the wei, one quintillionth of an ether, which is why an
-	 * ether balance does not fit in a {@code long} and is held as a
-	 * {@link java.math.BigInteger} in minor units.
-	 */
-	public static final Asset ETH = new Asset("ETH", AssetType.CRYPTO, 18);
-
-	/**
-	 * Solana. Its minor unit is the lamport.
-	 */
-	public static final Asset SOL = new Asset("SOL", AssetType.CRYPTO, 9);
-
-	/**
-	 * XRP. Its minor unit is the drop.
-	 */
-	public static final Asset XRP = new Asset("XRP", AssetType.CRYPTO, 6);
-
-	/**
-	 * Tether, as issued on the chains that give it six decimal places.
-	 */
-	public static final Asset USDT = new Asset("USDT", AssetType.STABLECOIN, 6);
-
-	/**
-	 * USD Coin, as issued on the chains that give it six decimal places.
-	 */
-	public static final Asset USDC = new Asset("USDC", AssetType.STABLECOIN, 6);
-
-	private static final Map<String, Asset> KNOWN = Stream
-		.of(USD, EUR, GBP, CHF, SGD, JPY, BTC, ETH, SOL, XRP, USDT, USDC)
+	private static final Map<String, Asset> KNOWN = Stream.of(USD, EUR, GBP, CHF, SGD, HKD, CNY, AUD, CAD, JPY)
 		.collect(Collectors.toUnmodifiableMap(Asset::code, Function.identity()));
 
 	public Asset {
 		Objects.requireNonNull(code, "code must not be null");
-		Objects.requireNonNull(type, "type must not be null");
 		code = code.trim().toUpperCase(Locale.ROOT);
 		if (!CODE_PATTERN.matcher(code).matches()) {
 			throw new IllegalArgumentException(
@@ -147,7 +137,7 @@ public record Asset(String code, AssetType type, int scale) implements Comparabl
 
 	/**
 	 * Return the asset this library knows by the given code, matched case insensitively.
-	 * @param code the ticker to look up
+	 * @param code the code to look up
 	 * @return the asset
 	 * @throws IllegalArgumentException if no asset is known by that code
 	 */
@@ -159,7 +149,7 @@ public record Asset(String code, AssetType type, int scale) implements Comparabl
 	/**
 	 * Look up an asset by code without failing when it is not known, for parsing input
 	 * that may name anything.
-	 * @param code the ticker to look up, which may be {@code null}
+	 * @param code the code to look up, which may be {@code null}
 	 * @return the asset, or empty when none is known by that code
 	 */
 	public static Optional<Asset> find(String code) {
@@ -178,17 +168,8 @@ public record Asset(String code, AssetType type, int scale) implements Comparabl
 	}
 
 	/**
-	 * Whether this asset settles on a blockchain, and so cannot be recalled once a
-	 * movement is broadcast.
-	 * @return {@code true} for crypto and stablecoins
-	 */
-	public boolean isOnChain() {
-		return this.type.isOnChain();
-	}
-
-	/**
-	 * Return the smallest amount of this asset that can exist — one satoshi, one cent —
-	 * which is the granularity every balance and every split has to land on.
+	 * Return the smallest amount of this asset that can exist — one cent, one yen — which
+	 * is the granularity every balance and every split has to land on.
 	 * @return the minor unit as a fraction of one whole asset
 	 */
 	public BigDecimal minorUnit() {

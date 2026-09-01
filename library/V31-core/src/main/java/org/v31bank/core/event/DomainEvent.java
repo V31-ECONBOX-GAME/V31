@@ -20,8 +20,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 /**
- * Something that happened, stated in the language of the domain and in the past tense: a
- * wallet was credited, a transfer was settled, a customer was verified.
+ * Something that happened, stated in the language of the domain and in the past tense: an
+ * account was credited, a transfer was settled, a customer was verified.
  * <p>
  * Events are records, and they are facts. Nothing in one is a request or a decision, and
  * nothing that has already happened can be cancelled — a movement that turns out to be
@@ -35,7 +35,7 @@ import java.util.UUID;
  * without knowing which one it is.
  *
  * <pre class="code">
- * public record WalletCredited(UUID eventId, Instant occurredAt, UUID aggregateId, Money amount)
+ * public record AccountCredited(UUID eventId, Instant occurredAt, UUID aggregateId, Money amount)
  *         implements DomainEvent {
  * }
  * </pre>
@@ -65,7 +65,7 @@ public interface DomainEvent {
 	Instant occurredAt();
 
 	/**
-	 * Return what this happened to — the wallet that was credited, the transfer that
+	 * Return what this happened to — the account that was credited, the transfer that
 	 * settled. Events about the same aggregate are kept in order relative to each other,
 	 * which is what this identifies them by.
 	 * @return the identifier of the aggregate the event belongs to

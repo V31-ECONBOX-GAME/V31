@@ -67,9 +67,9 @@ class ApiResponseTests {
 
 	@Test
 	void errorReplacesTheMessage() {
-		ApiResponse<String> response = ApiResponse.error(CommonErrorCode.NOT_FOUND, "No wallet exists with id 7");
+		ApiResponse<String> response = ApiResponse.error(CommonErrorCode.NOT_FOUND, "No account exists with id 7");
 		assertThat(response.code()).isEqualTo("NOT_FOUND");
-		assertThat(response.message()).isEqualTo("No wallet exists with id 7");
+		assertThat(response.message()).isEqualTo("No account exists with id 7");
 	}
 
 	@Test

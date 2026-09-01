@@ -42,14 +42,14 @@ class MoneyTests {
 	}
 
 	@Test
-	void refusesASatoshiTooFar() {
-		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> Money.of(Asset.BTC, "0.000000001"));
+	void refusesAFractionOfAMinorUnit() {
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> Money.of(Asset.JPY, "0.5"));
 	}
 
 	@Test
 	void padsToTheAssetsScale() {
 		assertThat(Money.of(Asset.USD, "1.5").getAmount()).isEqualTo(new BigDecimal("1.50"));
-		assertThat(Money.of(Asset.BTC, "1").getAmount()).isEqualTo(new BigDecimal("1.00000000"));
+		assertThat(Money.of(new Asset("USD", 6), "1").getAmount()).isEqualTo(new BigDecimal("1.000000"));
 	}
 
 	@Test
@@ -64,17 +64,17 @@ class MoneyTests {
 	}
 
 	@Test
-	void holdsAnEtherBalanceInWei() {
-		Money ether = Money.of(Asset.ETH, "1");
-		assertThat(ether.toMinorUnits()).isEqualTo(new BigInteger("1000000000000000000"));
-		assertThat(Money.ofMinorUnits(Asset.ETH, new BigInteger("1000000000000000000"))).isEqualTo(ether);
+	void holdsATotalTooLargeForALong() {
+		Money total = Money.of(Asset.JPY, "92233720368547758080");
+		assertThat(total.toMinorUnits()).isEqualTo(new BigInteger("92233720368547758080"));
+		assertThat(Money.ofMinorUnits(Asset.JPY, new BigInteger("92233720368547758080"))).isEqualTo(total);
 	}
 
 	@Test
-	void holdsASingleSatoshi() {
-		Money satoshi = Money.ofMinorUnits(Asset.BTC, 1);
-		assertThat(satoshi.getAmount()).isEqualTo(new BigDecimal("0.00000001"));
-		assertThat(satoshi.toMinorUnits()).isEqualTo(BigInteger.ONE);
+	void holdsASingleMinorUnit() {
+		Money cent = Money.ofMinorUnits(Asset.USD, 1);
+		assertThat(cent.getAmount()).isEqualTo(new BigDecimal("0.01"));
+		assertThat(cent.toMinorUnits()).isEqualTo(BigInteger.ONE);
 	}
 
 	@Test
@@ -97,7 +97,7 @@ class MoneyTests {
 	@Test
 	void refusesToMixAssets() {
 		assertThatExceptionOfType(IllegalArgumentException.class)
-			.isThrownBy(() -> Money.of(Asset.BTC, "1").add(Money.of(Asset.USD, "1")))
+			.isThrownBy(() -> Money.of(Asset.EUR, "1").add(Money.of(Asset.USD, "1")))
 			.withMessageContaining("crossing assets needs an explicit FxRate");
 	}
 
@@ -135,8 +135,8 @@ class MoneyTests {
 	}
 
 	@Test
-	void splitsWithoutLosingASatoshi() {
-		Money total = Money.ofMinorUnits(Asset.BTC, 100);
+	void splitsWithoutLosingAUnitAtAFineScale() {
+		Money total = Money.ofMinorUnits(new Asset("USD", 8), 100);
 		List<Money> shares = total.allocate(7);
 		assertThat(shares).hasSize(7);
 		assertThat(sum(shares)).isEqualTo(total);
@@ -183,7 +183,7 @@ class MoneyTests {
 	@Test
 	void refusesToCompareAcrossAssets() {
 		assertThatExceptionOfType(IllegalArgumentException.class)
-			.isThrownBy(() -> Money.of(Asset.BTC, "1").isGreaterThan(Money.of(Asset.ETH, "1")));
+			.isThrownBy(() -> Money.of(Asset.USD, "1").isGreaterThan(Money.of(Asset.EUR, "1")));
 	}
 
 	@Test
@@ -194,12 +194,12 @@ class MoneyTests {
 
 	@Test
 	void isNotEqualAcrossAssets() {
-		assertThat(Money.of(Asset.USDC, "1")).isNotEqualTo(Money.of(Asset.USDT, "1"));
+		assertThat(Money.of(Asset.USD, "1")).isNotEqualTo(Money.of(Asset.EUR, "1"));
 	}
 
 	@Test
 	void readsAsPlainDecimal() {
-		assertThat(Money.ofMinorUnits(Asset.BTC, 1)).hasToString("0.00000001 BTC");
+		assertThat(Money.ofMinorUnits(new Asset("USD", 10), 125)).hasToString("0.0000000125 USD");
 		assertThat(Money.zero(Asset.JPY)).hasToString("0 JPY");
 	}
 

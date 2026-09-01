@@ -71,7 +71,7 @@ class ApiResponseExceptionHandlerTests {
 			.andExpect(status().isNotFound())
 			.andExpect(jsonPath("$.success").value(false))
 			.andExpect(jsonPath("$.code").value("NOT_FOUND"))
-			.andExpect(jsonPath("$.message").value("No wallet exists with id 7"));
+			.andExpect(jsonPath("$.message").value("No account exists with id 7"));
 	}
 
 	@Test
@@ -225,7 +225,7 @@ class ApiResponseExceptionHandlerTests {
 		String refuse(@PathVariable("code") String code) {
 			CommonErrorCode errorCode = CommonErrorCode.valueOf(code);
 			throw new BusinessException(errorCode, (errorCode == CommonErrorCode.NOT_FOUND)
-					? "No wallet exists with id 7" : errorCode.defaultMessage());
+					? "No account exists with id 7" : errorCode.defaultMessage());
 		}
 
 		@GetMapping("/explode")

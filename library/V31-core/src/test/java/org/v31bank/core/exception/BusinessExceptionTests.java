@@ -40,8 +40,8 @@ class BusinessExceptionTests {
 
 	@Test
 	void carriesTheMessageDescribingTheOccurrence() {
-		BusinessException exception = new BusinessException(CommonErrorCode.NOT_FOUND, "No wallet exists with id 7");
-		assertThat(exception.getMessage()).isEqualTo("No wallet exists with id 7");
+		BusinessException exception = new BusinessException(CommonErrorCode.NOT_FOUND, "No account exists with id 7");
+		assertThat(exception.getMessage()).isEqualTo("No account exists with id 7");
 	}
 
 	@Test

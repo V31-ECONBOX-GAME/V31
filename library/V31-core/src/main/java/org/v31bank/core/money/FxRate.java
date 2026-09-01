@@ -24,18 +24,19 @@ import java.time.Instant;
 import java.util.Objects;
 
 /**
- * The price of one asset in another at a point in time — {@code 1 BTC = 64200.50
- * USD} — and the only sanctioned way to turn {@link Money} of one asset into
- * {@link Money} of another.
+ * The price of one asset in another at a point in time — {@code 1 EUR = 1.0850 USD} — and
+ * the only sanctioned way to turn {@link Money} of one asset into {@link Money} of
+ * another.
  * <p>
  * The rate is directional: it says how much {@link #quote()} one unit of {@link #base()}
  * buys, and {@link #convert(Money)} refuses anything not denominated in the base. Getting
  * that backwards silently is a class of bug that only shows up in the reconciliation,
  * which is why it fails loudly instead.
  * <p>
- * {@link #asOf()} is carried because a crypto rate is worth minutes at most. Pricing a
- * movement against a rate that has gone stale is a real loss, so the age is checked
- * before the rate is used rather than assumed.
+ * {@link #asOf()} is carried because a quote is worth seconds in a market that keeps
+ * moving while a request is in flight. Pricing a movement against a rate that has gone
+ * stale is a real loss, so the age is checked before the rate is used rather than
+ * assumed.
  *
  * @param base the asset being priced
  * @param quote the asset it is priced in

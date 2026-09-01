@@ -60,9 +60,9 @@ class MasksTests {
 	}
 
 	@Test
-	void shortensABlockchainAddressFromBothEnds() {
-		assertThat(Masks.cryptoAddress("bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq")).isEqualTo("bc1qar****5mdq");
-		assertThat(Masks.cryptoAddress("bc1qar")).isEqualTo("****");
+	void shortensAnIbanFromBothEnds() {
+		assertThat(Masks.iban("DE89370400440532013000")).isEqualTo("DE89****3000");
+		assertThat(Masks.iban("DE89")).isEqualTo("****");
 	}
 
 	@Test
@@ -74,7 +74,7 @@ class MasksTests {
 	void passesNullThroughSoLoggingNeverFails() {
 		assertThat(Masks.accountNumber(null)).isNull();
 		assertThat(Masks.email(null)).isNull();
-		assertThat(Masks.cryptoAddress(null)).isNull();
+		assertThat(Masks.iban(null)).isNull();
 		assertThat(Masks.secret(null)).isNull();
 	}
 

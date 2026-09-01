@@ -38,28 +38,28 @@ class FxRateTests {
 
 	@Test
 	void convertsIntoTheQuoteAsset() {
-		FxRate rate = new FxRate(Asset.BTC, Asset.USD, new BigDecimal("60000.00"), OBSERVED_AT);
-		assertThat(rate.convert(Money.of(Asset.BTC, "0.5"))).isEqualTo(Money.of(Asset.USD, "30000.00"));
+		FxRate rate = new FxRate(Asset.EUR, Asset.USD, new BigDecimal("1.0850"), OBSERVED_AT);
+		assertThat(rate.convert(Money.of(Asset.EUR, "200.00"))).isEqualTo(Money.of(Asset.USD, "217.00"));
 	}
 
 	@Test
 	void roundsNeutrallyByDefault() {
-		FxRate rate = new FxRate(Asset.BTC, Asset.USD, new BigDecimal("2.005"), OBSERVED_AT);
-		assertThat(rate.convert(Money.of(Asset.BTC, "1"))).isEqualTo(Money.of(Asset.USD, "2.00"));
+		FxRate rate = new FxRate(Asset.EUR, Asset.USD, new BigDecimal("2.005"), OBSERVED_AT);
+		assertThat(rate.convert(Money.of(Asset.EUR, "1"))).isEqualTo(Money.of(Asset.USD, "2.00"));
 	}
 
 	@Test
 	void roundsAsAsked() {
-		FxRate rate = new FxRate(Asset.BTC, Asset.USD, new BigDecimal("2.005"), OBSERVED_AT);
-		assertThat(rate.convert(Money.of(Asset.BTC, "1"), RoundingMode.UP)).isEqualTo(Money.of(Asset.USD, "2.01"));
+		FxRate rate = new FxRate(Asset.EUR, Asset.USD, new BigDecimal("2.005"), OBSERVED_AT);
+		assertThat(rate.convert(Money.of(Asset.EUR, "1"), RoundingMode.UP)).isEqualTo(Money.of(Asset.USD, "2.01"));
 	}
 
 	@Test
 	void refusesToConvertTheWrongWayRound() {
-		FxRate rate = new FxRate(Asset.BTC, Asset.USD, new BigDecimal("60000.00"), OBSERVED_AT);
+		FxRate rate = new FxRate(Asset.EUR, Asset.USD, new BigDecimal("1.0850"), OBSERVED_AT);
 		assertThatExceptionOfType(IllegalArgumentException.class)
 			.isThrownBy(() -> rate.convert(Money.of(Asset.USD, "100.00")))
-			.withMessageContaining("A BTC/USD rate converts BTC, not USD");
+			.withMessageContaining("A EUR/USD rate converts EUR, not USD");
 	}
 
 	@Test
@@ -71,30 +71,30 @@ class FxRateTests {
 	@Test
 	void refusesARateThatIsNotPositive() {
 		assertThatExceptionOfType(IllegalArgumentException.class)
-			.isThrownBy(() -> new FxRate(Asset.BTC, Asset.USD, BigDecimal.ZERO, OBSERVED_AT));
+			.isThrownBy(() -> new FxRate(Asset.EUR, Asset.USD, BigDecimal.ZERO, OBSERVED_AT));
 		assertThatExceptionOfType(IllegalArgumentException.class)
-			.isThrownBy(() -> new FxRate(Asset.BTC, Asset.USD, new BigDecimal("-1"), OBSERVED_AT));
+			.isThrownBy(() -> new FxRate(Asset.EUR, Asset.USD, new BigDecimal("-1"), OBSERVED_AT));
 	}
 
 	@Test
 	void invertsTheDirection() {
-		FxRate inverse = new FxRate(Asset.BTC, Asset.USD, new BigDecimal("50000"), OBSERVED_AT).inverse();
+		FxRate inverse = new FxRate(Asset.EUR, Asset.USD, new BigDecimal("1.25"), OBSERVED_AT).inverse();
 		assertThat(inverse.base()).isEqualTo(Asset.USD);
-		assertThat(inverse.quote()).isEqualTo(Asset.BTC);
-		assertThat(inverse.convert(Money.of(Asset.USD, "50000.00"))).isEqualTo(Money.of(Asset.BTC, "1"));
+		assertThat(inverse.quote()).isEqualTo(Asset.EUR);
+		assertThat(inverse.convert(Money.of(Asset.USD, "1.25"))).isEqualTo(Money.of(Asset.EUR, "1"));
 	}
 
 	@Test
 	void reportsWhenItHasGoneStale() {
-		FxRate rate = new FxRate(Asset.BTC, Asset.USD, new BigDecimal("60000.00"), OBSERVED_AT);
+		FxRate rate = new FxRate(Asset.EUR, Asset.USD, new BigDecimal("1.0850"), OBSERVED_AT);
 		assertThat(rate.isOlderThan(Duration.ofMinutes(1), OBSERVED_AT.plusSeconds(30))).isFalse();
 		assertThat(rate.isOlderThan(Duration.ofMinutes(1), OBSERVED_AT.plusSeconds(90))).isTrue();
 	}
 
 	@Test
 	void readsAsAQuote() {
-		assertThat(new FxRate(Asset.BTC, Asset.USD, new BigDecimal("60000.00"), OBSERVED_AT))
-			.hasToString("1 BTC = 60000.00 USD");
+		assertThat(new FxRate(Asset.EUR, Asset.USD, new BigDecimal("1.0850"), OBSERVED_AT))
+			.hasToString("1 EUR = 1.0850 USD");
 	}
 
 }
