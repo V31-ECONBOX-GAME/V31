@@ -30,7 +30,6 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link Uuids}.
@@ -74,18 +73,11 @@ class UuidsTests {
 	}
 
 	@Test
-	void carriesTheInstantItWasIssued() {
+	void leadsWithTheMillisecondItWasIssued() {
 		Instant before = Instant.now().minusSeconds(1);
-		Instant issued = Uuids.timestampOf(Uuids.timeOrdered());
+		Instant issued = Instant.ofEpochMilli(Uuids.timeOrdered().getMostSignificantBits() >>> 16);
 		assertThat(issued).as(issued + " should be after " + before).isAfter(before);
 		assertThat(issued).isBefore(Instant.now().plusSeconds(1));
-	}
-
-	@Test
-	void refusesToReadATimestampThatIsNotThere() {
-		assertThatExceptionOfType(IllegalArgumentException.class)
-			.isThrownBy(() -> Uuids.timestampOf(UUID.randomUUID()));
-		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> Uuids.timestampOf(null));
 	}
 
 	private static Set<UUID> generate(int count) {

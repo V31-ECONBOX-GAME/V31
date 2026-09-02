@@ -24,5 +24,4 @@ description = "Core infrastructure shared across all V31 services"
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.assertj:assertj-core")
-    testImplementation("org.junit.jupiter:junit-jupiter")
 }

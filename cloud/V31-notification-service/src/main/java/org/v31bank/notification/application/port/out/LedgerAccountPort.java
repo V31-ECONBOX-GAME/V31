@@ -30,10 +30,10 @@ import org.v31bank.notification.application.dto.LedgerAccountSummary;
  * database, a gRPC call or a cache, and swapping one for another touches only the
  * adapter.
  * <p>
- * Failures arrive as {@link org.v31bank.core.exception.BusinessException}, carrying the
- * code the ledger reported. That is the point of the translation the adapter does: a
- * remote refusal reaches this layer looking like any other, and nothing here has to know
- * what a gRPC status is.
+ * Failures arrive as {@link org.v31bank.core.exception.ApiException}, carrying the code
+ * the ledger reported. That is the point of the translation the adapter does: a remote
+ * refusal reaches this layer looking like any other, and nothing here has to know what a
+ * gRPC status is.
  *
  * @author Xander Wang
  * @since 0.2.0

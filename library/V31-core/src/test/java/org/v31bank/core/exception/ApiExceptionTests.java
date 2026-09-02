@@ -24,38 +24,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
- * Tests for {@link BusinessException}.
+ * Tests for {@link ApiException}.
  *
  * @author Xander Wang
  * @since 0.2.0
  */
-class BusinessExceptionTests {
-
-	@Test
-	void fallsBackToTheCodesOwnMessage() {
-		BusinessException exception = new BusinessException(CommonErrorCode.CONFLICT);
-		assertThat(exception.getErrorCode()).isEqualTo(CommonErrorCode.CONFLICT);
-		assertThat(exception.getMessage()).isEqualTo(CommonErrorCode.CONFLICT.defaultMessage());
-	}
+class ApiExceptionTests {
 
 	@Test
 	void carriesTheMessageDescribingTheOccurrence() {
-		BusinessException exception = new BusinessException(CommonErrorCode.NOT_FOUND, "No account exists with id 7");
+		ApiException exception = new ApiException(CommonErrorCode.NOT_FOUND, "No account exists with id 7");
 		assertThat(exception.getMessage()).isEqualTo("No account exists with id 7");
 	}
 
 	@Test
 	void keepsTheFailureItWasTranslatedFrom() {
 		IllegalStateException cause = new IllegalStateException("unique constraint violated");
-		BusinessException exception = new BusinessException(CommonErrorCode.CONFLICT, "Code already in use", cause);
+		ApiException exception = new ApiException(CommonErrorCode.CONFLICT, "Code already in use", cause);
 		assertThat(exception.getCause()).isSameAs(cause);
 		assertThat(exception.getErrorCode().httpStatus()).isEqualTo(409);
 	}
 
 	@Test
 	void rejectsMissingCode() {
-		assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> new BusinessException(null, "boom"));
-		assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> new BusinessException(null));
+		assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> new ApiException(null, "boom"));
 	}
 
 }

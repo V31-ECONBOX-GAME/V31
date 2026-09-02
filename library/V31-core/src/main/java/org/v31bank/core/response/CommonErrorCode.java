@@ -19,10 +19,8 @@ package org.v31bank.core.response;
 import java.util.Optional;
 
 /**
- * The failures any service can report, independent of what it does.
- * <p>
- * Failures specific to a domain — an insufficient balance, a frozen account, a sanctions
- * hit — belong in that service's own {@link ErrorCode} enum rather than here.
+ * The failures any service can report. Ones specific to a domain belong in that service's
+ * own {@link ErrorCode} enum.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -30,8 +28,7 @@ import java.util.Optional;
 public enum CommonErrorCode implements ErrorCode {
 
 	/**
-	 * The request was malformed: an unparseable body, a missing parameter, or a field
-	 * that failed validation.
+	 * The request was malformed, or a field failed validation.
 	 */
 	VALIDATION_FAILED(400, "The request is not valid"),
 
@@ -51,16 +48,10 @@ public enum CommonErrorCode implements ErrorCode {
 	NOT_FOUND(404, "The requested resource does not exist"),
 
 	/**
-	 * The request conflicts with the current state, such as a duplicate unique value or
-	 * an edit against a stale version.
+	 * The request conflicts with the current state, such as a duplicate value or an edit
+	 * against a stale version.
 	 */
 	CONFLICT(409, "The request conflicts with the current state of the resource"),
-
-	/**
-	 * An {@code Idempotency-Key} was replayed with a different payload, so the original
-	 * response cannot be returned and the new request must not be applied.
-	 */
-	IDEMPOTENCY_KEY_REUSED(409, "This idempotency key was already used with a different request"),
 
 	/**
 	 * The request was well formed but a business rule refused it.
@@ -73,21 +64,20 @@ public enum CommonErrorCode implements ErrorCode {
 	RATE_LIMITED(429, "Too many requests, please retry later"),
 
 	/**
-	 * The service failed for a reason the caller cannot act on. The message stays
-	 * deliberately vague; the cause belongs in the logs, correlated by the response's
-	 * trace identifier.
+	 * The service failed for a reason the caller cannot act on; the cause belongs in the
+	 * logs, correlated by the trace identifier.
 	 */
 	INTERNAL_ERROR(500, "The request could not be completed"),
 
 	/**
-	 * A service or provider this call depends on is unavailable. Distinct from
-	 * {@link #INTERNAL_ERROR} because retrying is usually worthwhile.
+	 * A service this call depends on is unavailable. Unlike {@link #INTERNAL_ERROR},
+	 * retrying is usually worthwhile.
 	 */
 	DEPENDENCY_UNAVAILABLE(503, "A required service is temporarily unavailable"),
 
 	/**
-	 * A dependency did not answer in time. The outcome of the operation is unknown, so a
-	 * caller retrying it must send the same {@code Idempotency-Key}.
+	 * A dependency did not answer in time, so the outcome is unknown and a retry must
+	 * send the same {@code Idempotency-Key}.
 	 */
 	DEPENDENCY_TIMEOUT(504, "A required service did not respond in time");
 
@@ -101,9 +91,8 @@ public enum CommonErrorCode implements ErrorCode {
 	}
 
 	/**
-	 * Look up a code by its wire form, which is what a layer holding only a serialised
-	 * {@link ApiResponse} has to work from — the envelope carries the code as text, so
-	 * the status that belongs with it has to be recovered rather than read.
+	 * Look up a code by its wire form, for a layer holding only a serialised
+	 * {@link ApiResponse}.
 	 * @param code the code to look up, which may be {@code null}
 	 * @return the matching code, or empty when it is not one of these
 	 */

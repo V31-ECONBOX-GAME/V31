@@ -27,7 +27,7 @@ import io.grpc.StatusRuntimeException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import org.v31bank.core.exception.BusinessException;
+import org.v31bank.core.exception.ApiException;
 import org.v31bank.core.response.PageResponse;
 import org.v31bank.grpc.client.GrpcErrors;
 import org.v31bank.ledger.api.v1.CreateLedgerAccountRequest;
@@ -52,7 +52,7 @@ import org.v31bank.notification.application.port.out.LedgerAccountPort;
  * <h2>Failures are translated, not propagated</h2>
  *
  * Every call goes through {@link GrpcErrors}, so a refusal from the ledger arrives here
- * as a {@link BusinessException} carrying the code the ledger reported rather than as a
+ * as an {@link ApiException} carrying the code the ledger reported rather than as a
  * {@link StatusRuntimeException}. Without that, a status code would leak into the
  * application layer and every caller would have to know what {@code ALREADY_EXISTS}
  * means.
@@ -96,7 +96,7 @@ public class LedgerAccountGrpcAdapter implements LedgerAccountPort {
 			if (ex.getStatus().getCode() == Status.Code.NOT_FOUND) {
 				return Optional.empty();
 			}
-			throw GrpcErrors.asBusinessException(ex);
+			throw GrpcErrors.asApiException(ex);
 		}
 	}
 

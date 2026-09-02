@@ -21,7 +21,7 @@ import java.util.UUID;
 import io.grpc.stub.StreamObserver;
 import org.springframework.grpc.server.service.GrpcService;
 
-import org.v31bank.core.exception.BusinessException;
+import org.v31bank.core.exception.ApiException;
 import org.v31bank.core.response.ApiResponse;
 import org.v31bank.core.response.CommonErrorCode;
 import org.v31bank.data.jpa.domain.PageResult;
@@ -52,10 +52,10 @@ import org.v31bank.ledger.infra.grpc.adapter.LedgerAccountProtos;
  *
  * The use cases report an outcome rather than throwing, because that is what suits an
  * HTTP response. gRPC has no envelope: a call either returns its message or fails with a
- * status. So a refused outcome is raised as a {@link BusinessException} here, and the
- * handler the gRPC starter registers turns it into a status carrying the same code the
- * REST layer would have put in the envelope. A caller therefore sees the same
- * {@code CONFLICT} either way.
+ * status. So a refused outcome is raised as an {@link ApiException} here, and the handler
+ * the gRPC starter registers turns it into a status carrying the same code the REST layer
+ * would have put in the envelope. A caller therefore sees the same {@code CONFLICT}
+ * either way.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -84,8 +84,7 @@ public class LedgerAccountGrpcService extends LedgerAccountServiceGrpc.LedgerAcc
 	public void getLedgerAccount(GetLedgerAccountRequest request, StreamObserver<GetLedgerAccountResponse> observer) {
 		UUID id = LedgerAccountProtos.toUuid(request.getId());
 		LedgerAccount account = this.ledgerAccountInputPort.get(id)
-			.orElseThrow(
-					() -> new BusinessException(CommonErrorCode.NOT_FOUND, "No ledger account exists with id " + id));
+			.orElseThrow(() -> new ApiException(CommonErrorCode.NOT_FOUND, "No ledger account exists with id " + id));
 		respond(observer,
 				GetLedgerAccountResponse.newBuilder().setLedgerAccount(LedgerAccountProtos.toProto(account)).build());
 	}
@@ -146,7 +145,7 @@ public class LedgerAccountGrpcService extends LedgerAccountServiceGrpc.LedgerAcc
 	 */
 	private static LedgerAccount unwrap(ApiResponse<LedgerAccount> result) {
 		if (!result.success()) {
-			throw new BusinessException(LedgerAccountProtos.errorCodeOf(result.code()), result.message());
+			throw new ApiException(LedgerAccountProtos.errorCodeOf(result.code()), result.message());
 		}
 		return result.data();
 	}

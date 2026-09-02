@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.v31bank.core.constant.ApiHeaders;
-import org.v31bank.core.exception.BusinessException;
+import org.v31bank.core.exception.ApiException;
 import org.v31bank.core.response.CommonErrorCode;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -224,8 +224,8 @@ class ApiResponseExceptionHandlerTests {
 		@GetMapping("/refuse/{code}")
 		String refuse(@PathVariable("code") String code) {
 			CommonErrorCode errorCode = CommonErrorCode.valueOf(code);
-			throw new BusinessException(errorCode, (errorCode == CommonErrorCode.NOT_FOUND)
-					? "No account exists with id 7" : errorCode.defaultMessage());
+			throw new ApiException(errorCode, (errorCode == CommonErrorCode.NOT_FOUND) ? "No account exists with id 7"
+					: errorCode.defaultMessage());
 		}
 
 		@GetMapping("/explode")

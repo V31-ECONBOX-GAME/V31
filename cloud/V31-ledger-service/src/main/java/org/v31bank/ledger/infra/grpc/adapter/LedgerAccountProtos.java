@@ -122,14 +122,14 @@ public final class LedgerAccountProtos {
 	 * boundary where that string has to become an identifier or be rejected.
 	 * @param id the value received
 	 * @return the identifier
-	 * @throws org.v31bank.core.exception.BusinessException if it is not a UUID
+	 * @throws org.v31bank.core.exception.ApiException if it is not a UUID
 	 */
 	public static UUID toUuid(String id) {
 		try {
 			return UUID.fromString(id);
 		}
 		catch (IllegalArgumentException ex) {
-			throw new org.v31bank.core.exception.BusinessException(CommonErrorCode.VALIDATION_FAILED,
+			throw new org.v31bank.core.exception.ApiException(CommonErrorCode.VALIDATION_FAILED,
 					"'" + id + "' is not an identifier", ex);
 		}
 	}

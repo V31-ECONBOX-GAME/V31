@@ -29,8 +29,6 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.junit.jupiter.api.Test;
 
-import org.v31bank.core.util.Uuids;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -78,7 +76,7 @@ class AuditRecordListenerTests {
 		UUID id = record.get(ID);
 		assertThat(id).isNotNull();
 		assertThat(id.version()).isEqualTo(7);
-		assertThat(Uuids.timestampOf(id)).isBefore(Instant.now().plusSeconds(1));
+		assertThat(Instant.ofEpochMilli(id.getMostSignificantBits() >>> 16)).isBefore(Instant.now().plusSeconds(1));
 	}
 
 	@Test

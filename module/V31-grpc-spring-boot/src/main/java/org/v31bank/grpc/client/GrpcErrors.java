@@ -22,13 +22,13 @@ import java.util.function.Supplier;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 
-import org.v31bank.core.exception.BusinessException;
+import org.v31bank.core.exception.ApiException;
 import org.v31bank.core.response.ErrorCode;
 import org.v31bank.grpc.status.GrpcStatuses;
 import org.v31bank.grpc.status.RemoteErrorCode;
 
 /**
- * Turns a failed call into the same {@link BusinessException} the far side threw.
+ * Turns a failed call into the same {@link ApiException} the far side threw.
  * <p>
  * Without this, a service calling another has to reason about
  * {@link StatusRuntimeException} and status codes in the middle of its application layer,
@@ -58,11 +58,11 @@ public final class GrpcErrors {
 	}
 
 	/**
-	 * Make a call, reporting a failure as a {@link BusinessException}.
+	 * Make a call, reporting a failure as an {@link ApiException}.
 	 * @param call the call to make
 	 * @param <T> what the call returns
 	 * @return what the call returned
-	 * @throws BusinessException if the call failed
+	 * @throws ApiException if the call failed
 	 */
 	public static <T> T call(Supplier<T> call) {
 		Objects.requireNonNull(call, "call must not be null");
@@ -70,7 +70,7 @@ public final class GrpcErrors {
 			return call.get();
 		}
 		catch (StatusRuntimeException ex) {
-			throw asBusinessException(ex);
+			throw asApiException(ex);
 		}
 	}
 
@@ -88,7 +88,7 @@ public final class GrpcErrors {
 	 * @param exception the failure to translate
 	 * @return the exception to raise in its place
 	 */
-	public static BusinessException asBusinessException(StatusRuntimeException exception) {
+	public static ApiException asApiException(StatusRuntimeException exception) {
 		Objects.requireNonNull(exception, "exception must not be null");
 		Status status = exception.getStatus();
 		String remoteCode = (exception.getTrailers() != null) ? exception.getTrailers().get(GrpcStatuses.ERROR_CODE)
@@ -101,15 +101,14 @@ public final class GrpcErrors {
 			// worse, revealing, to whoever made the call. The exception carries it
 			// as the cause; the message does not.
 			ErrorCode common = GrpcStatuses.commonErrorCodeFor(status.getCode());
-			return new BusinessException(common, common.defaultMessage(), exception);
+			return new ApiException(common, common.defaultMessage(), exception);
 		}
 		// A V31 service refused this deliberately, so the description is a message
 		// it wrote for the caller.
 		String message = (status.getDescription() != null) ? status.getDescription()
 				: GrpcStatuses.commonErrorCodeFor(status.getCode()).defaultMessage();
-		return new BusinessException(
-				new RemoteErrorCode(remoteCode, message, GrpcStatuses.httpStatusFor(status.getCode())), message,
-				exception);
+		return new ApiException(new RemoteErrorCode(remoteCode, message, GrpcStatuses.httpStatusFor(status.getCode())),
+				message, exception);
 	}
 
 }

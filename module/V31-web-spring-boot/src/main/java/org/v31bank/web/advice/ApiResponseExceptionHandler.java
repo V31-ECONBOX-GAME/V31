@@ -36,7 +36,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import org.v31bank.core.constant.ApiHeaders;
-import org.v31bank.core.exception.BusinessException;
+import org.v31bank.core.exception.ApiException;
 import org.v31bank.core.response.ApiResponse;
 import org.v31bank.core.response.CommonErrorCode;
 import org.v31bank.core.response.ErrorCode;
@@ -88,14 +88,14 @@ public class ApiResponseExceptionHandler extends ResponseEntityExceptionHandler 
 	 * reported.
 	 * <p>
 	 * This is the one case where the exception's message is sent on: a
-	 * {@link BusinessException} is raised by code that chose both the code and the
-	 * wording for the caller.
+	 * {@link ApiException} is raised by code that chose both the code and the wording for
+	 * the caller.
 	 * @param ex the refusal
 	 * @param request the request being served
 	 * @return the response to send
 	 */
-	@ExceptionHandler(BusinessException.class)
-	public ResponseEntity<ApiResponse<Void>> handleBusinessException(BusinessException ex, WebRequest request) {
+	@ExceptionHandler(ApiException.class)
+	public ResponseEntity<ApiResponse<Void>> handleApiException(ApiException ex, WebRequest request) {
 		ErrorCode errorCode = ex.getErrorCode();
 		logger.debug("Refused with {}", errorCode.code(), ex);
 		return ResponseEntity.status(statusOf(errorCode))

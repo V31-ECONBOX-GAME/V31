@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.grpc.server.GlobalServerInterceptor;
 import org.springframework.grpc.server.exception.GrpcExceptionHandler;
 
-import org.v31bank.grpc.server.BusinessExceptionGrpcExceptionHandler;
+import org.v31bank.grpc.server.ApiExceptionGrpcExceptionHandler;
 import org.v31bank.grpc.server.HeaderPropagationServerInterceptor;
 import org.v31bank.grpc.server.UnexpectedExceptionGrpcExceptionHandler;
 
@@ -56,8 +56,8 @@ public class V31GrpcServerAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(name = "v31.grpc.server.exception-handling.enabled", matchIfMissing = true)
-	public BusinessExceptionGrpcExceptionHandler businessExceptionGrpcExceptionHandler() {
-		return new BusinessExceptionGrpcExceptionHandler();
+	public ApiExceptionGrpcExceptionHandler apiExceptionGrpcExceptionHandler() {
+		return new ApiExceptionGrpcExceptionHandler();
 	}
 
 	/**

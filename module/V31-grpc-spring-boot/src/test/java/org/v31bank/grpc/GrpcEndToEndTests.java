@@ -47,14 +47,14 @@ import org.springframework.grpc.client.interceptor.DefaultDeadlineSetupClientInt
 import org.springframework.grpc.server.exception.CompositeGrpcExceptionHandler;
 import org.springframework.grpc.server.exception.GrpcExceptionHandlerInterceptor;
 
-import org.v31bank.core.exception.BusinessException;
+import org.v31bank.core.exception.ApiException;
 import org.v31bank.core.response.CommonErrorCode;
 import org.v31bank.core.response.ErrorCode;
 import org.v31bank.grpc.client.GrpcErrors;
 import org.v31bank.grpc.client.HeaderPropagationClientInterceptor;
 import org.v31bank.grpc.context.GrpcRequestId;
 import org.v31bank.grpc.context.RequestContext;
-import org.v31bank.grpc.server.BusinessExceptionGrpcExceptionHandler;
+import org.v31bank.grpc.server.ApiExceptionGrpcExceptionHandler;
 import org.v31bank.grpc.server.HeaderPropagationServerInterceptor;
 import org.v31bank.grpc.server.UnexpectedExceptionGrpcExceptionHandler;
 import org.v31bank.grpc.status.GrpcStatuses;
@@ -133,7 +133,7 @@ class GrpcEndToEndTests {
 	@Test
 	void aRefusalArrivesCarryingTheCodeTheServerThrew() throws IOException {
 		Channel client = start(Duration.ZERO);
-		BusinessException thrown = catchThrowableOfType(BusinessException.class,
+		ApiException thrown = catchThrowableOfType(ApiException.class,
 				() -> GrpcErrors.call(() -> call(client, FAIL_BUSINESS)));
 		assertThat(thrown.getErrorCode().code()).as("the exact code has to survive the hop, not just the status")
 			.isEqualTo("CATEGORY_HAS_CHILDREN");
@@ -164,9 +164,9 @@ class GrpcEndToEndTests {
 	}
 
 	@Test
-	void anUnexpectedFailureStillReachesTheCallerAsABusinessException() throws IOException {
+	void anUnexpectedFailureStillReachesTheCallerAsAnApiException() throws IOException {
 		Channel client = start(Duration.ZERO);
-		BusinessException thrown = catchThrowableOfType(BusinessException.class,
+		ApiException thrown = catchThrowableOfType(ApiException.class,
 				() -> GrpcErrors.call(() -> call(client, FAIL_UNEXPECTED)));
 		assertThat(thrown.getErrorCode().code()).isEqualTo("INTERNAL_ERROR");
 		assertThat(thrown.getErrorCode().httpStatus()).isEqualTo(500);
@@ -176,7 +176,7 @@ class GrpcEndToEndTests {
 	void aFailureFromOutsideThePlatformDoesNotLeakItsDiagnosticText() {
 		io.grpc.StatusRuntimeException transportFailure = Status.UNAVAILABLE.withDescription("io exception")
 			.asRuntimeException();
-		BusinessException translated = GrpcErrors.asBusinessException(transportFailure);
+		ApiException translated = GrpcErrors.asApiException(transportFailure);
 		assertThat(translated.getErrorCode().code()).isEqualTo(CommonErrorCode.DEPENDENCY_UNAVAILABLE.code());
 		assertThat(translated.getMessage()).as("transport wording is for the logs, not for whoever made the call")
 			.isEqualTo(CommonErrorCode.DEPENDENCY_UNAVAILABLE.defaultMessage());
@@ -284,7 +284,7 @@ class GrpcEndToEndTests {
 	private Channel start(Duration defaultDeadline) throws IOException {
 		String name = InProcessServerBuilder.generateName();
 		GrpcExceptionHandlerInterceptor exceptions = new GrpcExceptionHandlerInterceptor(
-				new CompositeGrpcExceptionHandler(new BusinessExceptionGrpcExceptionHandler(),
+				new CompositeGrpcExceptionHandler(new ApiExceptionGrpcExceptionHandler(),
 						new UnexpectedExceptionGrpcExceptionHandler()));
 		this.server = InProcessServerBuilder.forName(name)
 			.addService(ServerInterceptors.intercept(probeService(), exceptions,
@@ -320,7 +320,7 @@ class GrpcEndToEndTests {
 						observer.onCompleted();
 					}
 					case FAIL_BUSINESS ->
-						throw new BusinessException(new TestErrorCode(), "Customer category 7 still has children");
+						throw new ApiException(new TestErrorCode(), "Customer category 7 still has children");
 					case FAIL_UNEXPECTED ->
 						throw new IllegalStateException("ERROR: relation \"customer_category\" does not exist");
 					default -> {
