@@ -49,7 +49,6 @@ import org.gradle.plugins.ide.idea.model.IdeaModule;
 import org.v31bank.build.constant.Configurations;
 import org.v31bank.build.constant.Coordinates;
 import org.v31bank.build.constant.Locations;
-import org.v31bank.build.constant.Metadata;
 import org.v31bank.build.constant.Projects;
 import org.v31bank.build.constant.Tasks;
 import org.v31bank.build.proto.BufTask;
@@ -57,6 +56,7 @@ import org.v31bank.build.proto.GenerateProtoSources;
 import org.v31bank.build.proto.LintProto;
 import org.v31bank.build.proto.ProtoToolchainPlugin;
 import org.v31bank.build.util.Directories;
+import org.v31bank.build.util.IsolatedProjects;
 import org.v31bank.build.util.SourceSets;
 
 /**
@@ -108,7 +108,8 @@ public class ProtobufPlugin implements Plugin<Project> {
 	}
 
 	private Optional<Api> apiFor(Project project) {
-		List<Api> matches = apisIn(Directories.rootOf(project).dir(PROTO).getAsFile())
+		List<Api> matches = apisIn(Directories.rootDirOf(project).dir(PROTO).getAsFile(),
+				IsolatedProjects.rootOf(project).getName())
 			.filter((api) -> project.getName().contains(api.name()))
 			.toList();
 		if (matches.size() > 1) {
@@ -119,12 +120,12 @@ public class ProtobufPlugin implements Plugin<Project> {
 		return matches.stream().findFirst();
 	}
 
-	private Stream<Api> apisIn(File root) {
+	private Stream<Api> apisIn(File root, String namespace) {
 		// null covers both a missing path and a non-directory one.
-		File[] directories = new File(root, Metadata.NAME).listFiles();
+		File[] directories = new File(root, namespace).listFiles();
 		return (directories != null) ? Stream.of(directories)
 			.filter((file) -> file.isDirectory() && !file.getName().startsWith("."))
-			.map((file) -> new Api(root, file.getName())) : Stream.empty();
+			.map((file) -> new Api(root, namespace, file.getName())) : Stream.empty();
 	}
 
 	private void declareAsGeneratedSources(Project project) {
@@ -199,13 +200,15 @@ public class ProtobufPlugin implements Plugin<Project> {
 	/**
 	 * One API: the directory holding its {@code .proto} and the path buf addresses it by.
 	 * <p>
-	 * Both are derived from {@link Metadata#NAME} rather than spelled out at each use, so
-	 * they cannot drift apart when the layout moves.
+	 * Both are derived from the name the build is rooted at rather than spelled out at
+	 * each use, so they cannot drift apart when the layout moves.
 	 *
 	 * @param root where buf runs, holding {@code buf.yaml} and every API
+	 * @param namespace the directory every API sits beneath, the name the build is rooted
+	 * at
 	 * @param name what the API is called, and so what a project's name is matched against
 	 */
-	private record Api(File root, String name) {
+	private record Api(File root, String namespace, String name) {
 
 		/**
 		 * Written with {@code /} on every platform: buf reads this path, and so does an
@@ -213,7 +216,7 @@ public class ProtobufPlugin implements Plugin<Project> {
 		 * @return this API's path beneath the proto root
 		 */
 		String path() {
-			return Metadata.NAME + "/" + this.name;
+			return this.namespace + "/" + this.name;
 		}
 
 		File directory() {

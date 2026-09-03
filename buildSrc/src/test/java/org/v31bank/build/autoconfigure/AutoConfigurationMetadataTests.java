@@ -54,16 +54,16 @@ class AutoConfigurationMetadataTests {
 		ClassFiles.autoConfiguration(FIRST).writeTo(classes());
 		writeImports(FIRST);
 		AutoConfigurationMetadata task = task();
-		task.getModuleName().set("V31-example-spring-boot");
+		task.getModuleName().set("v31-example-spring-boot");
 		task.documentAutoConfiguration();
-		assertThat(metadata()).containsEntry("module", "V31-example-spring-boot")
+		assertThat(metadata()).containsEntry("module", "v31-example-spring-boot")
 			.containsEntry("autoConfigurationClassNames", FIRST);
 	}
 
 	@Test
 	void takesItsModuleNameFromTheProject() {
 		writeImports();
-		assertThat(task().getModuleName().get()).isEqualTo("V31-example-spring-boot");
+		assertThat(task().getModuleName().get()).isEqualTo("v31-example-spring-boot");
 	}
 
 	/**
@@ -120,7 +120,7 @@ class AutoConfigurationMetadataTests {
 
 	private AutoConfigurationMetadata task() {
 		Project project = ProjectBuilder.builder()
-			.withName("V31-example-spring-boot")
+			.withName("v31-example-spring-boot")
 			.withProjectDir(this.directory.toFile())
 			.build();
 		AutoConfigurationMetadata task = project.getTasks()

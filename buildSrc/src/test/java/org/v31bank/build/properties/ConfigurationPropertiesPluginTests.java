@@ -171,7 +171,7 @@ class ConfigurationPropertiesPluginTests {
 	}
 
 	private Project bareProject() {
-		return ProjectBuilder.builder().withName("V31-example").withProjectDir(this.directory).build();
+		return ProjectBuilder.builder().withName("v31-example").withProjectDir(this.directory).build();
 	}
 
 }

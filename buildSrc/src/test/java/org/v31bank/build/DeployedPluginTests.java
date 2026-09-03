@@ -47,6 +47,14 @@ class DeployedPluginTests {
 	}
 
 	@Test
+	void namesThePublicationAfterTheBuild() {
+		Project root = ProjectBuilder.builder().withName("other").build();
+		Project project = ProjectBuilder.builder().withName("other-core").withParent(root).build();
+		project.getPlugins().apply(DeployedPlugin.class);
+		assertThat(publishing(project).getPublications().getNames()).containsExactly("other");
+	}
+
+	@Test
 	void waitsForALibraryToSayWhatItIs() {
 		Project project = project();
 		project.getPlugins().apply("java-library");
@@ -83,7 +91,8 @@ class DeployedPluginTests {
 	}
 
 	private Project project() {
-		Project project = ProjectBuilder.builder().withName("V31-core").build();
+		Project root = ProjectBuilder.builder().withName("v31").build();
+		Project project = ProjectBuilder.builder().withName("v31-core").withParent(root).build();
 		project.getPlugins().apply(DeployedPlugin.class);
 		return project;
 	}

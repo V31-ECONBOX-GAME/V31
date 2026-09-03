@@ -308,10 +308,10 @@ class AutoConfigurationPluginTests {
 	 * @return the project under test
 	 */
 	private Project module() {
-		Project root = ProjectBuilder.builder().withName("V31").withProjectDir(this.directory).build();
+		Project root = ProjectBuilder.builder().withName("v31").withProjectDir(this.directory).build();
 		Project platform = ProjectBuilder.builder().withName("platform").withParent(root).build();
-		ProjectBuilder.builder().withName("V31-internal-dependencies").withParent(platform).build();
-		Project project = ProjectBuilder.builder().withName("V31-example-spring-boot").withParent(root).build();
+		ProjectBuilder.builder().withName("v31-internal-dependencies").withParent(platform).build();
+		Project project = ProjectBuilder.builder().withName("v31-example-spring-boot").withParent(root).build();
 		// Supplied by gradle.properties in the real build; the conventions read them,
 		// never default.
 		project.getExtensions().getExtraProperties().set("buildJavaVersion", "25");

@@ -134,16 +134,16 @@ class StarterPluginTests {
 		StarterMetadata metadata = (StarterMetadata) starter.getTasks().getByName("starterMetadata");
 		assertThat(metadata.getDependencyFiles().getFrom())
 			.containsExactly(starter.getConfigurations().getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME));
-		assertThat(metadata.getStarterName().get()).isEqualTo("V31-web-spring-boot-starter");
+		assertThat(metadata.getStarterName().get()).isEqualTo("v31-web-spring-boot-starter");
 	}
 
 	private Project starter() {
 		// Both platform projects are reached by path, so they have to exist first.
-		Project root = ProjectBuilder.builder().withName("V31").withProjectDir(this.directory).build();
+		Project root = ProjectBuilder.builder().withName("v31").withProjectDir(this.directory).build();
 		Project platform = ProjectBuilder.builder().withName("platform").withParent(root).build();
-		ProjectBuilder.builder().withName("V31-internal-dependencies").withParent(platform).build();
-		ProjectBuilder.builder().withName("V31-dependencies").withParent(platform).build();
-		Project starter = ProjectBuilder.builder().withName("V31-web-spring-boot-starter").withParent(root).build();
+		ProjectBuilder.builder().withName("v31-internal-dependencies").withParent(platform).build();
+		ProjectBuilder.builder().withName("v31-dependencies").withParent(platform).build();
+		Project starter = ProjectBuilder.builder().withName("v31-web-spring-boot-starter").withParent(root).build();
 		// Supplied by gradle.properties in the real build; the conventions read them,
 		// never default.
 		starter.getExtensions().getExtraProperties().set("buildJavaVersion", "25");

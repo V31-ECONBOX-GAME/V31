@@ -41,7 +41,7 @@ import org.v31bank.build.constant.Locations;
  * <pre class="code">
  * SourceSets.of(project).main().java().directory()
  * SourceSets.of(project).named("intTest").resources().srcDirs()
- * SourceSets.of(sourceSet).resources().relativeTo(Directories.rootOf(project))
+ * SourceSets.of(sourceSet).resources().relativeTo(Directories.rootDirOf(project))
  * </pre>
  *
  * Every step answers {@code unwrap()} with the Gradle type it stands for, so anything not

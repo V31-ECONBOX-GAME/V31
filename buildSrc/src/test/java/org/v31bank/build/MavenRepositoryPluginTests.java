@@ -97,11 +97,11 @@ class MavenRepositoryPluginTests {
 	@Test
 	void pullsInTheRepositoriesOfTheProjectsItDependsOn() {
 		Project project = deployedProject();
-		project.getDependencies().add("api", project.getDependencies().project(Map.of("path", ":V31-core")));
+		project.getDependencies().add("api", project.getDependencies().project(Map.of("path", ":v31-core")));
 		assertThat(mavenRepository(project).getDependencies()).singleElement()
 			.asInstanceOf(InstanceOfAssertFactories.type(ProjectDependency.class))
 			.satisfies((dependency) -> {
-				assertThat(dependency.getPath()).isEqualTo(":V31-core");
+				assertThat(dependency.getPath()).isEqualTo(":v31-core");
 				assertThat(dependency.getTargetConfiguration()).isEqualTo(Configurations.MAVEN_REPOSITORY);
 			});
 	}
@@ -110,7 +110,7 @@ class MavenRepositoryPluginTests {
 	void emptiesTheRepositoryBeforePublishingIntoIt() throws IOException {
 		Project project = deployedProject();
 		Path stale = buildDirectory(project, "maven-repository").toPath()
-			.resolve("org/v31bank/V31-core/0.1.0/V31-core-0.1.0.jar");
+			.resolve("org/v31bank/v31-core/0.1.0/v31-core-0.1.0.jar");
 		Files.createDirectories(stale.getParent());
 		Files.writeString(stale, "stale");
 		runFirstActionOf(project.getTasks().getByName(PUBLISH_TASK_NAME));
@@ -156,16 +156,16 @@ class MavenRepositoryPluginTests {
 	}
 
 	private Project project() {
-		Project project = ProjectBuilder.builder().withName("V31-web").withProjectDir(this.directory).build();
+		Project project = ProjectBuilder.builder().withName("v31-web").withProjectDir(this.directory).build();
 		project.getPlugins().apply(MavenRepositoryPlugin.class);
 		return project;
 	}
 
 	private Project deployedProject() {
-		Project root = ProjectBuilder.builder().withName("V31").withProjectDir(this.directory).build();
+		Project root = ProjectBuilder.builder().withName("v31").withProjectDir(this.directory).build();
 		// A test depends on this project by path, so it has to exist first.
-		ProjectBuilder.builder().withName("V31-core").withParent(root).build();
-		Project project = ProjectBuilder.builder().withName("V31-web").withParent(root).build();
+		ProjectBuilder.builder().withName("v31-core").withParent(root).build();
+		Project project = ProjectBuilder.builder().withName("v31-web").withParent(root).build();
 		project.getPlugins().apply("java-library");
 		project.getPlugins().apply(DeployedPlugin.class);
 		return project;

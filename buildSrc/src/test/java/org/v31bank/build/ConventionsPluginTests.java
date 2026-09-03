@@ -100,7 +100,7 @@ class ConventionsPluginTests {
 	void makesThePlatformsVersionsMandatory() {
 		Configuration dependencyManagement = javaProject().getConfigurations().getByName(DEPENDENCY_MANAGEMENT);
 		assertThat(dependencyManagement.getDependencies()).singleElement()
-			.satisfies((dependency) -> assertThat(dependency.getName()).isEqualTo("V31-internal-dependencies"));
+			.satisfies((dependency) -> assertThat(dependency.getName()).isEqualTo("v31-internal-dependencies"));
 	}
 
 	@Test
@@ -184,9 +184,9 @@ class ConventionsPluginTests {
 	private Project conventions() {
 		// The conventions depend on the platform project by path, so it has to exist
 		// first.
-		Project root = ProjectBuilder.builder().withName("V31").withProjectDir(this.directory).build();
+		Project root = ProjectBuilder.builder().withName("v31").withProjectDir(this.directory).build();
 		Project platform = ProjectBuilder.builder().withName("platform").withParent(root).build();
-		ProjectBuilder.builder().withName("V31-internal-dependencies").withParent(platform).build();
+		ProjectBuilder.builder().withName("v31-internal-dependencies").withParent(platform).build();
 		Project project = ProjectBuilder.builder().withName("under-test").withParent(root).build();
 		// Supplied by gradle.properties in the real build; the conventions read them,
 		// never default.

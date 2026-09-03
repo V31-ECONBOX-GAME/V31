@@ -36,7 +36,7 @@ import org.gradle.api.plugins.JavaBasePlugin;
  *
  * <pre class="code">
  * Bom.of(project, SpringBootPlugin.BOM_COORDINATES).version("com.google.protobuf:protobuf-java")
- * Bom.of(project, project.getDependencies().project(":platform:V31-dependencies"))
+ * Bom.of(project, project.getDependencies().project(":platform:v31-dependencies"))
  *     .version("io.grpc:grpc-protobuf")
  * </pre>
  *

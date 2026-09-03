@@ -105,7 +105,7 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 	}
 
 	private String locations(Project project, SourceSet main) {
-		return String.join(",", SourceSets.of(main).resources().relativeTo(Directories.rootOf(project)));
+		return String.join(",", SourceSets.of(main).resources().relativeTo(Directories.rootDirOf(project)));
 	}
 
 	private void registerChecks(Project project, SourceSet main) {

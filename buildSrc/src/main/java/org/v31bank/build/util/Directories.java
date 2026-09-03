@@ -40,13 +40,12 @@ public final class Directories {
 	}
 
 	/**
-	 * The directory the build is rooted at, taken from the root project's isolated view:
-	 * an isolated project may not reach the root project itself.
+	 * The directory the build is rooted at.
 	 * @param project the project asking
 	 * @return the directory the build is rooted at
 	 */
-	public static Directory rootOf(Project project) {
-		return project.getIsolated().getRootProject().getProjectDirectory();
+	public static Directory rootDirOf(Project project) {
+		return IsolatedProjects.rootOf(project).getProjectDirectory();
 	}
 
 	/**

@@ -26,9 +26,9 @@ public final class Projects {
 
 	public static final String ROOT = ":";
 
-	public static final String DEPENDENCIES = ":platform:V31-dependencies";
+	public static final String DEPENDENCIES = ":platform:v31-dependencies";
 
-	public static final String INTERNAL_DEPENDENCIES = ":platform:V31-internal-dependencies";
+	public static final String INTERNAL_DEPENDENCIES = ":platform:v31-internal-dependencies";
 
 	private Projects() {
 	}

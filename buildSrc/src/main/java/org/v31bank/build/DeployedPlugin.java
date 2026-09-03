@@ -24,7 +24,7 @@ import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.tasks.GenerateModuleMetadata;
 
-import org.v31bank.build.constant.Metadata;
+import org.v31bank.build.util.IsolatedProjects;
 
 /**
  * Marks a project as one that is published, and applies everything that follows from
@@ -50,7 +50,8 @@ public class DeployedPlugin implements Plugin<Project> {
 	public void apply(Project project) {
 		project.getPluginManager().apply(MavenRepositoryPlugin.class);
 		PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
-		MavenPublication publication = publishing.getPublications().create(Metadata.NAME, MavenPublication.class);
+		MavenPublication publication = publishing.getPublications()
+			.create(IsolatedProjects.rootOf(project).getName(), MavenPublication.class);
 		// Matched, not looked up: the subproject's build file runs after this.
 		publishComponent(project, publication, JavaPlugin.class, "java");
 		publishComponent(project, publication, JavaPlatformPlugin.class, "javaPlatform");
@@ -59,7 +60,7 @@ public class DeployedPlugin implements Plugin<Project> {
 
 	/**
 	 * Gradle rejects module metadata whose dependencies carry no version. Here that shape
-	 * is intended: the versions live in {@code V31-dependencies}, and importing that BOM
+	 * is intended: the versions live in {@code v31-dependencies}, and importing that BOM
 	 * is how a consumer depends on V31.
 	 * @param project the project to configure
 	 */

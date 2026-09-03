@@ -84,7 +84,7 @@ class JavaConventions {
 		if (toolVersion != null) {
 			checkstyle.setToolVersion(toolVersion.toString());
 		}
-		checkstyle.getConfigDirectory().set(Directories.rootOf(project).dir("config/checkstyle"));
+		checkstyle.getConfigDirectory().set(Directories.rootDirOf(project).dir("config/checkstyle"));
 		String formatVersion = SpringJavaFormatPlugin.class.getPackage().getImplementationVersion();
 		DependencySet checkstyleDependencies = project.getConfigurations().getByName("checkstyle").getDependencies();
 		checkstyleDependencies
