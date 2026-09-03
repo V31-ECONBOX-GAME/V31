@@ -20,18 +20,13 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
- * Builds the keys this application writes, all under one prefix.
+ * Builds the keys this application writes, all under one prefix. Valkey has one flat
+ * keyspace, so two services on the same instance collide the moment both cache something
+ * they call {@code customer:1}.
  * <p>
- * Valkey has no schemas and no tables: everything one instance holds shares a single flat
- * keyspace. Several services pointed at the same instance will collide the moment two of
- * them cache something they both call {@code
- * customer:1}. The prefix is what keeps them apart, and putting it in one place is what
- * stops it being remembered in some call sites and forgotten in others.
- * <p>
- * A segment may not contain the separator. That is not tidiness: a segment is often built
- * from something a caller supplied, and one containing a colon would let it address a key
- * outside the namespace it was given — a customer identified as {@code 7:session:admin}
- * reaching a key it has no business reading.
+ * A segment may not contain the separator: segments are built from caller-supplied
+ * values, and one containing a colon would address a key outside its namespace — a
+ * customer identified as {@code 7:session:admin} reaching a key it may not read.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -55,9 +50,8 @@ public class ValkeyKeys {
 	}
 
 	/**
-	 * Build a key under this application's prefix.
-	 * <p>
-	 * {@code keys.of("customer", id)} gives {@code v31:customer:0199-7a}.
+	 * Build a key under this application's prefix — {@code keys.of("customer", id)} gives
+	 * {@code v31:customer:0199-7a}.
 	 * @param segments the parts of the key, in order, none of them empty or containing
 	 * the separator
 	 * @return the key
@@ -73,27 +67,6 @@ public class ValkeyKeys {
 			key.add(requireSegment(segment, "segment"));
 		}
 		return key.toString();
-	}
-
-	/**
-	 * Return the pattern matching every key under a namespace, for the rare operation
-	 * that has to sweep one.
-	 * <p>
-	 * Use it with {@code SCAN}, never with {@code KEYS}: the latter walks the whole
-	 * keyspace in one blocking call, and on a production instance that is an outage.
-	 * @param segments the namespace to match under
-	 * @return the pattern, ending in {@code :*}
-	 */
-	public String patternUnder(String... segments) {
-		return of(segments) + SEPARATOR + "*";
-	}
-
-	/**
-	 * Return the prefix every key from this builder begins with.
-	 * @return the prefix
-	 */
-	public String getPrefix() {
-		return this.prefix;
 	}
 
 	private static String requireSegment(String segment, String name) {

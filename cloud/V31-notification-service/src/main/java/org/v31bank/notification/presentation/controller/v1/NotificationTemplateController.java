@@ -17,6 +17,7 @@
 package org.v31bank.notification.presentation.controller.v1;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.validation.Valid;
@@ -31,11 +32,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.v31bank.core.response.ApiResponse;
-import org.v31bank.core.response.CommonErrorCode;
-import org.v31bank.core.response.ErrorCode;
-import org.v31bank.core.response.PageResponse;
-import org.v31bank.data.jpa.domain.PageResult;
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.notification.application.dto.NotificationTemplatePageQuery;
 import org.v31bank.notification.application.port.in.NotificationTemplateUseCase;
 import org.v31bank.notification.domain.model.NotificationTemplate;
@@ -45,7 +42,7 @@ import org.v31bank.notification.presentation.dto.NotificationTemplateResponse;
 /**
  * REST endpoints for managing notification templates.
  * <p>
- * Commands come back from the use case as an {@link ApiResponse} already carrying the
+ * Commands come back from the use case as an {@link HttpResponse} already carrying the
  * verdict, so this layer converts the payload to the wire record and puts the matching
  * status on the response.
  *
@@ -58,12 +55,6 @@ public class NotificationTemplateController {
 
 	static final String PATH = "/api/v1/notification-templates";
 
-	/**
-	 * Status for a code this service does not recognise, matching the default an
-	 * {@link ErrorCode} declares.
-	 */
-	private static final int UNRECOGNISED_CODE_STATUS = HttpStatus.UNPROCESSABLE_CONTENT.value();
-
 	private final NotificationTemplateUseCase notificationTemplateInputPort;
 
 	public NotificationTemplateController(NotificationTemplateUseCase notificationTemplateInputPort) {
@@ -71,11 +62,11 @@ public class NotificationTemplateController {
 	}
 
 	@PostMapping
-	public ResponseEntity<ApiResponse<NotificationTemplateResponse>> create(
+	public ResponseEntity<HttpResponse<NotificationTemplateResponse>> create(
 			@Valid @RequestBody NotificationTemplateRequest request) {
-		ApiResponse<NotificationTemplate> result = this.notificationTemplateInputPort.create(request.code(),
+		HttpResponse<NotificationTemplate> result = this.notificationTemplateInputPort.create(request.code(),
 				request.name(), request.channel());
-		if (!result.success()) {
+		if (!result.succeeded()) {
 			return toResponseEntity(result);
 		}
 		return ResponseEntity.created(URI.create(PATH + "/" + result.data().getId()))
@@ -83,11 +74,11 @@ public class NotificationTemplateController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<ApiResponse<NotificationTemplateResponse>> get(@PathVariable UUID id) {
+	public ResponseEntity<HttpResponse<NotificationTemplateResponse>> get(@PathVariable UUID id) {
 		return this.notificationTemplateInputPort.get(id)
 			.map((notificationTemplate) -> ResponseEntity
-				.ok(ApiResponse.ok(NotificationTemplateResponse.from(notificationTemplate))))
-			.orElseGet(() -> error(CommonErrorCode.NOT_FOUND, "No notification template exists with id " + id));
+				.ok(HttpResponse.ok(NotificationTemplateResponse.from(notificationTemplate))))
+			.orElseGet(() -> error(HttpStatus.NOT_FOUND.value(), "No notification template exists with id " + id));
 	}
 
 	/**
@@ -96,15 +87,13 @@ public class NotificationTemplateController {
 	 * @return the page of matching records
 	 */
 	@GetMapping
-	public ApiResponse<PageResponse<NotificationTemplateResponse>> page(NotificationTemplatePageQuery query) {
-		PageResult<NotificationTemplateResponse> page = this.notificationTemplateInputPort.page(query)
-			.map(NotificationTemplateResponse::from);
-		return ApiResponse
-			.ok(PageResponse.of(page.getRecords(), page.getTotal(), page.getPageNumber(), page.getPageSize()));
+	public HttpResponse<List<NotificationTemplateResponse>> page(NotificationTemplatePageQuery query) {
+		return this.notificationTemplateInputPort.page(query)
+			.map((records) -> records.stream().map(NotificationTemplateResponse::from).toList());
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<ApiResponse<NotificationTemplateResponse>> update(@PathVariable UUID id,
+	public ResponseEntity<HttpResponse<NotificationTemplateResponse>> update(@PathVariable UUID id,
 			@Valid @RequestBody NotificationTemplateRequest request) {
 		return toResponseEntity(this.notificationTemplateInputPort.update(id, request.code(), request.name(),
 				request.channel(), request.status()));
@@ -117,31 +106,26 @@ public class NotificationTemplateController {
 	 * @return the response to send
 	 */
 	@DeleteMapping("/{id}")
-	public ResponseEntity<ApiResponse<NotificationTemplateResponse>> delete(@PathVariable UUID id) {
+	public ResponseEntity<HttpResponse<NotificationTemplateResponse>> delete(@PathVariable UUID id) {
 		return toResponseEntity(this.notificationTemplateInputPort.delete(id));
 	}
 
-	private static ResponseEntity<ApiResponse<NotificationTemplateResponse>> toResponseEntity(
-			ApiResponse<NotificationTemplate> result) {
+	private static ResponseEntity<HttpResponse<NotificationTemplateResponse>> toResponseEntity(
+			HttpResponse<NotificationTemplate> result) {
 		return ResponseEntity.status(statusOf(result)).body(result.map(NotificationTemplateResponse::from));
 	}
 
 	/**
-	 * Recover the HTTP status belonging to an outcome. The envelope carries the code as
-	 * text, since that is what goes on the wire, so the status has to be looked back up
-	 * rather than read off it.
+	 * Recover the HTTP status belonging to an outcome.
 	 * @param result the outcome to place
 	 * @return the status to answer with
 	 */
-	private static int statusOf(ApiResponse<?> result) {
-		if (result.success()) {
-			return HttpStatus.OK.value();
-		}
-		return CommonErrorCode.find(result.code()).map(ErrorCode::httpStatus).orElse(UNRECOGNISED_CODE_STATUS);
+	private static int statusOf(HttpResponse<?> result) {
+		return result.code();
 	}
 
-	private static <T> ResponseEntity<ApiResponse<T>> error(ErrorCode errorCode, String message) {
-		return ResponseEntity.status(errorCode.httpStatus()).body(ApiResponse.error(errorCode, message));
+	private static <T> ResponseEntity<HttpResponse<T>> error(int code, String message) {
+		return ResponseEntity.status(code).body(HttpResponse.error(code, message));
 	}
 
 }

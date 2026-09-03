@@ -17,6 +17,7 @@
 package org.v31bank.compliance.presentation.controller.v1;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.validation.Valid;
@@ -36,15 +37,12 @@ import org.v31bank.compliance.application.port.in.ComplianceCaseUseCase;
 import org.v31bank.compliance.domain.model.ComplianceCase;
 import org.v31bank.compliance.presentation.dto.ComplianceCaseRequest;
 import org.v31bank.compliance.presentation.dto.ComplianceCaseResponse;
-import org.v31bank.core.response.ApiResponse;
-import org.v31bank.core.response.CommonErrorCode;
-import org.v31bank.core.response.ErrorCode;
-import org.v31bank.core.response.PageResponse;
+import org.v31bank.core.response.HttpResponse;
 
 /**
  * REST endpoints for managing compliance cases.
  * <p>
- * Commands come back from the use case as an {@link ApiResponse} already carrying the
+ * Commands come back from the use case as an {@link HttpResponse} already carrying the
  * verdict, so this layer converts the payload from the domain model to the wire record
  * and puts the matching status on the response.
  *
@@ -57,12 +55,6 @@ public class ComplianceCaseController {
 
 	static final String PATH = "/api/v1/compliance-cases";
 
-	/**
-	 * Status for a code this service does not recognise, matching the default an
-	 * {@link ErrorCode} declares.
-	 */
-	private static final int UNRECOGNISED_CODE_STATUS = HttpStatus.UNPROCESSABLE_CONTENT.value();
-
 	private final ComplianceCaseUseCase complianceCaseInputPort;
 
 	public ComplianceCaseController(ComplianceCaseUseCase complianceCaseInputPort) {
@@ -70,11 +62,11 @@ public class ComplianceCaseController {
 	}
 
 	@PostMapping
-	public ResponseEntity<ApiResponse<ComplianceCaseResponse>> create(
+	public ResponseEntity<HttpResponse<ComplianceCaseResponse>> create(
 			@Valid @RequestBody ComplianceCaseRequest request) {
-		ApiResponse<ComplianceCase> result = this.complianceCaseInputPort.create(request.caseNumber(),
+		HttpResponse<ComplianceCase> result = this.complianceCaseInputPort.create(request.caseNumber(),
 				request.customerId(), request.type(), request.summary());
-		if (!result.success()) {
+		if (!result.succeeded()) {
 			return toResponseEntity(result);
 		}
 		return ResponseEntity.created(URI.create(PATH + "/" + result.data().getId()))
@@ -82,10 +74,10 @@ public class ComplianceCaseController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<ApiResponse<ComplianceCaseResponse>> get(@PathVariable UUID id) {
+	public ResponseEntity<HttpResponse<ComplianceCaseResponse>> get(@PathVariable UUID id) {
 		return this.complianceCaseInputPort.get(id)
-			.map((complianceCase) -> ResponseEntity.ok(ApiResponse.ok(ComplianceCaseResponse.from(complianceCase))))
-			.orElseGet(() -> error(CommonErrorCode.NOT_FOUND, "No compliance case exists with id " + id));
+			.map((complianceCase) -> ResponseEntity.ok(HttpResponse.ok(ComplianceCaseResponse.from(complianceCase))))
+			.orElseGet(() -> error(HttpStatus.NOT_FOUND.value(), "No compliance case exists with id " + id));
 	}
 
 	/**
@@ -95,12 +87,13 @@ public class ComplianceCaseController {
 	 * @return the page of matching cases
 	 */
 	@GetMapping
-	public ApiResponse<PageResponse<ComplianceCaseResponse>> page(ComplianceCasePageQuery query) {
-		return ApiResponse.ok(this.complianceCaseInputPort.page(query).map(ComplianceCaseResponse::from));
+	public HttpResponse<List<ComplianceCaseResponse>> page(ComplianceCasePageQuery query) {
+		return this.complianceCaseInputPort.page(query)
+			.map((records) -> records.stream().map(ComplianceCaseResponse::from).toList());
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<ApiResponse<ComplianceCaseResponse>> update(@PathVariable UUID id,
+	public ResponseEntity<HttpResponse<ComplianceCaseResponse>> update(@PathVariable UUID id,
 			@Valid @RequestBody ComplianceCaseRequest request) {
 		return toResponseEntity(this.complianceCaseInputPort.update(id, request.caseNumber(), request.customerId(),
 				request.type(), request.status(), request.summary()));
@@ -113,31 +106,26 @@ public class ComplianceCaseController {
 	 * @return the response to send
 	 */
 	@DeleteMapping("/{id}")
-	public ResponseEntity<ApiResponse<ComplianceCaseResponse>> delete(@PathVariable UUID id) {
+	public ResponseEntity<HttpResponse<ComplianceCaseResponse>> delete(@PathVariable UUID id) {
 		return toResponseEntity(this.complianceCaseInputPort.delete(id));
 	}
 
-	private static ResponseEntity<ApiResponse<ComplianceCaseResponse>> toResponseEntity(
-			ApiResponse<ComplianceCase> result) {
+	private static ResponseEntity<HttpResponse<ComplianceCaseResponse>> toResponseEntity(
+			HttpResponse<ComplianceCase> result) {
 		return ResponseEntity.status(statusOf(result)).body(result.map(ComplianceCaseResponse::from));
 	}
 
 	/**
-	 * Recover the HTTP status belonging to an outcome. The envelope carries the code as
-	 * text, since that is what goes on the wire, so the status has to be looked back up
-	 * rather than read off it.
+	 * Recover the HTTP status belonging to an outcome.
 	 * @param result the outcome to place
 	 * @return the status to answer with
 	 */
-	private static int statusOf(ApiResponse<?> result) {
-		if (result.success()) {
-			return HttpStatus.OK.value();
-		}
-		return CommonErrorCode.find(result.code()).map(ErrorCode::httpStatus).orElse(UNRECOGNISED_CODE_STATUS);
+	private static int statusOf(HttpResponse<?> result) {
+		return result.code();
 	}
 
-	private static <T> ResponseEntity<ApiResponse<T>> error(ErrorCode errorCode, String message) {
-		return ResponseEntity.status(errorCode.httpStatus()).body(ApiResponse.error(errorCode, message));
+	private static <T> ResponseEntity<HttpResponse<T>> error(int code, String message) {
+		return ResponseEntity.status(code).body(HttpResponse.error(code, message));
 	}
 
 }

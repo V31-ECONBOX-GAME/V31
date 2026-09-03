@@ -40,11 +40,8 @@ public class V31WebProperties {
 
 		/**
 		 * Whether every failure is answered with the platform's response envelope.
-		 * <p>
-		 * Turning this off restores Spring Boot's default error body, which means a
-		 * service answers its failures in a different shape from its successes. Worth
-		 * doing only while migrating a service that already has its own handler, and not
-		 * for long.
+		 * Turning it off restores Spring Boot's default error body, so failures no longer
+		 * match successes in shape.
 		 */
 		private boolean enabled = true;
 

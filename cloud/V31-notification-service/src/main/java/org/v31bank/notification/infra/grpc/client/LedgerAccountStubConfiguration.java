@@ -30,8 +30,8 @@ import org.v31bank.ledger.api.v1.LedgerAccountServiceGrpc;
  * in one environment and at a service name in another, and nothing in the code changes.
  * <p>
  * The channel the factory returns already carries the interceptors the gRPC starter
- * registers — the deadline every call leaves with, and the request identifier that keeps
- * a trace whole across the hop.
+ * registers — the deadline every call leaves with, and the headers listed for
+ * propagation.
  *
  * @author Xander Wang
  * @since 0.2.0

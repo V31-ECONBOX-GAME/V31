@@ -27,12 +27,13 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import org.v31bank.core.request.PageQuery;
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.customer.application.port.out.CustomerPort;
 import org.v31bank.customer.domain.constant.CustomerStatus;
 import org.v31bank.customer.domain.model.Customer;
 import org.v31bank.customer.infra.persistence.jpa.JpaCustomerRepository;
-import org.v31bank.data.jpa.domain.PageQuery;
-import org.v31bank.data.jpa.domain.PageResult;
+import org.v31bank.data.jpa.util.JpaPages;
 
 /**
  * {@link CustomerPort} adapter backed by Spring Data JPA.
@@ -60,7 +61,7 @@ public class CustomerPersistenceAdapter implements CustomerPort {
 	}
 
 	@Override
-	public PageResult<Customer> findPage(String email, CustomerStatus status, PageQuery pageQuery) {
+	public HttpResponse<List<Customer>> findPage(String email, CustomerStatus status, PageQuery pageQuery) {
 		Specification<Customer> spec = (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			if (StringUtils.hasText(email)) {
@@ -72,7 +73,7 @@ public class CustomerPersistenceAdapter implements CustomerPort {
 			return cb.and(predicates.toArray(Predicate[]::new));
 		};
 		Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
-		return PageResult.of(this.jpaRepository.findAll(spec, pageQuery.toPageable(sort)));
+		return JpaPages.from(this.jpaRepository.findAll(spec, JpaPages.toPageable(pageQuery, sort)));
 	}
 
 	@Override

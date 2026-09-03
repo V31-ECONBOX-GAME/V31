@@ -17,16 +17,10 @@
 package org.v31bank.jooq.audit;
 
 /**
- * Names of the columns {@link AuditRecordListener} maintains.
- * <p>
- * jOOQ works from generated classes rather than a mapped superclass, so there is no
- * {@code BaseEntity} to inherit these from and nothing forces a table to carry them. The
- * listener therefore stamps whichever of them a record happens to declare, and skips the
- * rest.
- * <p>
- * The names match the columns {@code org.v31bank.data.jpa.domain.BaseEntity} maps, so a
- * table can be reached through either mapper and read the same way. Changing one of these
- * means changing every table already carrying it.
+ * Names of the columns {@link AuditRecordListener} maintains, matching what
+ * {@code org.v31bank.data.jpa.domain.BaseEntity} maps so a table reads the same through
+ * either mapper. Nothing forces a table to carry them; the listener stamps whichever ones
+ * a record declares.
  *
  * @author Xander Wang
  * @since 0.2.0

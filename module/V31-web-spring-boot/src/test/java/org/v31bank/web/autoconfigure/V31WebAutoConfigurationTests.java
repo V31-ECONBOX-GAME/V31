@@ -23,8 +23,8 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import org.v31bank.web.advice.ApiResponseExceptionHandler;
 import org.v31bank.web.advice.DataAccessExceptionHandler;
+import org.v31bank.web.advice.HttpResponseExceptionHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,7 +42,7 @@ class V31WebAutoConfigurationTests {
 	@Test
 	void registersBothHandlers() {
 		this.runner.run((context) -> {
-			assertThat(context).hasSingleBean(ApiResponseExceptionHandler.class);
+			assertThat(context).hasSingleBean(HttpResponseExceptionHandler.class);
 			assertThat(context).hasSingleBean(DataAccessExceptionHandler.class);
 		});
 	}
@@ -50,7 +50,7 @@ class V31WebAutoConfigurationTests {
 	@Test
 	void addsNothingWhenTurnedOff() {
 		this.runner.withPropertyValues("v31.web.exception-handling.enabled=false").run((context) -> {
-			assertThat(context).doesNotHaveBean(ApiResponseExceptionHandler.class);
+			assertThat(context).doesNotHaveBean(HttpResponseExceptionHandler.class);
 			assertThat(context).doesNotHaveBean(DataAccessExceptionHandler.class);
 		});
 	}
@@ -62,8 +62,8 @@ class V31WebAutoConfigurationTests {
 	@Test
 	void backsOffFromAnApplicationSuppliedHandler() {
 		this.runner.withUserConfiguration(CustomHandlerConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(ApiResponseExceptionHandler.class);
-			assertThat(context.getBean(ApiResponseExceptionHandler.class)).isInstanceOf(CustomHandler.class);
+			assertThat(context).hasSingleBean(HttpResponseExceptionHandler.class);
+			assertThat(context.getBean(HttpResponseExceptionHandler.class)).isInstanceOf(CustomHandler.class);
 		});
 	}
 
@@ -73,7 +73,7 @@ class V31WebAutoConfigurationTests {
 	@Test
 	void addsNothingOutsideAWebApplication() {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(V31WebAutoConfiguration.class))
-			.run((context) -> assertThat(context).doesNotHaveBean(ApiResponseExceptionHandler.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(HttpResponseExceptionHandler.class));
 	}
 
 	@Test
@@ -87,13 +87,13 @@ class V31WebAutoConfigurationTests {
 	static class CustomHandlerConfiguration {
 
 		@Bean
-		ApiResponseExceptionHandler apiResponseExceptionHandler() {
+		HttpResponseExceptionHandler apiResponseExceptionHandler() {
 			return new CustomHandler();
 		}
 
 	}
 
-	static class CustomHandler extends ApiResponseExceptionHandler {
+	static class CustomHandler extends HttpResponseExceptionHandler {
 
 	}
 

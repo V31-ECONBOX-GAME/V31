@@ -16,10 +16,11 @@
 
 package org.v31bank.notification.application.port.out;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.v31bank.data.jpa.domain.PageResult;
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.notification.application.dto.NotificationTemplatePageQuery;
 import org.v31bank.notification.domain.model.NotificationTemplate;
 
@@ -41,7 +42,7 @@ public interface NotificationTemplatePort {
 	 * @param query the filters and the pagination request
 	 * @return the page of matching records
 	 */
-	PageResult<NotificationTemplate> findPage(NotificationTemplatePageQuery query);
+	HttpResponse<List<NotificationTemplate>> findPage(NotificationTemplatePageQuery query);
 
 	/**
 	 * Whether any record already uses the given code.

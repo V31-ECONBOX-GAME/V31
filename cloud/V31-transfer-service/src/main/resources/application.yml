@@ -2,7 +2,7 @@ spring:
   application:
     name: V31-transfer-service
   jackson:
-    # ApiResponse leaves the members it is not using unset: without this a failure
+    # HttpResponse leaves the members it is not using unset: without this a failure
     # carries an empty payload and a success carries empty error fields.
     default-property-inclusion: non_null
   datasource:

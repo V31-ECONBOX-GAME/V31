@@ -34,14 +34,11 @@ import org.v31bank.jooq.audit.AuditorSupplier;
 import org.v31bank.jooq.audit.FixedAuditorSupplier;
 
 /**
- * {@link AutoConfiguration Auto-configuration} for V31 jOOQ support: registers a
- * {@link RecordListener} that fills in the identifier and the audit columns as records
- * are written, along with a fallback {@link AuditorSupplier} that says who is acting.
+ * {@link AutoConfiguration Auto-configuration} for V31 jOOQ: a {@link RecordListener}
+ * that stamps the identifier and audit columns, and a fallback {@link AuditorSupplier}.
  * <p>
- * The listener is attached through a {@link DefaultConfigurationCustomizer}, which is the
- * seam Spring Boot leaves for adding to the jOOQ configuration it builds. It is appended
- * rather than set, so a listener registered by the application or by another library
- * survives.
+ * The listener is appended through a {@link DefaultConfigurationCustomizer} rather than
+ * set, so one registered by the application survives.
  *
  * @author Xander Wang
  * @since 0.2.0

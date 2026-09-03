@@ -16,12 +16,13 @@
 
 package org.v31bank.compliance.application.port.out;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.v31bank.compliance.application.dto.ComplianceCasePageQuery;
 import org.v31bank.compliance.domain.model.ComplianceCase;
-import org.v31bank.core.response.PageResponse;
+import org.v31bank.core.response.HttpResponse;
 
 /**
  * Output port for {@link ComplianceCase} persistence, implemented by the infrastructure
@@ -47,7 +48,7 @@ public interface ComplianceCasePort {
 	 * @param query the filters and the pagination request
 	 * @return the page of matching cases
 	 */
-	PageResponse<ComplianceCase> findPage(ComplianceCasePageQuery query);
+	HttpResponse<List<ComplianceCase>> findPage(ComplianceCasePageQuery query);
 
 	/**
 	 * Whether any case already uses the given number.

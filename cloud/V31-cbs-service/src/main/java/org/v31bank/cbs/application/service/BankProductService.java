@@ -18,10 +18,12 @@ package org.v31bank.cbs.application.service;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import org.v31bank.cbs.application.dto.BankProductPageQuery;
@@ -30,9 +32,7 @@ import org.v31bank.cbs.application.port.out.BankProductPort;
 import org.v31bank.cbs.domain.constant.BankProductCategory;
 import org.v31bank.cbs.domain.constant.BankProductStatus;
 import org.v31bank.cbs.domain.model.BankProduct;
-import org.v31bank.core.response.ApiResponse;
-import org.v31bank.core.response.CommonErrorCode;
-import org.v31bank.core.response.PageResponse;
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.core.util.Uuids;
 
 /**
@@ -68,15 +68,16 @@ public class BankProductService implements BankProductUseCase {
 	}
 
 	@Override
-	public ApiResponse<BankProduct> create(String code, String name, BankProductCategory category,
+	public HttpResponse<BankProduct> create(String code, String name, BankProductCategory category,
 			BigDecimal interestRate) {
-		ApiResponse<BankProduct> rejected = validate(code, category);
+		HttpResponse<BankProduct> rejected = validate(code, category);
 		if (rejected != null) {
 			return rejected;
 		}
 		UUID id = Uuids.timeOrdered();
 		if (!this.bankProductRepository.claimCode(code, id)) {
-			return ApiResponse.error(CommonErrorCode.CONFLICT, "Bank product code '" + code + "' is already in use");
+			return HttpResponse.error(HttpStatus.CONFLICT.value(),
+					"Bank product code '" + code + "' is already in use");
 		}
 		Instant now = Instant.now();
 		BankProduct product = new BankProduct();
@@ -87,7 +88,7 @@ public class BankProductService implements BankProductUseCase {
 		product.setInterestRate(interestRate);
 		product.setCreatedDate(now);
 		product.setLastModifiedDate(now);
-		return ApiResponse.ok(this.bankProductRepository.save(product));
+		return HttpResponse.ok(this.bankProductRepository.save(product));
 	}
 
 	@Override
@@ -96,25 +97,26 @@ public class BankProductService implements BankProductUseCase {
 	}
 
 	@Override
-	public PageResponse<BankProduct> page(BankProductPageQuery query) {
+	public HttpResponse<List<BankProduct>> page(BankProductPageQuery query) {
 		return this.bankProductRepository.findPage(query);
 	}
 
 	@Override
-	public ApiResponse<BankProduct> update(UUID id, String code, String name, BankProductCategory category,
+	public HttpResponse<BankProduct> update(UUID id, String code, String name, BankProductCategory category,
 			BankProductStatus status, BigDecimal interestRate) {
-		ApiResponse<BankProduct> rejected = validate(code, category);
+		HttpResponse<BankProduct> rejected = validate(code, category);
 		if (rejected != null) {
 			return rejected;
 		}
 		Optional<BankProduct> found = this.bankProductRepository.findById(id);
 		if (found.isEmpty()) {
-			return ApiResponse.error(CommonErrorCode.NOT_FOUND, "No bank product exists with id " + id);
+			return HttpResponse.error(HttpStatus.NOT_FOUND.value(), "No bank product exists with id " + id);
 		}
 		BankProduct product = found.get();
 		String previousCode = product.getCode();
 		if (!previousCode.equals(code) && !this.bankProductRepository.claimCode(code, id)) {
-			return ApiResponse.error(CommonErrorCode.CONFLICT, "Bank product code '" + code + "' is already in use");
+			return HttpResponse.error(HttpStatus.CONFLICT.value(),
+					"Bank product code '" + code + "' is already in use");
 		}
 		product.setCode(code);
 		product.setName(name);
@@ -128,7 +130,7 @@ public class BankProductService implements BankProductUseCase {
 		if (!previousCode.equals(code)) {
 			this.bankProductRepository.releaseCode(previousCode);
 		}
-		return ApiResponse.ok(saved);
+		return HttpResponse.ok(saved);
 	}
 
 	/**
@@ -140,19 +142,19 @@ public class BankProductService implements BankProductUseCase {
 	 * the existing ones describing terms nobody can produce.
 	 */
 	@Override
-	public ApiResponse<BankProduct> delete(UUID id) {
+	public HttpResponse<BankProduct> delete(UUID id) {
 		Optional<BankProduct> found = this.bankProductRepository.findById(id);
 		if (found.isEmpty()) {
-			return ApiResponse.error(CommonErrorCode.NOT_FOUND, "No bank product exists with id " + id);
+			return HttpResponse.error(HttpStatus.NOT_FOUND.value(), "No bank product exists with id " + id);
 		}
 		BankProduct product = found.get();
 		if (product.getStatus() != BankProductStatus.DRAFT) {
-			return ApiResponse.error(CommonErrorCode.CONFLICT,
+			return HttpResponse.error(HttpStatus.CONFLICT.value(),
 					"Bank product " + id + " has been offered and cannot be deleted; withdraw it instead");
 		}
 		this.bankProductRepository.delete(product);
 		this.bankProductRepository.releaseCode(product.getCode());
-		return ApiResponse.ok(product);
+		return HttpResponse.ok(product);
 	}
 
 	/**
@@ -161,13 +163,13 @@ public class BankProductService implements BankProductUseCase {
 	 * @param category the category, which a product cannot be without
 	 * @return the refusal to report, or {@code null} when there is nothing wrong
 	 */
-	private static ApiResponse<BankProduct> validate(String code, BankProductCategory category) {
+	private static HttpResponse<BankProduct> validate(String code, BankProductCategory category) {
 		if (code == null || !CODE_PATTERN.matcher(code).matches()) {
-			return ApiResponse.error(CommonErrorCode.VALIDATION_FAILED,
+			return HttpResponse.error(HttpStatus.BAD_REQUEST.value(),
 					"A bank product code is 2 to 32 characters of A-Z, 0-9, '_' or '-'");
 		}
 		if (category == null) {
-			return ApiResponse.error(CommonErrorCode.VALIDATION_FAILED, "A bank product needs a category");
+			return HttpResponse.error(HttpStatus.BAD_REQUEST.value(), "A bank product needs a category");
 		}
 		return null;
 	}

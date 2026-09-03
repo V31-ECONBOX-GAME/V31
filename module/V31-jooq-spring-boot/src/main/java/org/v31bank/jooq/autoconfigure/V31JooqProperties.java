@@ -79,8 +79,7 @@ public class V31JooqProperties {
 
 		/**
 		 * Whether to give a record without a primary key a time-ordered UUIDv7. Disable
-		 * where identifiers come from the database instead, such as from a sequence or a
-		 * column default.
+		 * where the database supplies them instead.
 		 */
 		private boolean enabled = true;
 

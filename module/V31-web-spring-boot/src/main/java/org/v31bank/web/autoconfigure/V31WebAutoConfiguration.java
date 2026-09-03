@@ -27,17 +27,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataAccessException;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import org.v31bank.web.advice.ApiResponseExceptionHandler;
 import org.v31bank.web.advice.DataAccessExceptionHandler;
-import org.v31bank.web.filter.RequestIdFilter;
+import org.v31bank.web.advice.HttpResponseExceptionHandler;
 
 /**
- * {@link AutoConfiguration Auto-configuration} for V31 web support: makes every failure a
- * service reports arrive in the same envelope as everything it succeeds with.
- * <p>
- * Both handlers back off from one the application declared itself, so a service with a
- * reason to answer differently keeps that reason by declaring its own bean rather than by
- * turning the module off.
+ * {@link AutoConfiguration Auto-configuration} for V31 web support: every failure arrives
+ * in the same envelope as a success. Both handlers back off from one the application
+ * declared itself.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -51,28 +47,14 @@ public class V31WebAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ApiResponseExceptionHandler apiResponseExceptionHandler() {
-		return new ApiResponseExceptionHandler();
+	public HttpResponseExceptionHandler apiResponseExceptionHandler() {
+		return new HttpResponseExceptionHandler();
 	}
 
 	/**
-	 * Gives every request something to be traced by. Stands aside where a service already
-	 * establishes one for its outbound calls.
-	 * @return the filter
-	 */
-	@Bean
-	@ConditionalOnMissingBean
-	public RequestIdFilter requestIdFilter() {
-		return new RequestIdFilter();
-	}
-
-	/**
-	 * Registered only where a data access failure is something that can actually happen.
-	 * <p>
-	 * Nested and guarded at class level rather than on the {@code @Bean} method, because
-	 * the handler names {@code DataIntegrityViolationException} in a method signature:
-	 * Spring reflects over an advice's methods to find its handlers, so on a service
-	 * without {@code spring-tx} the class must never be reached at all.
+	 * Registered only where a data access failure can happen. Guarded at class level
+	 * rather than on the {@code @Bean} method: Spring reflects over an advice's method
+	 * signatures, so without {@code spring-tx} the class must never be reached.
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(DataAccessException.class)

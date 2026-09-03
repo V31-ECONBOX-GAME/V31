@@ -37,7 +37,7 @@ import org.v31bank.cbs.domain.constant.BankProductCategory;
 import org.v31bank.cbs.domain.constant.BankProductStatus;
 import org.v31bank.cbs.domain.model.BankProduct;
 import org.v31bank.cbs.infra.persistence.valkey.BankProductValkeyKeys;
-import org.v31bank.core.response.PageResponse;
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.core.util.Uuids;
 
 /**
@@ -79,12 +79,6 @@ import org.v31bank.core.util.Uuids;
  */
 @Repository
 public class BankProductPersistenceAdapter implements BankProductPort {
-
-	/**
-	 * The largest page a caller may ask for, so that one request cannot pull the whole
-	 * catalogue into memory.
-	 */
-	private static final int MAX_PAGE_SIZE = 500;
 
 	/**
 	 * How long an intersection survives if the request reading it dies before cleaning
@@ -166,18 +160,18 @@ public class BankProductPersistenceAdapter implements BankProductPort {
 	}
 
 	@Override
-	public PageResponse<BankProduct> findPage(BankProductPageQuery query) {
-		int number = Math.max(query.getPageNumber(), BankProductPageQuery.FIRST_PAGE_NUMBER);
-		int size = Math.clamp(query.getPageSize(), 1, MAX_PAGE_SIZE);
+	public HttpResponse<List<BankProduct>> findPage(BankProductPageQuery query) {
+		int number = query.normalizedPageNumber();
+		int size = query.normalizedPageSize();
 		String index = indexFor(query);
 		try {
 			Long total = this.valkey.opsForZSet().zCard(index);
 			if (total == null || total == 0) {
-				return PageResponse.empty(number, size);
+				return HttpResponse.page(List.of(), 0);
 			}
 			long offset = (long) (number - 1) * size;
 			Set<String> members = this.valkey.opsForZSet().reverseRange(index, offset, offset + size - 1L);
-			return PageResponse.of(read(members), total, number, size);
+			return HttpResponse.page(read(members), total);
 		}
 		finally {
 			if (isIntersection(query)) {

@@ -27,16 +27,11 @@ import io.grpc.MethodDescriptor;
 import org.v31bank.grpc.context.RequestContext;
 
 /**
- * Sends onward whatever the request being served arrived carrying, so that a trace, a
- * tenant or a locale does not stop at the edge of a service.
+ * Sends onward whatever the request being served arrived carrying, so a trace, a tenant
+ * or a locale does not stop at the edge of a service.
  * <p>
- * Without it, following one customer's complaint through the platform means finding the
- * identifier in one service's logs, working out from timestamps which call it made, and
- * starting again — for every hop.
- * <p>
- * Nothing is sent when there is nothing to send. A scheduled job calling another service
- * is not part of anybody's request, and inventing values here would only make it look
- * like it was.
+ * Nothing is sent when there is nothing to send: a scheduled job is not part of anybody's
+ * request, and inventing values would only make it look like it was.
  *
  * @author Xander Wang
  * @since 0.2.0

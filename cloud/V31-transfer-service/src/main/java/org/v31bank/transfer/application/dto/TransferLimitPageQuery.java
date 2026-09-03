@@ -16,7 +16,7 @@
 
 package org.v31bank.transfer.application.dto;
 
-import org.v31bank.data.jpa.domain.PageQuery;
+import org.v31bank.core.request.PageQuery;
 import org.v31bank.transfer.domain.constant.TransferLimitStatus;
 
 /**

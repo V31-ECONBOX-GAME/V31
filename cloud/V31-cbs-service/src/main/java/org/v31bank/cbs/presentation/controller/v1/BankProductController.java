@@ -17,6 +17,7 @@
 package org.v31bank.cbs.presentation.controller.v1;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.validation.Valid;
@@ -36,15 +37,12 @@ import org.v31bank.cbs.application.port.in.BankProductUseCase;
 import org.v31bank.cbs.domain.model.BankProduct;
 import org.v31bank.cbs.presentation.dto.BankProductRequest;
 import org.v31bank.cbs.presentation.dto.BankProductResponse;
-import org.v31bank.core.response.ApiResponse;
-import org.v31bank.core.response.CommonErrorCode;
-import org.v31bank.core.response.ErrorCode;
-import org.v31bank.core.response.PageResponse;
+import org.v31bank.core.response.HttpResponse;
 
 /**
  * REST endpoints for managing the bank product catalogue.
  * <p>
- * Commands come back from the use case as an {@link ApiResponse} already carrying the
+ * Commands come back from the use case as an {@link HttpResponse} already carrying the
  * verdict, so this layer converts the payload from the domain model to the wire record
  * and puts the matching status on the response.
  *
@@ -57,12 +55,6 @@ public class BankProductController {
 
 	static final String PATH = "/api/v1/bank-products";
 
-	/**
-	 * Status for a code this service does not recognise, matching the default an
-	 * {@link ErrorCode} declares.
-	 */
-	private static final int UNRECOGNISED_CODE_STATUS = HttpStatus.UNPROCESSABLE_CONTENT.value();
-
 	private final BankProductUseCase bankProductInputPort;
 
 	public BankProductController(BankProductUseCase bankProductInputPort) {
@@ -70,10 +62,10 @@ public class BankProductController {
 	}
 
 	@PostMapping
-	public ResponseEntity<ApiResponse<BankProductResponse>> create(@Valid @RequestBody BankProductRequest request) {
-		ApiResponse<BankProduct> result = this.bankProductInputPort.create(request.code(), request.name(),
+	public ResponseEntity<HttpResponse<BankProductResponse>> create(@Valid @RequestBody BankProductRequest request) {
+		HttpResponse<BankProduct> result = this.bankProductInputPort.create(request.code(), request.name(),
 				request.category(), request.interestRate());
-		if (!result.success()) {
+		if (!result.succeeded()) {
 			return toResponseEntity(result);
 		}
 		return ResponseEntity.created(URI.create(PATH + "/" + result.data().getId()))
@@ -81,10 +73,10 @@ public class BankProductController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<ApiResponse<BankProductResponse>> get(@PathVariable UUID id) {
+	public ResponseEntity<HttpResponse<BankProductResponse>> get(@PathVariable UUID id) {
 		return this.bankProductInputPort.get(id)
-			.map((product) -> ResponseEntity.ok(ApiResponse.ok(BankProductResponse.from(product))))
-			.orElseGet(() -> error(CommonErrorCode.NOT_FOUND, "No bank product exists with id " + id));
+			.map((product) -> ResponseEntity.ok(HttpResponse.ok(BankProductResponse.from(product))))
+			.orElseGet(() -> error(HttpStatus.NOT_FOUND.value(), "No bank product exists with id " + id));
 	}
 
 	/**
@@ -94,12 +86,13 @@ public class BankProductController {
 	 * @return the page of matching products
 	 */
 	@GetMapping
-	public ApiResponse<PageResponse<BankProductResponse>> page(BankProductPageQuery query) {
-		return ApiResponse.ok(this.bankProductInputPort.page(query).map(BankProductResponse::from));
+	public HttpResponse<List<BankProductResponse>> page(BankProductPageQuery query) {
+		return this.bankProductInputPort.page(query)
+			.map((records) -> records.stream().map(BankProductResponse::from).toList());
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<ApiResponse<BankProductResponse>> update(@PathVariable UUID id,
+	public ResponseEntity<HttpResponse<BankProductResponse>> update(@PathVariable UUID id,
 			@Valid @RequestBody BankProductRequest request) {
 		return toResponseEntity(this.bankProductInputPort.update(id, request.code(), request.name(), request.category(),
 				request.status(), request.interestRate()));
@@ -112,30 +105,26 @@ public class BankProductController {
 	 * @return the response to send
 	 */
 	@DeleteMapping("/{id}")
-	public ResponseEntity<ApiResponse<BankProductResponse>> delete(@PathVariable UUID id) {
+	public ResponseEntity<HttpResponse<BankProductResponse>> delete(@PathVariable UUID id) {
 		return toResponseEntity(this.bankProductInputPort.delete(id));
 	}
 
-	private static ResponseEntity<ApiResponse<BankProductResponse>> toResponseEntity(ApiResponse<BankProduct> result) {
+	private static ResponseEntity<HttpResponse<BankProductResponse>> toResponseEntity(
+			HttpResponse<BankProduct> result) {
 		return ResponseEntity.status(statusOf(result)).body(result.map(BankProductResponse::from));
 	}
 
 	/**
-	 * Recover the HTTP status belonging to an outcome. The envelope carries the code as
-	 * text, since that is what goes on the wire, so the status has to be looked back up
-	 * rather than read off it.
+	 * Recover the HTTP status belonging to an outcome.
 	 * @param result the outcome to place
 	 * @return the status to answer with
 	 */
-	private static int statusOf(ApiResponse<?> result) {
-		if (result.success()) {
-			return HttpStatus.OK.value();
-		}
-		return CommonErrorCode.find(result.code()).map(ErrorCode::httpStatus).orElse(UNRECOGNISED_CODE_STATUS);
+	private static int statusOf(HttpResponse<?> result) {
+		return result.code();
 	}
 
-	private static <T> ResponseEntity<ApiResponse<T>> error(ErrorCode errorCode, String message) {
-		return ResponseEntity.status(errorCode.httpStatus()).body(ApiResponse.error(errorCode, message));
+	private static <T> ResponseEntity<HttpResponse<T>> error(int code, String message) {
+		return ResponseEntity.status(code).body(HttpResponse.error(code, message));
 	}
 
 }

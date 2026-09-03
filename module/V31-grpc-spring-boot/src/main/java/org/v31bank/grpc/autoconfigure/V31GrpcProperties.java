@@ -55,21 +55,15 @@ public class V31GrpcProperties {
 	public static class Propagation {
 
 		/**
-		 * Whether to carry a request's context onward — into the calls made while serving
-		 * it, and into the log lines written for it.
+		 * Whether to carry a request's context onward, into the calls made while serving
+		 * it.
 		 */
 		private boolean enabled = true;
 
 		/**
-		 * Header names carried through beyond the request identifier, which is always
-		 * carried.
-		 * <p>
-		 * Lower case, since that is what gRPC requires of a metadata key and what makes
-		 * the same spelling work for an HTTP header too. Values are checked before being
-		 * carried: printable, and bounded in length.
-		 * <p>
-		 * Nothing secret belongs here. Every name listed is copied onto every outgoing
-		 * call, to every service reached, for the rest of the request.
+		 * Header names carried onward, lower case as gRPC requires. Nothing secret
+		 * belongs here: every name listed is copied onto every outgoing call, to every
+		 * service reached.
 		 */
 		private List<String> headers = new ArrayList<>();
 
@@ -108,7 +102,7 @@ public class V31GrpcProperties {
 		public static class ExceptionHandling {
 
 			/**
-			 * Whether to report a refused call with the platform's error code and to keep
+			 * Whether to report a refused call with the platform's error code, and keep
 			 * an unexpected failure's message off the wire.
 			 */
 			private boolean enabled = true;
@@ -144,26 +138,16 @@ public class V31GrpcProperties {
 	public static class Deadline {
 
 		/**
-		 * Whether a call that did not set a deadline is given one.
-		 * <p>
-		 * Turning this off restores what gRPC does out of the box, which is to let a call
-		 * wait until the connection breaks. That should be a deliberate decision, not
-		 * something arrived at by leaving a duration unset.
+		 * Whether a call that set no deadline is given one. Turning it off lets a call
+		 * wait until the connection breaks, which should be a deliberate decision.
 		 */
 		private boolean enabled = true;
 
 		/**
-		 * How long a call may run before it is given up on.
-		 * <p>
-		 * gRPC applies no deadline of its own: a call to a service that has stopped
-		 * answering — not refusing, answering nothing — waits until the connection
-		 * breaks, holding the caller's thread and whoever is waiting on it. Under load
-		 * that is how one unhealthy service exhausts the thread pools of everything in
-		 * front of it.
-		 * <p>
-		 * Must be positive. A zero or negative duration would expire every call the
-		 * moment it left, so it is refused at startup rather than discovered in
-		 * production.
+		 * How long a call may run before it is given up on. gRPC applies none of its own,
+		 * so a call to a service answering nothing holds the caller's thread until the
+		 * connection breaks — under load, how one unhealthy service exhausts the pools in
+		 * front of it. Must be positive, checked at startup.
 		 */
 		private Duration duration = Duration.ofSeconds(5);
 

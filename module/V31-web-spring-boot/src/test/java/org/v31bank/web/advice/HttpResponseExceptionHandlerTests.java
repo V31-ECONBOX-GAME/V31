@@ -24,9 +24,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.MDC;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -36,10 +36,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import org.v31bank.core.constant.ApiHeaders;
-import org.v31bank.core.exception.ApiException;
-import org.v31bank.core.response.CommonErrorCode;
+import org.springframework.web.server.ResponseStatusException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -48,46 +45,53 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests for {@link ApiResponseExceptionHandler}.
+ * Tests for {@link HttpResponseExceptionHandler}.
  *
  * @author Xander Wang
  * @since 0.2.0
  */
-class ApiResponseExceptionHandlerTests {
+class HttpResponseExceptionHandlerTests {
 
 	private final MockMvc mvc = MockMvcBuilders.standaloneSetup(new TestController())
-		.setControllerAdvice(new ApiResponseExceptionHandler())
+		.setControllerAdvice(new HttpResponseExceptionHandler())
 		.setValidator(validator())
 		.build();
 
-	@AfterEach
-	void clearMdc() {
-		MDC.clear();
-	}
-
 	@Test
-	void reportsARefusalWithTheCodeAndStatusItCarried() throws Exception {
-		this.mvc.perform(get("/refuse/NOT_FOUND"))
+	void reportsARefusalWithTheStatusItCarried() throws Exception {
+		this.mvc.perform(get("/refuse/404"))
 			.andExpect(status().isNotFound())
-			.andExpect(jsonPath("$.success").value(false))
-			.andExpect(jsonPath("$.code").value("NOT_FOUND"))
-			.andExpect(jsonPath("$.message").value("No account exists with id 7"));
+			.andExpect(jsonPath("$.code").value(404))
+			.andExpect(jsonPath("$.message").value(HttpStatus.NOT_FOUND.getReasonPhrase()));
 	}
 
 	@Test
 	void placesARefusalByTheCodesOwnStatus() throws Exception {
-		this.mvc.perform(get("/refuse/RATE_LIMITED")).andExpect(status().isTooManyRequests());
-		this.mvc.perform(get("/refuse/DEPENDENCY_TIMEOUT")).andExpect(status().isGatewayTimeout());
+		this.mvc.perform(get("/refuse/429")).andExpect(status().isTooManyRequests());
+		this.mvc.perform(get("/refuse/504")).andExpect(status().isGatewayTimeout());
 	}
 
 	@Test
-	void namesEveryRejectedField() throws Exception {
+	void answersARejectedBodyAsTheCallersFault() throws Exception {
 		this.mvc.perform(post("/customers").contentType(MediaType.APPLICATION_JSON).content("{}"))
 			.andExpect(status().isBadRequest())
-			.andExpect(jsonPath("$.code").value(CommonErrorCode.VALIDATION_FAILED.code()))
-			.andExpect(jsonPath("$.violations.length()").value(2))
-			.andExpect(jsonPath("$.violations[?(@.field=='email')]").exists())
-			.andExpect(jsonPath("$.violations[?(@.field=='fullName')]").exists());
+			.andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()));
+	}
+
+	/**
+	 * The envelope is the five members a caller is told about and nothing else. A field
+	 * that appears only sometimes is one a caller writes code against and then finds
+	 * missing.
+	 */
+	@Test
+	void sendsNothingBeyondTheEnvelope() throws Exception {
+		this.mvc.perform(get("/refuse/404"))
+			.andExpect(jsonPath("$.succeeded").doesNotExist())
+			.andExpect(jsonPath("$.violations").doesNotExist())
+			.andExpect(jsonPath("$.timestamp").doesNotExist())
+			.andExpect(jsonPath("$.traceId").doesNotExist())
+			.andExpect(jsonPath("$.code").exists())
+			.andExpect(jsonPath("$.message").exists());
 	}
 
 	/**
@@ -130,7 +134,7 @@ class ApiResponseExceptionHandlerTests {
 			.perform(post("/customers").contentType(MediaType.APPLICATION_JSON)
 				.content("{\"email\":\"not-an-email\",\"fullName\":\"Ada\"}"))
 			.andExpect(status().isBadRequest())
-			.andExpect(jsonPath("$.violations[0].field").value("email"));
+			.andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()));
 	}
 
 	/**
@@ -141,18 +145,30 @@ class ApiResponseExceptionHandlerTests {
 	void saysNothingAboutAnUnrecognisedFailure() throws Exception {
 		this.mvc.perform(get("/explode"))
 			.andExpect(status().isInternalServerError())
-			.andExpect(jsonPath("$.code").value(CommonErrorCode.INTERNAL_ERROR.code()))
-			.andExpect(jsonPath("$.message").value(CommonErrorCode.INTERNAL_ERROR.defaultMessage()))
+			.andExpect(jsonPath("$.code").value(HttpStatus.INTERNAL_SERVER_ERROR.value()))
+			.andExpect(jsonPath("$.message").value(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase()))
 			.andExpect(jsonPath("$.message").value(org.hamcrest.Matchers
 				.not(org.hamcrest.Matchers.containsString("jdbc:postgresql://ledger-primary.internal:5432"))));
+	}
+
+	/**
+	 * Spring raises {@code ResponseStatusException} with any status in {@code 100..999},
+	 * and {@link HttpStatus} has a constant for only some of them. Answering is this
+	 * class's whole job, so a status it cannot name must still produce an envelope.
+	 */
+	@Test
+	void stillAnswersWithTheEnvelopeForAStatusItCannotName() throws Exception {
+		this.mvc.perform(get("/nonstandard"))
+			.andExpect(status().is(499))
+			.andExpect(jsonPath("$.code").value(499))
+			.andExpect(jsonPath("$.message").exists());
 	}
 
 	@Test
 	void answersAnUnreadableBodyAsTheCallersFault() throws Exception {
 		this.mvc.perform(post("/customers").contentType(MediaType.APPLICATION_JSON).content("not json at all"))
 			.andExpect(status().isBadRequest())
-			.andExpect(jsonPath("$.success").value(false))
-			.andExpect(jsonPath("$.code").value(CommonErrorCode.VALIDATION_FAILED.code()));
+			.andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()));
 	}
 
 	@Test
@@ -161,47 +177,21 @@ class ApiResponseExceptionHandlerTests {
 	}
 
 	@Test
-	void stampsTheIdentifierTheRequestArrivedWith() throws Exception {
-		this.mvc.perform(get("/refuse/CONFLICT").header(ApiHeaders.REQUEST_ID, "REQ-9142"))
-			.andExpect(jsonPath("$.traceId").value("REQ-9142"));
-	}
-
-	@Test
-	void stampsAValidationFailureToo() throws Exception {
-		this.mvc
-			.perform(post("/customers").contentType(MediaType.APPLICATION_JSON)
-				.content("{}")
-				.header(ApiHeaders.REQUEST_ID, "REQ-7"))
-			.andExpect(jsonPath("$.traceId").value("REQ-7"));
-	}
-
-	@Test
-	void fallsBackToTheIdentifierAlreadyBeingLoggedUnder() throws Exception {
-		MDC.put("requestId", "FROM-MDC");
-		this.mvc.perform(get("/explode")).andExpect(jsonPath("$.traceId").value("FROM-MDC"));
-	}
-
-	@Test
-	void leavesTheIdentifierOutWhenThereIsNoneToReport() throws Exception {
-		this.mvc.perform(get("/refuse/CONFLICT")).andExpect(jsonPath("$.traceId").isEmpty());
-	}
-
-	@Test
 	void leavesASucceedingRequestAlone() throws Exception {
-		this.mvc.perform(get("/ok")).andExpect(status().isOk()).andExpect(jsonPath("$.code").value("OK"));
+		this.mvc.perform(get("/ok")).andExpect(status().isOk()).andExpect(jsonPath("$.code").value(200));
 	}
 
 	private static ListAppender<ILoggingEvent> attachAppender() {
 		ListAppender<ILoggingEvent> appender = new ListAppender<>();
 		appender.start();
-		Logger logger = (Logger) org.slf4j.LoggerFactory.getLogger(ApiResponseExceptionHandler.class);
+		Logger logger = (Logger) org.slf4j.LoggerFactory.getLogger(HttpResponseExceptionHandler.class);
 		logger.setLevel(Level.DEBUG);
 		logger.addAppender(appender);
 		return appender;
 	}
 
 	private static void detachAppender(ListAppender<ILoggingEvent> appender) {
-		((Logger) org.slf4j.LoggerFactory.getLogger(ApiResponseExceptionHandler.class)).detachAppender(appender);
+		((Logger) org.slf4j.LoggerFactory.getLogger(HttpResponseExceptionHandler.class)).detachAppender(appender);
 	}
 
 	private static LocalValidatorFactoryBean validator() {
@@ -223,9 +213,14 @@ class ApiResponseExceptionHandlerTests {
 
 		@GetMapping("/refuse/{code}")
 		String refuse(@PathVariable("code") String code) {
-			CommonErrorCode errorCode = CommonErrorCode.valueOf(code);
-			throw new ApiException(errorCode, (errorCode == CommonErrorCode.NOT_FOUND) ? "No account exists with id 7"
-					: errorCode.defaultMessage());
+			HttpStatus status = HttpStatus.valueOf(Integer.parseInt(code));
+			throw new ResponseStatusException(status,
+					(status == HttpStatus.NOT_FOUND) ? "No account exists with id 7" : status.getReasonPhrase());
+		}
+
+		@GetMapping("/nonstandard")
+		String nonstandard() {
+			throw new ResponseStatusException(HttpStatusCode.valueOf(499), "the client went away");
 		}
 
 		@GetMapping("/explode")
@@ -235,8 +230,8 @@ class ApiResponseExceptionHandlerTests {
 		}
 
 		@GetMapping("/ok")
-		org.v31bank.core.response.ApiResponse<String> ok() {
-			return org.v31bank.core.response.ApiResponse.ok("fine");
+		org.v31bank.core.response.HttpResponse<String> ok() {
+			return org.v31bank.core.response.HttpResponse.ok("fine");
 		}
 
 		@GetMapping("/customers/{id}")

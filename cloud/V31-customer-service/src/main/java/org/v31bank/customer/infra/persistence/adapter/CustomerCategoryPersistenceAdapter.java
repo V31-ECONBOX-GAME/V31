@@ -27,12 +27,13 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.customer.application.dto.CustomerCategoryPageQuery;
 import org.v31bank.customer.application.port.out.CustomerCategoryPort;
 import org.v31bank.customer.domain.constant.CustomerCategoryStatus;
 import org.v31bank.customer.domain.model.CustomerCategory;
 import org.v31bank.customer.infra.persistence.jpa.JpaCustomerCategoryRepository;
-import org.v31bank.data.jpa.domain.PageResult;
+import org.v31bank.data.jpa.util.JpaPages;
 
 /**
  * {@link CustomerCategoryPort} adapter backed by Spring Data JPA.
@@ -72,7 +73,7 @@ public class CustomerCategoryPersistenceAdapter implements CustomerCategoryPort 
 	}
 
 	@Override
-	public PageResult<CustomerCategory> findPage(CustomerCategoryPageQuery query) {
+	public HttpResponse<List<CustomerCategory>> findPage(CustomerCategoryPageQuery query) {
 		Specification<CustomerCategory> spec = (root, criteriaQuery, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			if (StringUtils.hasText(query.getCode())) {
@@ -92,7 +93,7 @@ public class CustomerCategoryPersistenceAdapter implements CustomerCategoryPort 
 			}
 			return cb.and(predicates.toArray(Predicate[]::new));
 		};
-		return PageResult.of(this.jpaRepository.findAll(spec, query.toPageable(SIBLING_ORDER)));
+		return JpaPages.from(this.jpaRepository.findAll(spec, JpaPages.toPageable(query, SIBLING_ORDER)));
 	}
 
 	@Override

@@ -21,10 +21,8 @@ import org.springframework.cache.interceptor.CacheErrorHandler;
 
 /**
  * Hands Spring's caching infrastructure the {@link ValkeyCacheErrorHandler}.
- * <p>
- * {@link CachingConfigurer} is the only way to replace the error handler, and Spring
- * accepts exactly one of them, so this backs off entirely when the application supplies
- * its own.
+ * {@link CachingConfigurer} is the only way to replace it and Spring accepts exactly one,
+ * so this backs off entirely when the application supplies its own.
  *
  * @author Xander Wang
  * @since 0.2.0

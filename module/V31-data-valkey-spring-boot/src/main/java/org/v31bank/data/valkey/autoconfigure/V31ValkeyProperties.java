@@ -65,18 +65,8 @@ public class V31ValkeyProperties {
 
 		/**
 		 * Package prefixes a stored value may name as its own type. Anything else is
-		 * refused when read back, which is what stops a tampered entry from naming a
-		 * class whose construction does something on its way to being deserialized.
-		 * <p>
-		 * The defaults are this platform's own types plus the three JDK packages its
-		 * values are actually made of: collections and identifiers from
-		 * {@code java.util}, the instants every audited record carries, and the decimals
-		 * every amount is held in. All of them are immutable values whose construction
-		 * does nothing but hold what it was given, which is what makes them safe to name.
-		 * <p>
-		 * Widening this to {@code java} would readmit every class the runtime ships with
-		 * — including the ones that open connections or load classes while being
-		 * constructed — and give up the protection entirely.
+		 * refused on read, which stops a tampered entry naming a class whose construction
+		 * does something. Widening this to {@code java} gives up the protection entirely.
 		 */
 		private List<String> trustedPackages = List.of("org.v31bank", "java.util", "java.time", "java.math");
 
@@ -112,21 +102,15 @@ public class V31ValkeyProperties {
 		private Map<String, Duration> ttls = new LinkedHashMap<>();
 
 		/**
-		 * Whether a lookup that found nothing may be cached.
-		 * <p>
-		 * Kept on by default: without it, repeated lookups of something that does not
-		 * exist reach the database every time, which is both a load problem and something
-		 * an attacker can aim at deliberately.
+		 * Whether a lookup that found nothing may be cached. On by default: without it,
+		 * repeated lookups of something absent reach the database every time.
 		 */
 		private boolean allowNullValues = true;
 
 		/**
-		 * Whether a cache read or write that fails is allowed to fail the call.
-		 * <p>
-		 * Off by default, so an unreachable Valkey costs latency rather than availability
-		 * and the call falls through to the method behind the cache. A failed eviction is
-		 * always allowed out regardless, since swallowing it would leave the cache
-		 * serving a value known to be stale.
+		 * Whether a failed cache read or write fails the call. Off by default, so an
+		 * unreachable Valkey costs latency rather than availability. A failed eviction is
+		 * always allowed out regardless.
 		 */
 		private boolean failFast;
 

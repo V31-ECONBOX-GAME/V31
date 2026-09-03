@@ -17,6 +17,7 @@
 package org.v31bank.cbs.application.port.in;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,8 +25,7 @@ import org.v31bank.cbs.application.dto.BankProductPageQuery;
 import org.v31bank.cbs.domain.constant.BankProductCategory;
 import org.v31bank.cbs.domain.constant.BankProductStatus;
 import org.v31bank.cbs.domain.model.BankProduct;
-import org.v31bank.core.response.ApiResponse;
-import org.v31bank.core.response.PageResponse;
+import org.v31bank.core.response.HttpResponse;
 
 /**
  * Use cases for managing the bank product catalogue.
@@ -43,7 +43,7 @@ public interface BankProductUseCase {
 	 * @param interestRate the annual rate as a fraction, or {@code null}
 	 * @return the outcome of the command
 	 */
-	ApiResponse<BankProduct> create(String code, String name, BankProductCategory category, BigDecimal interestRate);
+	HttpResponse<BankProduct> create(String code, String name, BankProductCategory category, BigDecimal interestRate);
 
 	Optional<BankProduct> get(UUID id);
 
@@ -52,7 +52,7 @@ public interface BankProductUseCase {
 	 * @param query the filters and the pagination request
 	 * @return the page of matching products
 	 */
-	PageResponse<BankProduct> page(BankProductPageQuery query);
+	HttpResponse<List<BankProduct>> page(BankProductPageQuery query);
 
 	/**
 	 * Update the product with the given identifier.
@@ -64,7 +64,7 @@ public interface BankProductUseCase {
 	 * @param interestRate the annual rate as a fraction, or {@code null}
 	 * @return the outcome of the command
 	 */
-	ApiResponse<BankProduct> update(UUID id, String code, String name, BankProductCategory category,
+	HttpResponse<BankProduct> update(UUID id, String code, String name, BankProductCategory category,
 			BankProductStatus status, BigDecimal interestRate);
 
 	/**
@@ -72,6 +72,6 @@ public interface BankProductUseCase {
 	 * @param id the product to delete
 	 * @return the outcome of the command
 	 */
-	ApiResponse<BankProduct> delete(UUID id);
+	HttpResponse<BankProduct> delete(UUID id);
 
 }

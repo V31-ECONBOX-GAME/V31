@@ -27,7 +27,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import org.v31bank.data.jpa.domain.PageResult;
+import org.v31bank.core.response.HttpResponse;
+import org.v31bank.data.jpa.util.JpaPages;
 import org.v31bank.risk.application.dto.RiskRulePageQuery;
 import org.v31bank.risk.application.port.out.RiskRulePort;
 import org.v31bank.risk.domain.model.RiskRule;
@@ -61,7 +62,7 @@ public class RiskRulePersistenceAdapter implements RiskRulePort {
 	}
 
 	@Override
-	public PageResult<RiskRule> findPage(RiskRulePageQuery query) {
+	public HttpResponse<List<RiskRule>> findPage(RiskRulePageQuery query) {
 		Specification<RiskRule> spec = (root, criteriaQuery, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			if (StringUtils.hasText(query.getCode())) {
@@ -75,7 +76,7 @@ public class RiskRulePersistenceAdapter implements RiskRulePort {
 			}
 			return cb.and(predicates.toArray(Predicate[]::new));
 		};
-		return PageResult.of(this.jpaRepository.findAll(spec, query.toPageable(NEWEST_FIRST)));
+		return JpaPages.from(this.jpaRepository.findAll(spec, JpaPages.toPageable(query, NEWEST_FIRST)));
 	}
 
 	@Override

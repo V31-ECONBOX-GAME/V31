@@ -80,7 +80,7 @@ class CustomerApiIntegrationTests {
 			.expectBody(JSON_OBJECT)
 			.returnResult()
 			.getResponseBody();
-		assertThat(body).containsEntry("success", true).containsEntry("code", "OK");
+		assertThat(body).containsEntry("code", 200);
 		assertThat(data(body)).containsEntry("email", "ada@v31bank.org")
 			.containsEntry("fullName", "Ada Lovelace")
 			.containsEntry("status", "ACTIVE");
@@ -116,18 +116,14 @@ class CustomerApiIntegrationTests {
 			.expectBody(JSON_OBJECT)
 			.returnResult()
 			.getResponseBody();
-		assertThat(body).containsEntry("success", false).containsEntry("code", "NOT_FOUND");
+		assertThat(body).containsEntry("code", 404);
 	}
 
 	@Test
 	void pagesNewestFirstAndCountsThemAll() {
 		createMany(25);
-		Map<String, Object> page = data(get(PATH + "?pageNumber=1&pageSize=10"));
-		assertThat(page).containsEntry("total", 25)
-			.containsEntry("pageNumber", 1)
-			.containsEntry("pageSize", 10)
-			.containsEntry("totalPages", 3)
-			.containsEntry("hasNext", true);
+		Map<String, Object> page = get(PATH + "?pageNumber=1&pageSize=10");
+		assertThat(page).containsEntry("total", 25);
 		assertThat(records(page)).hasSize(10);
 		assertThat(records(page).get(0)).containsEntry("email", "customer25@v31bank.org");
 	}
@@ -135,8 +131,7 @@ class CustomerApiIntegrationTests {
 	@Test
 	void reportsTheLastPageAsTheLastOne() {
 		createMany(25);
-		Map<String, Object> page = data(get(PATH + "?pageNumber=3&pageSize=10"));
-		assertThat(page).containsEntry("hasNext", false);
+		Map<String, Object> page = get(PATH + "?pageNumber=3&pageSize=10");
 		assertThat(records(page)).hasSize(5);
 	}
 
@@ -150,8 +145,7 @@ class CustomerApiIntegrationTests {
 		createMany(25);
 		Set<Object> seen = new HashSet<>();
 		for (int page = 1; page <= 3; page++) {
-			records(data(get(PATH + "?pageNumber=" + page + "&pageSize=10")))
-				.forEach((record) -> seen.add(record.get("id")));
+			records(get(PATH + "?pageNumber=" + page + "&pageSize=10")).forEach((record) -> seen.add(record.get("id")));
 		}
 		assertThat(seen).hasSize(25);
 	}
@@ -160,7 +154,7 @@ class CustomerApiIntegrationTests {
 	void filtersByEmailFragment() {
 		create("ada@v31bank.org", "Ada");
 		create("alan@v31bank.org", "Alan");
-		assertThat(data(get(PATH + "?email=ada"))).containsEntry("total", 1);
+		assertThat(get(PATH + "?email=ada")).containsEntry("total", 1);
 	}
 
 	@Test
@@ -239,8 +233,8 @@ class CustomerApiIntegrationTests {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static List<Map<String, Object>> records(Map<String, Object> page) {
-		return (List<Map<String, Object>>) page.get("records");
+	private static List<Map<String, Object>> records(Map<String, ?> envelope) {
+		return (List<Map<String, Object>>) envelope.get("data");
 	}
 
 	/**
@@ -249,7 +243,7 @@ class CustomerApiIntegrationTests {
 	 * {@code 500}, telling the caller to retry a request that could never succeed.
 	 */
 	@Test
-	void rejectsAnEmptyBodyNamingTheFieldsThatAreMissing() {
+	void rejectsAnEmptyBody() {
 		Map<String, Object> body = this.client.post()
 			.uri(PATH)
 			.body(Map.of())
@@ -259,8 +253,7 @@ class CustomerApiIntegrationTests {
 			.expectBody(JSON_OBJECT)
 			.returnResult()
 			.getResponseBody();
-		assertThat(body).containsEntry("success", false).containsEntry("code", "VALIDATION_FAILED");
-		assertThat(violations(body)).isNotEmpty();
+		assertThat(body).containsEntry("code", 400);
 	}
 
 	/**
@@ -278,7 +271,7 @@ class CustomerApiIntegrationTests {
 			.expectBody(JSON_OBJECT)
 			.returnResult()
 			.getResponseBody();
-		assertThat(violations(body)).extracting((violation) -> violation.get("field")).contains("fullName");
+		assertThat(body).containsEntry("code", 400);
 	}
 
 	/**
@@ -297,14 +290,8 @@ class CustomerApiIntegrationTests {
 			.expectBody(JSON_OBJECT)
 			.returnResult()
 			.getResponseBody();
-		assertThat(body).containsEntry("success", false)
-			.containsEntry("code", "VALIDATION_FAILED")
-			.containsKey("timestamp");
-	}
-
-	@SuppressWarnings("unchecked")
-	private static List<Map<String, Object>> violations(Map<String, ?> envelope) {
-		return (List<Map<String, Object>>) envelope.get("violations");
+		assertThat(body).containsEntry("code", 400)
+			.doesNotContainKeys("succeeded", "violations", "timestamp", "traceId");
 	}
 
 	private static final String TOO_LONG = "x".repeat(100 + 1);

@@ -25,6 +25,8 @@ description = "V31 Data JPA auto-configuration"
 dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
+    api(project(":library:V31-core"))
+
     api("org.springframework.boot:spring-boot")
     api("org.springframework.boot:spring-boot-autoconfigure")
     api("org.springframework.data:spring-data-jpa")

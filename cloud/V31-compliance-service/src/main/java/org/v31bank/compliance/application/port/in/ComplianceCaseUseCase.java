@@ -16,6 +16,7 @@
 
 package org.v31bank.compliance.application.port.in;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,8 +24,7 @@ import org.v31bank.compliance.application.dto.ComplianceCasePageQuery;
 import org.v31bank.compliance.domain.constant.ComplianceCaseStatus;
 import org.v31bank.compliance.domain.constant.ComplianceCaseType;
 import org.v31bank.compliance.domain.model.ComplianceCase;
-import org.v31bank.core.response.ApiResponse;
-import org.v31bank.core.response.PageResponse;
+import org.v31bank.core.response.HttpResponse;
 
 /**
  * Use cases for managing compliance cases.
@@ -42,7 +42,7 @@ public interface ComplianceCaseUseCase {
 	 * @param summary why the case was opened
 	 * @return the outcome of the command
 	 */
-	ApiResponse<ComplianceCase> create(String caseNumber, UUID customerId, ComplianceCaseType type, String summary);
+	HttpResponse<ComplianceCase> create(String caseNumber, UUID customerId, ComplianceCaseType type, String summary);
 
 	Optional<ComplianceCase> get(UUID id);
 
@@ -51,7 +51,7 @@ public interface ComplianceCaseUseCase {
 	 * @param query the filters and the pagination request
 	 * @return the page of matching cases
 	 */
-	PageResponse<ComplianceCase> page(ComplianceCasePageQuery query);
+	HttpResponse<List<ComplianceCase>> page(ComplianceCasePageQuery query);
 
 	/**
 	 * Update the case with the given identifier.
@@ -63,7 +63,7 @@ public interface ComplianceCaseUseCase {
 	 * @param summary why the case was opened
 	 * @return the outcome of the command
 	 */
-	ApiResponse<ComplianceCase> update(UUID id, String caseNumber, UUID customerId, ComplianceCaseType type,
+	HttpResponse<ComplianceCase> update(UUID id, String caseNumber, UUID customerId, ComplianceCaseType type,
 			ComplianceCaseStatus status, String summary);
 
 	/**
@@ -71,6 +71,6 @@ public interface ComplianceCaseUseCase {
 	 * @param id the case to delete
 	 * @return the outcome of the command
 	 */
-	ApiResponse<ComplianceCase> delete(UUID id);
+	HttpResponse<ComplianceCase> delete(UUID id);
 
 }

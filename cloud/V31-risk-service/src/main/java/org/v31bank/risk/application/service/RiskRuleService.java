@@ -16,15 +16,15 @@
 
 package org.v31bank.risk.application.service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.v31bank.core.response.ApiResponse;
-import org.v31bank.core.response.CommonErrorCode;
-import org.v31bank.data.jpa.domain.PageResult;
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.risk.application.dto.RiskRulePageQuery;
 import org.v31bank.risk.application.port.in.RiskRuleUseCase;
 import org.v31bank.risk.application.port.out.RiskRulePort;
@@ -49,15 +49,15 @@ public class RiskRuleService implements RiskRuleUseCase {
 	}
 
 	@Override
-	public ApiResponse<RiskRule> create(String code, String name, RiskSeverity severity) {
+	public HttpResponse<RiskRule> create(String code, String name, RiskSeverity severity) {
 		if (this.riskRuleRepository.existsByCode(code)) {
-			return ApiResponse.error(CommonErrorCode.CONFLICT, "Code '" + code + "' is already in use");
+			return HttpResponse.error(HttpStatus.CONFLICT.value(), "Code '" + code + "' is already in use");
 		}
 		RiskRule riskRule = new RiskRule();
 		riskRule.setCode(code);
 		riskRule.setName(name);
 		riskRule.setSeverity(severity);
-		return ApiResponse.ok(this.riskRuleRepository.save(riskRule));
+		return HttpResponse.ok(this.riskRuleRepository.save(riskRule));
 	}
 
 	@Override
@@ -68,20 +68,20 @@ public class RiskRuleService implements RiskRuleUseCase {
 
 	@Override
 	@Transactional(readOnly = true)
-	public PageResult<RiskRule> page(RiskRulePageQuery query) {
+	public HttpResponse<List<RiskRule>> page(RiskRulePageQuery query) {
 		return this.riskRuleRepository.findPage(query);
 	}
 
 	@Override
-	public ApiResponse<RiskRule> update(UUID id, String code, String name, RiskSeverity severity,
+	public HttpResponse<RiskRule> update(UUID id, String code, String name, RiskSeverity severity,
 			RiskRuleStatus status) {
 		Optional<RiskRule> found = this.riskRuleRepository.findById(id);
 		if (found.isEmpty()) {
-			return ApiResponse.error(CommonErrorCode.NOT_FOUND, "No risk rule exists with id " + id);
+			return HttpResponse.error(HttpStatus.NOT_FOUND.value(), "No risk rule exists with id " + id);
 		}
 		RiskRule riskRule = found.get();
 		if (!riskRule.getCode().equals(code) && this.riskRuleRepository.existsByCode(code)) {
-			return ApiResponse.error(CommonErrorCode.CONFLICT, "Code '" + code + "' is already in use");
+			return HttpResponse.error(HttpStatus.CONFLICT.value(), "Code '" + code + "' is already in use");
 		}
 		riskRule.setCode(code);
 		riskRule.setName(name);
@@ -89,18 +89,18 @@ public class RiskRuleService implements RiskRuleUseCase {
 		if (status != null) {
 			riskRule.setStatus(status);
 		}
-		return ApiResponse.ok(this.riskRuleRepository.save(riskRule));
+		return HttpResponse.ok(this.riskRuleRepository.save(riskRule));
 	}
 
 	@Override
-	public ApiResponse<RiskRule> delete(UUID id) {
+	public HttpResponse<RiskRule> delete(UUID id) {
 		Optional<RiskRule> found = this.riskRuleRepository.findById(id);
 		if (found.isEmpty()) {
-			return ApiResponse.error(CommonErrorCode.NOT_FOUND, "No risk rule exists with id " + id);
+			return HttpResponse.error(HttpStatus.NOT_FOUND.value(), "No risk rule exists with id " + id);
 		}
 		RiskRule riskRule = found.get();
 		this.riskRuleRepository.delete(riskRule);
-		return ApiResponse.ok(riskRule);
+		return HttpResponse.ok(riskRule);
 	}
 
 }

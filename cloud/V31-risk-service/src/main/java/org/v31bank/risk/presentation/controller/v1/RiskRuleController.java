@@ -17,6 +17,7 @@
 package org.v31bank.risk.presentation.controller.v1;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.validation.Valid;
@@ -31,11 +32,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.v31bank.core.response.ApiResponse;
-import org.v31bank.core.response.CommonErrorCode;
-import org.v31bank.core.response.ErrorCode;
-import org.v31bank.core.response.PageResponse;
-import org.v31bank.data.jpa.domain.PageResult;
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.risk.application.dto.RiskRulePageQuery;
 import org.v31bank.risk.application.port.in.RiskRuleUseCase;
 import org.v31bank.risk.domain.model.RiskRule;
@@ -45,7 +42,7 @@ import org.v31bank.risk.presentation.dto.RiskRuleResponse;
 /**
  * REST endpoints for managing risk rules.
  * <p>
- * Commands come back from the use case as an {@link ApiResponse} already carrying the
+ * Commands come back from the use case as an {@link HttpResponse} already carrying the
  * verdict, so this layer converts the payload to the wire record and puts the matching
  * status on the response.
  *
@@ -58,12 +55,6 @@ public class RiskRuleController {
 
 	static final String PATH = "/api/v1/risk-rules";
 
-	/**
-	 * Status for a code this service does not recognise, matching the default an
-	 * {@link ErrorCode} declares.
-	 */
-	private static final int UNRECOGNISED_CODE_STATUS = HttpStatus.UNPROCESSABLE_CONTENT.value();
-
 	private final RiskRuleUseCase riskRuleInputPort;
 
 	public RiskRuleController(RiskRuleUseCase riskRuleInputPort) {
@@ -71,10 +62,10 @@ public class RiskRuleController {
 	}
 
 	@PostMapping
-	public ResponseEntity<ApiResponse<RiskRuleResponse>> create(@Valid @RequestBody RiskRuleRequest request) {
-		ApiResponse<RiskRule> result = this.riskRuleInputPort.create(request.code(), request.name(),
+	public ResponseEntity<HttpResponse<RiskRuleResponse>> create(@Valid @RequestBody RiskRuleRequest request) {
+		HttpResponse<RiskRule> result = this.riskRuleInputPort.create(request.code(), request.name(),
 				request.severity());
-		if (!result.success()) {
+		if (!result.succeeded()) {
 			return toResponseEntity(result);
 		}
 		return ResponseEntity.created(URI.create(PATH + "/" + result.data().getId()))
@@ -82,10 +73,10 @@ public class RiskRuleController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<ApiResponse<RiskRuleResponse>> get(@PathVariable UUID id) {
+	public ResponseEntity<HttpResponse<RiskRuleResponse>> get(@PathVariable UUID id) {
 		return this.riskRuleInputPort.get(id)
-			.map((riskRule) -> ResponseEntity.ok(ApiResponse.ok(RiskRuleResponse.from(riskRule))))
-			.orElseGet(() -> error(CommonErrorCode.NOT_FOUND, "No risk rule exists with id " + id));
+			.map((riskRule) -> ResponseEntity.ok(HttpResponse.ok(RiskRuleResponse.from(riskRule))))
+			.orElseGet(() -> error(HttpStatus.NOT_FOUND.value(), "No risk rule exists with id " + id));
 	}
 
 	/**
@@ -94,14 +85,13 @@ public class RiskRuleController {
 	 * @return the page of matching records
 	 */
 	@GetMapping
-	public ApiResponse<PageResponse<RiskRuleResponse>> page(RiskRulePageQuery query) {
-		PageResult<RiskRuleResponse> page = this.riskRuleInputPort.page(query).map(RiskRuleResponse::from);
-		return ApiResponse
-			.ok(PageResponse.of(page.getRecords(), page.getTotal(), page.getPageNumber(), page.getPageSize()));
+	public HttpResponse<List<RiskRuleResponse>> page(RiskRulePageQuery query) {
+		return this.riskRuleInputPort.page(query)
+			.map((records) -> records.stream().map(RiskRuleResponse::from).toList());
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<ApiResponse<RiskRuleResponse>> update(@PathVariable UUID id,
+	public ResponseEntity<HttpResponse<RiskRuleResponse>> update(@PathVariable UUID id,
 			@Valid @RequestBody RiskRuleRequest request) {
 		return toResponseEntity(this.riskRuleInputPort.update(id, request.code(), request.name(), request.severity(),
 				request.status()));
@@ -114,30 +104,25 @@ public class RiskRuleController {
 	 * @return the response to send
 	 */
 	@DeleteMapping("/{id}")
-	public ResponseEntity<ApiResponse<RiskRuleResponse>> delete(@PathVariable UUID id) {
+	public ResponseEntity<HttpResponse<RiskRuleResponse>> delete(@PathVariable UUID id) {
 		return toResponseEntity(this.riskRuleInputPort.delete(id));
 	}
 
-	private static ResponseEntity<ApiResponse<RiskRuleResponse>> toResponseEntity(ApiResponse<RiskRule> result) {
+	private static ResponseEntity<HttpResponse<RiskRuleResponse>> toResponseEntity(HttpResponse<RiskRule> result) {
 		return ResponseEntity.status(statusOf(result)).body(result.map(RiskRuleResponse::from));
 	}
 
 	/**
-	 * Recover the HTTP status belonging to an outcome. The envelope carries the code as
-	 * text, since that is what goes on the wire, so the status has to be looked back up
-	 * rather than read off it.
+	 * Recover the HTTP status belonging to an outcome.
 	 * @param result the outcome to place
 	 * @return the status to answer with
 	 */
-	private static int statusOf(ApiResponse<?> result) {
-		if (result.success()) {
-			return HttpStatus.OK.value();
-		}
-		return CommonErrorCode.find(result.code()).map(ErrorCode::httpStatus).orElse(UNRECOGNISED_CODE_STATUS);
+	private static int statusOf(HttpResponse<?> result) {
+		return result.code();
 	}
 
-	private static <T> ResponseEntity<ApiResponse<T>> error(ErrorCode errorCode, String message) {
-		return ResponseEntity.status(errorCode.httpStatus()).body(ApiResponse.error(errorCode, message));
+	private static <T> ResponseEntity<HttpResponse<T>> error(int code, String message) {
+		return ResponseEntity.status(code).body(HttpResponse.error(code, message));
 	}
 
 }

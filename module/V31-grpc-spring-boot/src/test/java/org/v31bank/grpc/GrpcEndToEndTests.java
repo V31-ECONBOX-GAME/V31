@@ -46,18 +46,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.grpc.client.interceptor.DefaultDeadlineSetupClientInterceptor;
 import org.springframework.grpc.server.exception.CompositeGrpcExceptionHandler;
 import org.springframework.grpc.server.exception.GrpcExceptionHandlerInterceptor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
-import org.v31bank.core.exception.ApiException;
-import org.v31bank.core.response.CommonErrorCode;
-import org.v31bank.core.response.ErrorCode;
 import org.v31bank.grpc.client.GrpcErrors;
 import org.v31bank.grpc.client.HeaderPropagationClientInterceptor;
-import org.v31bank.grpc.context.GrpcRequestId;
 import org.v31bank.grpc.context.RequestContext;
-import org.v31bank.grpc.server.ApiExceptionGrpcExceptionHandler;
 import org.v31bank.grpc.server.HeaderPropagationServerInterceptor;
+import org.v31bank.grpc.server.RefusalGrpcExceptionHandler;
 import org.v31bank.grpc.server.UnexpectedExceptionGrpcExceptionHandler;
-import org.v31bank.grpc.status.GrpcStatuses;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
@@ -78,8 +75,6 @@ class GrpcEndToEndTests {
 	/**
 	 * What the handler is asked to do, sent as the request.
 	 */
-	private static final String ECHO_REQUEST_ID = "echo-request-id";
-
 	private static final String ECHO_DEADLINE = "echo-deadline";
 
 	private static final String ECHO_TENANT = "echo-tenant";
@@ -130,24 +125,34 @@ class GrpcEndToEndTests {
 		}
 	}
 
+	/**
+	 * gRPC's status describes what the transport saw, not what an HTTP caller should do
+	 * about it, so nothing is mapped: every failed call is a {@code 500}.
+	 */
 	@Test
-	void aRefusalArrivesCarryingTheCodeTheServerThrew() throws IOException {
+	void everyFailedCallArrivesAsAServerError() throws IOException {
 		Channel client = start(Duration.ZERO);
-		ApiException thrown = catchThrowableOfType(ApiException.class,
-				() -> GrpcErrors.call(() -> call(client, FAIL_BUSINESS)));
-		assertThat(thrown.getErrorCode().code()).as("the exact code has to survive the hop, not just the status")
-			.isEqualTo("CATEGORY_HAS_CHILDREN");
-		assertThat(thrown.getMessage()).isEqualTo("Customer category 7 still has children");
-		assertThat(thrown.getErrorCode().httpStatus()).isEqualTo(409);
+		for (String scenario : new String[] { FAIL_BUSINESS, FAIL_UNEXPECTED }) {
+			ResponseStatusException thrown = catchThrowableOfType(ResponseStatusException.class,
+					() -> GrpcErrors.call(() -> call(client, scenario)));
+			assertThat(thrown.getStatusCode()).as(scenario).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+			assertThat(thrown.getReason()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+			assertThat(thrown.getCause()).as("the original stays reachable for the logs").isNotNull();
+		}
 	}
 
+	/**
+	 * The description still crosses the wire for whoever reads a log or calls this
+	 * service with something other than a V31 client; it is the caller-side translation
+	 * that stops passing it on.
+	 */
 	@Test
-	void aRefusalAlsoCarriesAStatusAnyGrpcClientUnderstands() throws IOException {
+	void aRefusalStillReachesAGrpcClientAsInternal() throws IOException {
 		Channel client = start(Duration.ZERO);
 		StatusRuntimeException thrown = catchThrowableOfType(StatusRuntimeException.class,
 				() -> call(client, FAIL_BUSINESS));
-		assertThat(thrown.getStatus().getCode()).isEqualTo(Status.Code.ALREADY_EXISTS);
-		assertThat(thrown.getTrailers().get(GrpcStatuses.ERROR_CODE)).isEqualTo("CATEGORY_HAS_CHILDREN");
+		assertThat(thrown.getStatus().getCode()).isEqualTo(Status.Code.INTERNAL);
+		assertThat(thrown.getStatus().getDescription()).isEqualTo("Customer category 7 still has children");
 	}
 
 	@Test
@@ -156,47 +161,23 @@ class GrpcEndToEndTests {
 		StatusRuntimeException thrown = catchThrowableOfType(StatusRuntimeException.class,
 				() -> call(client, FAIL_UNEXPECTED));
 		assertThat(thrown.getStatus().getCode()).isEqualTo(Status.Code.INTERNAL);
-		assertThat(thrown.getStatus().getDescription()).isEqualTo(CommonErrorCode.INTERNAL_ERROR.defaultMessage());
 		assertThat(String.valueOf(thrown.getStatus().getDescription()))
 			.as("the driver's message must not reach the caller")
 			.doesNotContain("customer_category");
-		assertThat(thrown.getTrailers().get(GrpcStatuses.ERROR_CODE)).isEqualTo("INTERNAL_ERROR");
-	}
-
-	@Test
-	void anUnexpectedFailureStillReachesTheCallerAsAnApiException() throws IOException {
-		Channel client = start(Duration.ZERO);
-		ApiException thrown = catchThrowableOfType(ApiException.class,
-				() -> GrpcErrors.call(() -> call(client, FAIL_UNEXPECTED)));
-		assertThat(thrown.getErrorCode().code()).isEqualTo("INTERNAL_ERROR");
-		assertThat(thrown.getErrorCode().httpStatus()).isEqualTo(500);
-	}
-
-	@Test
-	void aFailureFromOutsideThePlatformDoesNotLeakItsDiagnosticText() {
-		io.grpc.StatusRuntimeException transportFailure = Status.UNAVAILABLE.withDescription("io exception")
-			.asRuntimeException();
-		ApiException translated = GrpcErrors.asApiException(transportFailure);
-		assertThat(translated.getErrorCode().code()).isEqualTo(CommonErrorCode.DEPENDENCY_UNAVAILABLE.code());
-		assertThat(translated.getMessage()).as("transport wording is for the logs, not for whoever made the call")
-			.isEqualTo(CommonErrorCode.DEPENDENCY_UNAVAILABLE.defaultMessage());
-		assertThat(translated.getCause()).as("the original stays reachable for the logs").isNotNull();
 	}
 
 	/**
-	 * The identifier travels through {@link RequestContext}, which is what the HTTP
-	 * filter and the server interceptor both populate. The MDC is a mirror of it for the
-	 * log lines, not a second carrier — a value put only there does not travel, so that
-	 * the two sides cannot disagree about what a request carries.
+	 * Whatever a status carries — a transport's socket error, a proxy's wording, the
+	 * method name grpc-java puts on {@code UNIMPLEMENTED} — none of it is passed on.
 	 */
 	@Test
-	void theRequestIdentifierCrossesTheHop() throws IOException {
-		Channel client = start(Duration.ZERO);
-		try (RequestContext.Scope scope = RequestContext
-			.attach(java.util.Map.of(GrpcRequestId.HEADER_NAME, "trace-abc123"))) {
-			assertThat(call(client, ECHO_REQUEST_ID))
-				.as("the identifier the caller was serving under should be the one the server sees")
-				.isEqualTo("trace-abc123");
+	void noDescriptionEverReachesTheCaller() {
+		for (Status status : new Status[] { Status.UNAVAILABLE.withDescription("io exception"),
+				Status.UNIMPLEMENTED.withDescription("Method not found: v31.ledger.v1.LedgerAccountService/Get"),
+				Status.RESOURCE_EXHAUSTED.withDescription("gRPC message exceeds maximum size 4194304: 9000000") }) {
+			ResponseStatusException translated = GrpcErrors.asResponseStatusException(status.asRuntimeException());
+			assertThat(translated.getReason()).as(String.valueOf(status.getCode()))
+				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
 		}
 	}
 
@@ -230,32 +211,6 @@ class GrpcEndToEndTests {
 	}
 
 	@Test
-	void aCallWithNoIdentifierBehindItStillGetsOne() throws IOException {
-		Channel client = start(Duration.ZERO);
-		String seen = call(client, ECHO_REQUEST_ID);
-		assertThat(seen).isNotNull();
-		assertThat(seen).as("the server issues one when the caller had none").isNotBlank();
-	}
-
-	@Test
-	void aForgedIdentifierIsNotEchoed() throws IOException {
-		Channel client = start(Duration.ZERO);
-		org.slf4j.MDC.put(GrpcRequestId.MDC_KEY, "line-one\nline-two");
-		try {
-			String seen = call(client, ECHO_REQUEST_ID);
-			assertThat(seen).as("a value that could forge a log entry must be replaced").doesNotContain("\n");
-		}
-		catch (StatusRuntimeException ex) {
-			// gRPC itself may reject the malformed metadata value first, which is
-			// also an acceptable outcome — it never reaches the log either way.
-			assertThat(ex.getStatus()).isNotNull();
-		}
-		finally {
-			org.slf4j.MDC.remove(GrpcRequestId.MDC_KEY);
-		}
-	}
-
-	@Test
 	void everyCallLeavesWithADeadline() throws IOException {
 		Channel client = start(Duration.ofSeconds(30));
 		assertThat(call(client, ECHO_DEADLINE))
@@ -284,7 +239,7 @@ class GrpcEndToEndTests {
 	private Channel start(Duration defaultDeadline) throws IOException {
 		String name = InProcessServerBuilder.generateName();
 		GrpcExceptionHandlerInterceptor exceptions = new GrpcExceptionHandlerInterceptor(
-				new CompositeGrpcExceptionHandler(new ApiExceptionGrpcExceptionHandler(),
+				new CompositeGrpcExceptionHandler(new RefusalGrpcExceptionHandler(),
 						new UnexpectedExceptionGrpcExceptionHandler()));
 		this.server = InProcessServerBuilder.forName(name)
 			.addService(ServerInterceptors.intercept(probeService(), exceptions,
@@ -307,10 +262,6 @@ class GrpcEndToEndTests {
 		return ServerServiceDefinition.builder("v31.Probe")
 			.addMethod(METHOD, ServerCalls.asyncUnaryCall((String request, StreamObserver<String> observer) -> {
 				switch (request) {
-					case ECHO_REQUEST_ID -> {
-						observer.onNext(String.valueOf(GrpcRequestId.CONTEXT_KEY.get()));
-						observer.onCompleted();
-					}
 					case ECHO_TENANT -> {
 						observer.onNext(String.valueOf(RequestContext.get(TENANT_HEADER)));
 						observer.onCompleted();
@@ -319,8 +270,8 @@ class GrpcEndToEndTests {
 						observer.onNext(String.valueOf(Context.current().getDeadline() != null));
 						observer.onCompleted();
 					}
-					case FAIL_BUSINESS ->
-						throw new ApiException(new TestErrorCode(), "Customer category 7 still has children");
+					case FAIL_BUSINESS -> throw new ResponseStatusException(HttpStatus.CONFLICT,
+							"Customer category 7 still has children");
 					case FAIL_UNEXPECTED ->
 						throw new IllegalStateException("ERROR: relation \"customer_category\" does not exist");
 					default -> {
@@ -330,29 +281,6 @@ class GrpcEndToEndTests {
 				}
 			}))
 			.build();
-	}
-
-	/**
-	 * Stands for a code a service declares for its own failures — the case the status
-	 * code alone cannot carry.
-	 */
-	private record TestErrorCode() implements ErrorCode {
-
-		@Override
-		public String code() {
-			return "CATEGORY_HAS_CHILDREN";
-		}
-
-		@Override
-		public String defaultMessage() {
-			return "That category still has children";
-		}
-
-		@Override
-		public int httpStatus() {
-			return 409;
-		}
-
 	}
 
 }

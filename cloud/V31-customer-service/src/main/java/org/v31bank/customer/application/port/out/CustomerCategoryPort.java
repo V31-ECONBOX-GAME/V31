@@ -20,10 +20,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.customer.application.dto.CustomerCategoryPageQuery;
 import org.v31bank.customer.domain.constant.CustomerCategoryStatus;
 import org.v31bank.customer.domain.model.CustomerCategory;
-import org.v31bank.data.jpa.domain.PageResult;
 
 /**
  * Output port for {@link CustomerCategory} persistence, implemented by the infrastructure
@@ -50,7 +50,7 @@ public interface CustomerCategoryPort {
 	 * @param query the filters and the pagination request
 	 * @return the page of matching categories
 	 */
-	PageResult<CustomerCategory> findPage(CustomerCategoryPageQuery query);
+	HttpResponse<List<CustomerCategory>> findPage(CustomerCategoryPageQuery query);
 
 	/**
 	 * Whether any category is a direct child of the given node.

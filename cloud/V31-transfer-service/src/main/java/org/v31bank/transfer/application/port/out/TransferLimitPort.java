@@ -16,10 +16,11 @@
 
 package org.v31bank.transfer.application.port.out;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.v31bank.data.jpa.domain.PageResult;
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.transfer.application.dto.TransferLimitPageQuery;
 import org.v31bank.transfer.domain.model.TransferLimit;
 
@@ -41,7 +42,7 @@ public interface TransferLimitPort {
 	 * @param query the filters and the pagination request
 	 * @return the page of matching records
 	 */
-	PageResult<TransferLimit> findPage(TransferLimitPageQuery query);
+	HttpResponse<List<TransferLimit>> findPage(TransferLimitPageQuery query);
 
 	/**
 	 * Whether any record already uses the given code.

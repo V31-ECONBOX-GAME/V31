@@ -20,9 +20,9 @@ import java.time.Instant;
 import java.util.UUID;
 
 import com.google.protobuf.Timestamp;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
-import org.v31bank.core.response.CommonErrorCode;
-import org.v31bank.core.response.ErrorCode;
 import org.v31bank.ledger.domain.constant.LedgerAccountStatus;
 import org.v31bank.ledger.domain.constant.LedgerAccountType;
 import org.v31bank.ledger.domain.model.LedgerAccount;
@@ -122,26 +122,15 @@ public final class LedgerAccountProtos {
 	 * boundary where that string has to become an identifier or be rejected.
 	 * @param id the value received
 	 * @return the identifier
-	 * @throws org.v31bank.core.exception.ApiException if it is not a UUID
+	 * @throws ResponseStatusException if it is not a UUID
 	 */
 	public static UUID toUuid(String id) {
 		try {
 			return UUID.fromString(id);
 		}
 		catch (IllegalArgumentException ex) {
-			throw new org.v31bank.core.exception.ApiException(CommonErrorCode.VALIDATION_FAILED,
-					"'" + id + "' is not an identifier", ex);
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "'" + id + "' is not an identifier", ex);
 		}
-	}
-
-	/**
-	 * Return the code a failed outcome reported, so that it can be raised as an exception
-	 * the transport knows how to render.
-	 * @param code the code as the envelope carried it
-	 * @return the matching common code
-	 */
-	public static ErrorCode errorCodeOf(String code) {
-		return CommonErrorCode.find(code).map(ErrorCode.class::cast).orElse(CommonErrorCode.UNPROCESSABLE);
 	}
 
 	private static Timestamp toProto(Instant instant) {

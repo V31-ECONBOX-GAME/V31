@@ -17,11 +17,11 @@
 package org.v31bank.transfer.application.port.in;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.v31bank.core.response.ApiResponse;
-import org.v31bank.data.jpa.domain.PageResult;
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.transfer.application.dto.TransferLimitPageQuery;
 import org.v31bank.transfer.domain.constant.TransferLimitStatus;
 import org.v31bank.transfer.domain.model.TransferLimit;
@@ -41,7 +41,7 @@ public interface TransferLimitUseCase {
 	 * @param dailyMax the dailymax
 	 * @return the outcome of the command
 	 */
-	ApiResponse<TransferLimit> create(String code, String name, BigDecimal dailyMax);
+	HttpResponse<TransferLimit> create(String code, String name, BigDecimal dailyMax);
 
 	Optional<TransferLimit> get(UUID id);
 
@@ -50,7 +50,7 @@ public interface TransferLimitUseCase {
 	 * @param query the filters and the pagination request
 	 * @return the page of matching records
 	 */
-	PageResult<TransferLimit> page(TransferLimitPageQuery query);
+	HttpResponse<List<TransferLimit>> page(TransferLimitPageQuery query);
 
 	/**
 	 * Update the transfer limit with the given identifier.
@@ -61,7 +61,7 @@ public interface TransferLimitUseCase {
 	 * @param status the new status, or {@code null} to leave it unchanged
 	 * @return the outcome of the command
 	 */
-	ApiResponse<TransferLimit> update(UUID id, String code, String name, BigDecimal dailyMax,
+	HttpResponse<TransferLimit> update(UUID id, String code, String name, BigDecimal dailyMax,
 			TransferLimitStatus status);
 
 	/**
@@ -69,6 +69,6 @@ public interface TransferLimitUseCase {
 	 * @param id the record to delete
 	 * @return the outcome of the command
 	 */
-	ApiResponse<TransferLimit> delete(UUID id);
+	HttpResponse<TransferLimit> delete(UUID id);
 
 }

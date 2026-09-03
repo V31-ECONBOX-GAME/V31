@@ -16,10 +16,11 @@
 
 package org.v31bank.notification.application.port.in;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.v31bank.core.response.PageResponse;
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.notification.application.dto.LedgerAccountSummary;
 
 /**
@@ -40,7 +41,7 @@ public interface LedgerAccountUseCase {
 
 	Optional<LedgerAccountSummary> get(UUID id);
 
-	PageResponse<LedgerAccountSummary> page(int pageNumber, int pageSize, String code);
+	HttpResponse<List<LedgerAccountSummary>> page(int pageNumber, int pageSize, String code);
 
 	LedgerAccountSummary update(UUID id, String code, String name, String type, String status);
 

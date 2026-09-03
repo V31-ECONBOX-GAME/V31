@@ -16,11 +16,11 @@
 
 package org.v31bank.notification.application.port.in;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.v31bank.core.response.ApiResponse;
-import org.v31bank.data.jpa.domain.PageResult;
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.notification.application.dto.NotificationTemplatePageQuery;
 import org.v31bank.notification.domain.constant.NotificationChannel;
 import org.v31bank.notification.domain.constant.NotificationTemplateStatus;
@@ -41,7 +41,7 @@ public interface NotificationTemplateUseCase {
 	 * @param channel the channel
 	 * @return the outcome of the command
 	 */
-	ApiResponse<NotificationTemplate> create(String code, String name, NotificationChannel channel);
+	HttpResponse<NotificationTemplate> create(String code, String name, NotificationChannel channel);
 
 	Optional<NotificationTemplate> get(UUID id);
 
@@ -50,7 +50,7 @@ public interface NotificationTemplateUseCase {
 	 * @param query the filters and the pagination request
 	 * @return the page of matching records
 	 */
-	PageResult<NotificationTemplate> page(NotificationTemplatePageQuery query);
+	HttpResponse<List<NotificationTemplate>> page(NotificationTemplatePageQuery query);
 
 	/**
 	 * Update the notification template with the given identifier.
@@ -61,7 +61,7 @@ public interface NotificationTemplateUseCase {
 	 * @param status the new status, or {@code null} to leave it unchanged
 	 * @return the outcome of the command
 	 */
-	ApiResponse<NotificationTemplate> update(UUID id, String code, String name, NotificationChannel channel,
+	HttpResponse<NotificationTemplate> update(UUID id, String code, String name, NotificationChannel channel,
 			NotificationTemplateStatus status);
 
 	/**
@@ -69,6 +69,6 @@ public interface NotificationTemplateUseCase {
 	 * @param id the record to delete
 	 * @return the outcome of the command
 	 */
-	ApiResponse<NotificationTemplate> delete(UUID id);
+	HttpResponse<NotificationTemplate> delete(UUID id);
 
 }

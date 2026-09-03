@@ -25,8 +25,8 @@ import org.springframework.context.ApplicationContext;
 
 import org.v31bank.grpc.autoconfigure.V31GrpcProperties;
 import org.v31bank.grpc.client.HeaderPropagationClientInterceptor;
-import org.v31bank.grpc.server.ApiExceptionGrpcExceptionHandler;
 import org.v31bank.grpc.server.HeaderPropagationServerInterceptor;
+import org.v31bank.grpc.server.RefusalGrpcExceptionHandler;
 import org.v31bank.grpc.server.UnexpectedExceptionGrpcExceptionHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +42,7 @@ class V31GrpcSmokeTests {
 
 	@Test
 	void theStarterAloneContributesTheServerBeans() {
-		assertThat(this.context.getBeansOfType(ApiExceptionGrpcExceptionHandler.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(RefusalGrpcExceptionHandler.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(UnexpectedExceptionGrpcExceptionHandler.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(HeaderPropagationServerInterceptor.class)).hasSize(1);
 	}

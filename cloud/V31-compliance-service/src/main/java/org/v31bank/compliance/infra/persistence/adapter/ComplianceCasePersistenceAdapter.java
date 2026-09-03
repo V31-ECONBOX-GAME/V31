@@ -34,7 +34,7 @@ import org.v31bank.compliance.domain.constant.ComplianceCaseType;
 import org.v31bank.compliance.domain.model.ComplianceCase;
 import org.v31bank.compliance.infra.persistence.jooq.ComplianceCaseRecord;
 import org.v31bank.compliance.infra.persistence.jooq.ComplianceCaseTable;
-import org.v31bank.core.response.PageResponse;
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.jooq.util.JooqPages;
 
 /**
@@ -75,12 +75,12 @@ public class ComplianceCasePersistenceAdapter implements ComplianceCasePort {
 	}
 
 	@Override
-	public PageResponse<ComplianceCase> findPage(ComplianceCasePageQuery query) {
+	public HttpResponse<List<ComplianceCase>> findPage(ComplianceCasePageQuery query) {
 		SelectLimitStep<ComplianceCaseRecord> select = this.dsl.selectFrom(CASE)
 			.where(conditions(query))
 			.orderBy(CASE.CREATED_DATE.desc(), CASE.ID.desc());
-		return JooqPages.fetch(this.dsl, select, query.getPageNumber(), query.getPageSize())
-			.map(ComplianceCasePersistenceAdapter::toDomain);
+		return JooqPages.fetch(this.dsl, select, query)
+			.map((records) -> records.stream().map(ComplianceCasePersistenceAdapter::toDomain).toList());
 	}
 
 	@Override

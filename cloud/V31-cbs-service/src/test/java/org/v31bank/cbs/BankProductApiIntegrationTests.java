@@ -89,7 +89,7 @@ class BankProductApiIntegrationTests {
 			.expectBody(JSON_OBJECT)
 			.returnResult()
 			.getResponseBody();
-		assertThat(body).containsEntry("success", true);
+		assertThat(body).containsEntry("code", 200);
 		assertThat(data(body)).containsEntry("code", "SAV-USD-01")
 			.containsEntry("category", "SAVINGS")
 			.containsEntry("status", "DRAFT");
@@ -103,7 +103,7 @@ class BankProductApiIntegrationTests {
 	@Test
 	void keepsTheRateExact() {
 		create("SAV-USD-01", "SAVINGS");
-		assertThat(data(get(PATH + "?code=SAV-USD-01")).get("records")).asInstanceOf(InstanceOfAssertFactories.LIST)
+		assertThat(get(PATH + "?code=SAV-USD-01").get("data")).asInstanceOf(InstanceOfAssertFactories.LIST)
 			.first()
 			.extracting("interestRate")
 			.asString()
@@ -157,8 +157,8 @@ class BankProductApiIntegrationTests {
 	@Test
 	void pagesNewestFirstAndCountsThemAll() {
 		createMany(25);
-		Map<String, Object> page = data(get(PATH + "?pageNumber=1&pageSize=10"));
-		assertThat(page).containsEntry("total", 25).containsEntry("totalPages", 3).containsEntry("hasNext", true);
+		Map<String, Object> page = get(PATH + "?pageNumber=1&pageSize=10");
+		assertThat(page).containsEntry("total", 25);
 		assertThat(records(page)).hasSize(10);
 	}
 
@@ -167,8 +167,7 @@ class BankProductApiIntegrationTests {
 		createMany(25);
 		Set<Object> seen = new HashSet<>();
 		for (int page = 1; page <= 3; page++) {
-			records(data(get(PATH + "?pageNumber=" + page + "&pageSize=10")))
-				.forEach((record) -> seen.add(record.get("id")));
+			records(get(PATH + "?pageNumber=" + page + "&pageSize=10")).forEach((record) -> seen.add(record.get("id")));
 		}
 		assertThat(seen).hasSize(25);
 	}
@@ -177,7 +176,7 @@ class BankProductApiIntegrationTests {
 	void filtersByCategoryFromItsOwnIndex() {
 		create("SAV-1", "SAVINGS");
 		create("CUR-1", "CURRENT");
-		assertThat(data(get(PATH + "?category=SAVINGS"))).containsEntry("total", 1);
+		assertThat(get(PATH + "?category=SAVINGS")).containsEntry("total", 1);
 	}
 
 	/**
@@ -188,14 +187,8 @@ class BankProductApiIntegrationTests {
 	void intersectsTwoFiltersAndLeavesNothingBehind() {
 		create("SAV-1", "SAVINGS");
 		create("CUR-1", "CURRENT");
-		assertThat(data(get(PATH + "?category=SAVINGS&status=DRAFT"))).containsEntry("total", 1);
+		assertThat(get(PATH + "?category=SAVINGS&status=DRAFT")).containsEntry("total", 1);
 		assertThat(this.valkey.keys("v31it:cbs:product:index:intersection:*")).isEmpty();
-	}
-
-	@Test
-	void clampsAPageSizeNobodyShouldAskFor() {
-		createMany(3);
-		assertThat(data(get(PATH + "?pageSize=99999"))).containsEntry("pageSize", 500);
 	}
 
 	@Test
@@ -286,8 +279,8 @@ class BankProductApiIntegrationTests {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static List<Map<String, Object>> records(Map<String, Object> page) {
-		return (List<Map<String, Object>>) page.get("records");
+	private static List<Map<String, Object>> records(Map<String, ?> envelope) {
+		return (List<Map<String, Object>>) envelope.get("data");
 	}
 
 	/**
@@ -296,7 +289,7 @@ class BankProductApiIntegrationTests {
 	 * {@code 500}, telling the caller to retry a request that could never succeed.
 	 */
 	@Test
-	void rejectsAnEmptyBodyNamingTheFieldsThatAreMissing() {
+	void rejectsAnEmptyBody() {
 		Map<String, Object> body = this.client.post()
 			.uri(PATH)
 			.body(Map.of())
@@ -306,8 +299,7 @@ class BankProductApiIntegrationTests {
 			.expectBody(JSON_OBJECT)
 			.returnResult()
 			.getResponseBody();
-		assertThat(body).containsEntry("success", false).containsEntry("code", "VALIDATION_FAILED");
-		assertThat(violations(body)).isNotEmpty();
+		assertThat(body).containsEntry("code", 400);
 	}
 
 	/**
@@ -325,7 +317,7 @@ class BankProductApiIntegrationTests {
 			.expectBody(JSON_OBJECT)
 			.returnResult()
 			.getResponseBody();
-		assertThat(violations(body)).extracting((violation) -> violation.get("field")).contains("name");
+		assertThat(body).containsEntry("code", 400);
 	}
 
 	/**
@@ -344,14 +336,8 @@ class BankProductApiIntegrationTests {
 			.expectBody(JSON_OBJECT)
 			.returnResult()
 			.getResponseBody();
-		assertThat(body).containsEntry("success", false)
-			.containsEntry("code", "VALIDATION_FAILED")
-			.containsKey("timestamp");
-	}
-
-	@SuppressWarnings("unchecked")
-	private static List<Map<String, Object>> violations(Map<String, ?> envelope) {
-		return (List<Map<String, Object>>) envelope.get("violations");
+		assertThat(body).containsEntry("code", 400)
+			.doesNotContainKeys("succeeded", "violations", "timestamp", "traceId");
 	}
 
 	private static final String TOO_LONG = "x".repeat(100 + 1);

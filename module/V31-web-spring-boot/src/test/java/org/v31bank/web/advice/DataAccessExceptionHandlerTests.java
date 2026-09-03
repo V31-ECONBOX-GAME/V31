@@ -19,12 +19,11 @@ package org.v31bank.web.advice;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import org.v31bank.core.response.CommonErrorCode;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
@@ -41,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class DataAccessExceptionHandlerTests {
 
 	private final MockMvc mvc = MockMvcBuilders.standaloneSetup(new TestController())
-		.setControllerAdvice(new DataAccessExceptionHandler(), new ApiResponseExceptionHandler())
+		.setControllerAdvice(new DataAccessExceptionHandler(), new HttpResponseExceptionHandler())
 		.build();
 
 	/**
@@ -53,8 +52,7 @@ class DataAccessExceptionHandlerTests {
 	void reportsAWriteTheDatabaseRefusedAsAConflict() throws Exception {
 		this.mvc.perform(get("/duplicate"))
 			.andExpect(status().isConflict())
-			.andExpect(jsonPath("$.success").value(false))
-			.andExpect(jsonPath("$.code").value(CommonErrorCode.CONFLICT.code()));
+			.andExpect(jsonPath("$.code").value(HttpStatus.CONFLICT.value()));
 	}
 
 	@Test
@@ -68,7 +66,7 @@ class DataAccessExceptionHandlerTests {
 	void reportsALostRaceForTheSameRowAsAConflictToo() throws Exception {
 		this.mvc.perform(get("/stale"))
 			.andExpect(status().isConflict())
-			.andExpect(jsonPath("$.code").value(CommonErrorCode.CONFLICT.code()))
+			.andExpect(jsonPath("$.code").value(HttpStatus.CONFLICT.value()))
 			.andExpect(jsonPath("$.message").value("The record changed while this request was in flight"));
 	}
 

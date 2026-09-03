@@ -16,13 +16,14 @@
 
 package org.v31bank.customer.application.port.in;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.customer.application.dto.CustomerPageQuery;
 import org.v31bank.customer.domain.constant.CustomerStatus;
 import org.v31bank.customer.domain.model.Customer;
-import org.v31bank.data.jpa.domain.PageResult;
 
 /**
  * Use cases for managing customers.
@@ -36,7 +37,7 @@ public interface CustomerUseCase {
 
 	Optional<Customer> get(UUID id);
 
-	PageResult<Customer> page(CustomerPageQuery query);
+	HttpResponse<List<Customer>> page(CustomerPageQuery query);
 
 	/**
 	 * Update the customer with the given identifier.

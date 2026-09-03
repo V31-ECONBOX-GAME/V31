@@ -20,10 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
 
-import org.v31bank.web.advice.ApiResponseExceptionHandler;
-import org.v31bank.web.filter.RequestIdFilter;
+import org.v31bank.web.advice.HttpResponseExceptionHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,18 +31,9 @@ class V31WebSmokeTests {
 	@Autowired
 	private ApplicationContext context;
 
-	@Autowired
-	private Environment environment;
-
 	@Test
-	void theStarterAloneContributesTheAdviceAndTheFilter() {
-		assertThat(this.context.getBeansOfType(ApiResponseExceptionHandler.class)).hasSize(1);
-		assertThat(this.context.getBeansOfType(RequestIdFilter.class)).hasSize(1);
-	}
-
-	@Test
-	void theEnvironmentPostProcessorRegisteredInSpringFactoriesRuns() {
-		assertThat(this.environment.getProperty("logging.pattern.correlation")).isNotEmpty();
+	void theStarterAloneContributesTheAdvice() {
+		assertThat(this.context.getBeansOfType(HttpResponseExceptionHandler.class)).hasSize(1);
 	}
 
 	@Test

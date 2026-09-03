@@ -38,11 +38,6 @@ class ValkeyKeysTests {
 	}
 
 	@Test
-	void buildsAPatternForSweepingANamespace() {
-		assertThat(this.keys.patternUnder("customer")).isEqualTo("v31:customer:*");
-	}
-
-	@Test
 	void refusesASegmentThatWouldEscapeItsNamespace() {
 		assertThatExceptionOfType(IllegalArgumentException.class)
 			.isThrownBy(() -> this.keys.of("session", "7:session:admin"))
@@ -66,11 +61,6 @@ class ValkeyKeysTests {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ValkeyKeys(""));
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ValkeyKeys("v31:cache"));
 		assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> new ValkeyKeys(null));
-	}
-
-	@Test
-	void reportsItsPrefix() {
-		assertThat(this.keys.getPrefix()).isEqualTo("v31");
 	}
 
 }

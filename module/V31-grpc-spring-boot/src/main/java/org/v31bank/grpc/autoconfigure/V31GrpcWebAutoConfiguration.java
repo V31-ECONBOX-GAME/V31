@@ -29,16 +29,10 @@ import org.v31bank.grpc.web.HeaderPropagationFilter;
 
 /**
  * {@link AutoConfiguration Auto-configuration} for where a request's context enters the
- * platform.
+ * platform. The interceptors carry values between services, but the first hop is usually
+ * an HTTP call from outside and something has to put them there to begin with.
  * <p>
- * The interceptors carry values from one service to the next, but for most requests the
- * first hop is an HTTP call from outside, and something has to put the values there to
- * begin with. Without this the client interceptor finds nothing to send: the service at
- * the edge logs one identifier, the one behind it issues another, and the two halves of
- * the same request cannot be joined up.
- * <p>
- * Applies only to a servlet application. A service that speaks gRPC alone has no HTTP
- * entry point and needs none of this.
+ * Servlet applications only: a service speaking gRPC alone has no HTTP entry point.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -52,7 +46,7 @@ public class V31GrpcWebAutoConfiguration {
 
 	/**
 	 * Reads the request's context off the incoming HTTP request.
-	 * @param properties the header names to carry beyond the request identifier
+	 * @param properties the header names to carry
 	 * @return the filter
 	 */
 	@Bean

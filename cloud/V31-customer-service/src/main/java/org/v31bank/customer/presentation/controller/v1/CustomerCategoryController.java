@@ -33,22 +33,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.v31bank.core.response.ApiResponse;
-import org.v31bank.core.response.CommonErrorCode;
-import org.v31bank.core.response.ErrorCode;
-import org.v31bank.core.response.PageResponse;
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.customer.application.dto.CustomerCategoryPageQuery;
 import org.v31bank.customer.application.port.in.CustomerCategoryUseCase;
 import org.v31bank.customer.domain.constant.CustomerCategoryStatus;
 import org.v31bank.customer.domain.model.CustomerCategory;
 import org.v31bank.customer.presentation.dto.CustomerCategoryRequest;
 import org.v31bank.customer.presentation.dto.CustomerCategoryResponse;
-import org.v31bank.data.jpa.domain.PageResult;
 
 /**
  * REST endpoints for managing the customer category hierarchy.
  * <p>
- * Commands come back from the use case as an {@link ApiResponse} already carrying the
+ * Commands come back from the use case as an {@link HttpResponse} already carrying the
  * verdict, so this layer converts the payload from the domain model to the wire record
  * and puts the matching status on the response. It does not decide the outcome, and it
  * does not restate it.
@@ -62,12 +58,6 @@ public class CustomerCategoryController {
 
 	static final String PATH = "/api/v1/customer-categories";
 
-	/**
-	 * Status for a code this service does not recognise, matching the default an
-	 * {@link ErrorCode} declares: the request was well formed and a rule refused it.
-	 */
-	private static final int UNRECOGNISED_CODE_STATUS = HttpStatus.UNPROCESSABLE_CONTENT.value();
-
 	private final CustomerCategoryUseCase customerCategoryInputPort;
 
 	public CustomerCategoryController(CustomerCategoryUseCase customerCategoryInputPort) {
@@ -75,11 +65,11 @@ public class CustomerCategoryController {
 	}
 
 	@PostMapping
-	public ResponseEntity<ApiResponse<CustomerCategoryResponse>> create(
+	public ResponseEntity<HttpResponse<CustomerCategoryResponse>> create(
 			@Valid @RequestBody CustomerCategoryRequest request) {
-		ApiResponse<CustomerCategory> result = this.customerCategoryInputPort.create(request.code(), request.name(),
+		HttpResponse<CustomerCategory> result = this.customerCategoryInputPort.create(request.code(), request.name(),
 				request.parentId(), request.sortOrder(), request.status());
-		if (!result.success()) {
+		if (!result.succeeded()) {
 			return toResponseEntity(result);
 		}
 		return ResponseEntity.created(URI.create(PATH + "/" + result.data().getId()))
@@ -87,10 +77,10 @@ public class CustomerCategoryController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<ApiResponse<CustomerCategoryResponse>> get(@PathVariable UUID id) {
+	public ResponseEntity<HttpResponse<CustomerCategoryResponse>> get(@PathVariable UUID id) {
 		return this.customerCategoryInputPort.get(id)
-			.map((category) -> ResponseEntity.ok(ApiResponse.ok(CustomerCategoryResponse.from(category))))
-			.orElseGet(() -> error(CommonErrorCode.NOT_FOUND, "No customer category exists with id " + id));
+			.map((category) -> ResponseEntity.ok(HttpResponse.ok(CustomerCategoryResponse.from(category))))
+			.orElseGet(() -> error(HttpStatus.NOT_FOUND.value(), "No customer category exists with id " + id));
 	}
 
 	/**
@@ -100,11 +90,9 @@ public class CustomerCategoryController {
 	 * @return the page of matching categories
 	 */
 	@GetMapping
-	public ApiResponse<PageResponse<CustomerCategoryResponse>> page(CustomerCategoryPageQuery query) {
-		PageResult<CustomerCategoryResponse> page = this.customerCategoryInputPort.page(query)
-			.map(CustomerCategoryResponse::from);
-		return ApiResponse
-			.ok(PageResponse.of(page.getRecords(), page.getTotal(), page.getPageNumber(), page.getPageSize()));
+	public HttpResponse<List<CustomerCategoryResponse>> page(CustomerCategoryPageQuery query) {
+		return this.customerCategoryInputPort.page(query)
+			.map((records) -> records.stream().map(CustomerCategoryResponse::from).toList());
 	}
 
 	/**
@@ -116,16 +104,16 @@ public class CustomerCategoryController {
 	 * @return the root nodes, with descendants attached
 	 */
 	@GetMapping("/tree")
-	public ApiResponse<List<CustomerCategoryResponse>> tree(@RequestParam(required = false) UUID rootId,
+	public HttpResponse<List<CustomerCategoryResponse>> tree(@RequestParam(required = false) UUID rootId,
 			@RequestParam(required = false) CustomerCategoryStatus status) {
-		return ApiResponse.ok(this.customerCategoryInputPort.tree(rootId, status)
+		return HttpResponse.ok(this.customerCategoryInputPort.tree(rootId, status)
 			.stream()
 			.map(CustomerCategoryResponse::fromTree)
 			.toList());
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<ApiResponse<CustomerCategoryResponse>> update(@PathVariable UUID id,
+	public ResponseEntity<HttpResponse<CustomerCategoryResponse>> update(@PathVariable UUID id,
 			@Valid @RequestBody CustomerCategoryRequest request) {
 		return toResponseEntity(this.customerCategoryInputPort.update(id, request.code(), request.name(),
 				request.parentId(), request.sortOrder(), request.status()));
@@ -138,7 +126,7 @@ public class CustomerCategoryController {
 	 * @return the response to send
 	 */
 	@DeleteMapping("/{id}")
-	public ResponseEntity<ApiResponse<CustomerCategoryResponse>> delete(@PathVariable UUID id) {
+	public ResponseEntity<HttpResponse<CustomerCategoryResponse>> delete(@PathVariable UUID id) {
 		return toResponseEntity(this.customerCategoryInputPort.delete(id));
 	}
 
@@ -148,29 +136,22 @@ public class CustomerCategoryController {
 	 * @param result the outcome the use case reported
 	 * @return the response to send
 	 */
-	private static ResponseEntity<ApiResponse<CustomerCategoryResponse>> toResponseEntity(
-			ApiResponse<CustomerCategory> result) {
+	private static ResponseEntity<HttpResponse<CustomerCategoryResponse>> toResponseEntity(
+			HttpResponse<CustomerCategory> result) {
 		return ResponseEntity.status(statusOf(result)).body(result.map(CustomerCategoryResponse::from));
 	}
 
 	/**
 	 * Recover the HTTP status belonging to an outcome.
-	 * <p>
-	 * The envelope carries the code as text, since that is what goes on the wire, so the
-	 * status has to be looked back up rather than read off it. A code from outside
-	 * {@link CommonErrorCode} falls back to the default an {@link ErrorCode} declares.
 	 * @param result the outcome to place
 	 * @return the status to answer with
 	 */
-	private static int statusOf(ApiResponse<?> result) {
-		if (result.success()) {
-			return HttpStatus.OK.value();
-		}
-		return CommonErrorCode.find(result.code()).map(ErrorCode::httpStatus).orElse(UNRECOGNISED_CODE_STATUS);
+	private static int statusOf(HttpResponse<?> result) {
+		return result.code();
 	}
 
-	private static <T> ResponseEntity<ApiResponse<T>> error(ErrorCode errorCode, String message) {
-		return ResponseEntity.status(errorCode.httpStatus()).body(ApiResponse.error(errorCode, message));
+	private static <T> ResponseEntity<HttpResponse<T>> error(int code, String message) {
+		return ResponseEntity.status(code).body(HttpResponse.error(code, message));
 	}
 
 }

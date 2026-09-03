@@ -16,12 +16,13 @@
 
 package org.v31bank.cbs.application.port.out;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.v31bank.cbs.application.dto.BankProductPageQuery;
 import org.v31bank.cbs.domain.model.BankProduct;
-import org.v31bank.core.response.PageResponse;
+import org.v31bank.core.response.HttpResponse;
 
 /**
  * Output port for {@link BankProduct} persistence, implemented by the infrastructure
@@ -70,7 +71,7 @@ public interface BankProductPort {
 	 * @param query the filters and the pagination request
 	 * @return the page of matching products
 	 */
-	PageResponse<BankProduct> findPage(BankProductPageQuery query);
+	HttpResponse<List<BankProduct>> findPage(BankProductPageQuery query);
 
 	void delete(BankProduct product);
 

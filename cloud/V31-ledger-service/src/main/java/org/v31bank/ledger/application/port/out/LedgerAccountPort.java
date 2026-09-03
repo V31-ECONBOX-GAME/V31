@@ -16,10 +16,11 @@
 
 package org.v31bank.ledger.application.port.out;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.v31bank.data.jpa.domain.PageResult;
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.ledger.application.dto.LedgerAccountPageQuery;
 import org.v31bank.ledger.domain.model.LedgerAccount;
 
@@ -41,7 +42,7 @@ public interface LedgerAccountPort {
 	 * @param query the filters and the pagination request
 	 * @return the page of matching records
 	 */
-	PageResult<LedgerAccount> findPage(LedgerAccountPageQuery query);
+	HttpResponse<List<LedgerAccount>> findPage(LedgerAccountPageQuery query);
 
 	/**
 	 * Whether any record already uses the given code.

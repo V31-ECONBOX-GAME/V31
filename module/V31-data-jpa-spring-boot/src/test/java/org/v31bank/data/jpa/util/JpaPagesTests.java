@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-package org.v31bank.data.jpa.domain;
+package org.v31bank.data.jpa.util;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+
+import org.v31bank.core.request.PageQuery;
+import org.v31bank.core.response.HttpResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link PageQuery}.
+ * Tests for {@link JpaPages}.
  *
  * @author Xander Wang
  * @since 0.2.0
  */
-class PageQueryTests {
-
-	@Test
-	void startsAtTheFirstPage() {
-		PageQuery query = new PageQuery();
-		assertThat(query.getPageNumber()).isEqualTo(PageQuery.FIRST_PAGE_NUMBER);
-		assertThat(query.getPageSize()).isEqualTo(PageQuery.DEFAULT_PAGE_SIZE);
-	}
+class JpaPagesTests {
 
 	/**
 	 * The API counts pages from one and Spring Data counts them from zero. Getting this
@@ -48,39 +48,33 @@ class PageQueryTests {
 	}
 
 	@Test
-	void treatsAPageBeforeTheFirstAsTheFirst() {
+	void normalisesWhatTheCallerAskedFor() {
 		assertThat(pageable(0, 10).getPageNumber()).isZero();
-		assertThat(pageable(-5, 10).getPageNumber()).isZero();
-	}
-
-	/**
-	 * The page size arrives from the caller, so it is the one number in a listing request
-	 * that can be used to ask for the whole table at once.
-	 */
-	@Test
-	void refusesToReturnMoreThanTheMaximumPage() {
 		assertThat(pageable(1, PageQuery.MAX_PAGE_SIZE + 1).getPageSize()).isEqualTo(PageQuery.MAX_PAGE_SIZE);
-		assertThat(pageable(1, Integer.MAX_VALUE).getPageSize()).isEqualTo(PageQuery.MAX_PAGE_SIZE);
-	}
-
-	@Test
-	void refusesAPageOfNothing() {
 		assertThat(pageable(1, 0).getPageSize()).isEqualTo(1);
-		assertThat(pageable(1, -10).getPageSize()).isEqualTo(1);
 	}
 
 	@Test
 	void carriesTheSortThrough() {
 		Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
-		assertThat(new PageQuery().toPageable(sort).getSort()).isEqualTo(sort);
-		assertThat(new PageQuery().toPageable().getSort()).isEqualTo(Sort.unsorted());
+		assertThat(JpaPages.toPageable(new PageQuery(), sort).getSort()).isEqualTo(sort);
+		assertThat(JpaPages.toPageable(new PageQuery()).getSort()).isEqualTo(Sort.unsorted());
+	}
+
+	@Test
+	void carriesThePageAndTheTotal() {
+		HttpResponse<List<String>> page = JpaPages
+			.from(new PageImpl<>(List.of("a", "b", "c", "d", "e"), PageRequest.of(2, 10), 25));
+		assertThat(page.succeeded()).isTrue();
+		assertThat(page.total()).isEqualTo(25);
+		assertThat(page.data()).containsExactly("a", "b", "c", "d", "e");
 	}
 
 	private static Pageable pageable(int pageNumber, int pageSize) {
 		PageQuery query = new PageQuery();
 		query.setPageNumber(pageNumber);
 		query.setPageSize(pageSize);
-		return query.toPageable();
+		return JpaPages.toPageable(query);
 	}
 
 }

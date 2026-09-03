@@ -16,7 +16,7 @@
 
 package org.v31bank.notification.application.dto;
 
-import org.v31bank.data.jpa.domain.PageQuery;
+import org.v31bank.core.request.PageQuery;
 import org.v31bank.notification.domain.constant.NotificationChannel;
 import org.v31bank.notification.domain.constant.NotificationTemplateStatus;
 

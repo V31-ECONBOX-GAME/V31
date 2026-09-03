@@ -16,9 +16,11 @@
 
 package org.v31bank.compliance.application.service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,9 +30,7 @@ import org.v31bank.compliance.application.port.out.ComplianceCasePort;
 import org.v31bank.compliance.domain.constant.ComplianceCaseStatus;
 import org.v31bank.compliance.domain.constant.ComplianceCaseType;
 import org.v31bank.compliance.domain.model.ComplianceCase;
-import org.v31bank.core.response.ApiResponse;
-import org.v31bank.core.response.CommonErrorCode;
-import org.v31bank.core.response.PageResponse;
+import org.v31bank.core.response.HttpResponse;
 
 /**
  * Default {@link ComplianceCaseUseCase} implementation.
@@ -49,10 +49,10 @@ public class ComplianceCaseService implements ComplianceCaseUseCase {
 	}
 
 	@Override
-	public ApiResponse<ComplianceCase> create(String caseNumber, UUID customerId, ComplianceCaseType type,
+	public HttpResponse<ComplianceCase> create(String caseNumber, UUID customerId, ComplianceCaseType type,
 			String summary) {
 		if (this.complianceCaseRepository.existsByCaseNumber(caseNumber)) {
-			return ApiResponse.error(CommonErrorCode.CONFLICT,
+			return HttpResponse.error(HttpStatus.CONFLICT.value(),
 					"Compliance case number '" + caseNumber + "' is already in use");
 		}
 		ComplianceCase complianceCase = new ComplianceCase();
@@ -60,7 +60,7 @@ public class ComplianceCaseService implements ComplianceCaseUseCase {
 		complianceCase.setCustomerId(customerId);
 		complianceCase.setType(type);
 		complianceCase.setSummary(summary);
-		return ApiResponse.ok(this.complianceCaseRepository.save(complianceCase));
+		return HttpResponse.ok(this.complianceCaseRepository.save(complianceCase));
 	}
 
 	@Override
@@ -71,25 +71,25 @@ public class ComplianceCaseService implements ComplianceCaseUseCase {
 
 	@Override
 	@Transactional(readOnly = true)
-	public PageResponse<ComplianceCase> page(ComplianceCasePageQuery query) {
+	public HttpResponse<List<ComplianceCase>> page(ComplianceCasePageQuery query) {
 		return this.complianceCaseRepository.findPage(query);
 	}
 
 	@Override
-	public ApiResponse<ComplianceCase> update(UUID id, String caseNumber, UUID customerId, ComplianceCaseType type,
+	public HttpResponse<ComplianceCase> update(UUID id, String caseNumber, UUID customerId, ComplianceCaseType type,
 			ComplianceCaseStatus status, String summary) {
 		Optional<ComplianceCase> found = this.complianceCaseRepository.findById(id);
 		if (found.isEmpty()) {
-			return ApiResponse.error(CommonErrorCode.NOT_FOUND, "No compliance case exists with id " + id);
+			return HttpResponse.error(HttpStatus.NOT_FOUND.value(), "No compliance case exists with id " + id);
 		}
 		ComplianceCase complianceCase = found.get();
 		if (!complianceCase.getCaseNumber().equals(caseNumber)
 				&& this.complianceCaseRepository.existsByCaseNumber(caseNumber)) {
-			return ApiResponse.error(CommonErrorCode.CONFLICT,
+			return HttpResponse.error(HttpStatus.CONFLICT.value(),
 					"Compliance case number '" + caseNumber + "' is already in use");
 		}
 		if (complianceCase.getStatus() == ComplianceCaseStatus.CLOSED) {
-			return ApiResponse.error(CommonErrorCode.CONFLICT,
+			return HttpResponse.error(HttpStatus.CONFLICT.value(),
 					"Compliance case " + id + " is closed and cannot be changed");
 		}
 		complianceCase.setCaseNumber(caseNumber);
@@ -99,7 +99,7 @@ public class ComplianceCaseService implements ComplianceCaseUseCase {
 		if (status != null) {
 			complianceCase.setStatus(status);
 		}
-		return ApiResponse.ok(this.complianceCaseRepository.save(complianceCase));
+		return HttpResponse.ok(this.complianceCaseRepository.save(complianceCase));
 	}
 
 	/**
@@ -110,18 +110,18 @@ public class ComplianceCaseService implements ComplianceCaseUseCase {
 	 * progress — raised in error, a duplicate of another — can be removed.
 	 */
 	@Override
-	public ApiResponse<ComplianceCase> delete(UUID id) {
+	public HttpResponse<ComplianceCase> delete(UUID id) {
 		Optional<ComplianceCase> found = this.complianceCaseRepository.findById(id);
 		if (found.isEmpty()) {
-			return ApiResponse.error(CommonErrorCode.NOT_FOUND, "No compliance case exists with id " + id);
+			return HttpResponse.error(HttpStatus.NOT_FOUND.value(), "No compliance case exists with id " + id);
 		}
 		ComplianceCase complianceCase = found.get();
 		if (complianceCase.getStatus() == ComplianceCaseStatus.CLOSED) {
-			return ApiResponse.error(CommonErrorCode.CONFLICT,
+			return HttpResponse.error(HttpStatus.CONFLICT.value(),
 					"Compliance case " + id + " is closed and is kept as a record of the decision");
 		}
 		this.complianceCaseRepository.deleteById(id);
-		return ApiResponse.ok(complianceCase);
+		return HttpResponse.ok(complianceCase);
 	}
 
 }

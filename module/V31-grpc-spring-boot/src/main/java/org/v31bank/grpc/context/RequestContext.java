@@ -24,30 +24,16 @@ import java.util.regex.Pattern;
 import io.grpc.Context;
 
 /**
- * What travels with a request, wherever it goes next.
+ * What travels with a request wherever it goes next — which trace it belongs to, which
+ * tenant asked — so the meaning does not stop at the first hop.
  * <p>
- * A request arrives carrying values that mean something further in — which trace it
- * belongs to, which tenant asked, which language to answer in — and the calls made while
- * serving it have to carry the same ones, or the meaning stops at the first hop. This is
- * where they live between arriving and being sent on.
- *
- * <h2>Two carriers, because there are two kinds of thread</h2>
- *
- * A servlet request runs on the thread it arrived on, so a {@link ThreadLocal} holds it.
- * A gRPC call does not: the interceptor runs on one thread and the handler on another,
- * and a {@code ThreadLocal} set in the interceptor is simply not there when the handler
- * runs. {@link Context} is gRPC's own carrier and is propagated across those hops, so it
- * holds it there.
+ * Two carriers, because there are two kinds of thread. A servlet request stays on its
+ * thread, so a {@link ThreadLocal} holds it; a gRPC interceptor and handler run on
+ * different threads, so {@link Context} holds it there. {@link #current()} reads the gRPC
+ * context first and falls back to the thread.
  * <p>
- * {@link #current()} reads the gRPC context first — authoritative while a call is being
- * served — and falls back to the thread, so a gRPC call made while serving an HTTP
- * request picks up what that request arrived with.
- *
- * <h2>What must not go in here</h2>
- *
- * Nothing secret. Everything placed here is copied onto every outgoing call, to every
- * service reached, for the rest of the request. A credential put here would be handed to
- * services that have no business holding one, and would reach any of them that logs its
+ * <strong>Nothing secret goes in here.</strong> Everything placed here is copied onto
+ * every outgoing call, to every service reached, and reaches any of them that logs its
  * metadata. Credentials travel deliberately, per call.
  *
  * @author Xander Wang
@@ -61,12 +47,9 @@ public final class RequestContext {
 	public static final Context.Key<Map<String, String>> CONTEXT_KEY = Context.key("v31-request-context");
 
 	/**
-	 * What a value has to look like to be carried.
-	 * <p>
-	 * Printable ASCII and bounded: these values end up in gRPC metadata, in response
-	 * headers, and in log lines. One containing a newline could forge a log entry or
-	 * terminate a header early, and one of unbounded length is a way to make every
-	 * downstream call expensive.
+	 * What a value must look like to be carried: printable ASCII and bounded. These end
+	 * up in metadata, headers and log lines, where a newline forges a log entry and an
+	 * unbounded length makes every downstream call expensive.
 	 */
 	private static final Pattern ACCEPTED_VALUE = Pattern.compile("[\\x20-\\x7E]{1,256}");
 
@@ -98,18 +81,9 @@ public final class RequestContext {
 	}
 
 	/**
-	 * Attach values to the current thread until the returned scope is closed.
-	 * <p>
-	 * For the HTTP side, where the request runs on one thread. Values left behind on a
-	 * pooled thread would be attributed to whatever it served next, which is why this
-	 * returns something that has to be closed rather than a pair of methods that can be
-	 * left unpaired.
-	 *
-	 * <pre class="code">
-	 * try (RequestContext.Scope scope = RequestContext.attach(values)) {
-	 *     chain.doFilter(request, response);
-	 * }
-	 * </pre>
+	 * Attach values to the current thread until the returned scope is closed. Returns a
+	 * scope rather than a pair of methods because values left on a pooled thread would be
+	 * attributed to whatever it served next.
 	 * @param values what the request is carrying
 	 * @return the scope to close when the request is done with
 	 */

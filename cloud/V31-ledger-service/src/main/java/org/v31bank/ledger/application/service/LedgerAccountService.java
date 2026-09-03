@@ -16,16 +16,16 @@
 
 package org.v31bank.ledger.application.service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import org.v31bank.core.response.ApiResponse;
-import org.v31bank.core.response.CommonErrorCode;
-import org.v31bank.data.jpa.domain.PageResult;
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.ledger.application.dto.LedgerAccountPageQuery;
 import org.v31bank.ledger.application.port.in.LedgerAccountUseCase;
 import org.v31bank.ledger.application.port.out.LedgerAccountPort;
@@ -50,19 +50,19 @@ public class LedgerAccountService implements LedgerAccountUseCase {
 	}
 
 	@Override
-	public ApiResponse<LedgerAccount> create(String code, String name, LedgerAccountType type) {
-		ApiResponse<LedgerAccount> invalid = validate(code, name, type);
+	public HttpResponse<LedgerAccount> create(String code, String name, LedgerAccountType type) {
+		HttpResponse<LedgerAccount> invalid = validate(code, name, type);
 		if (invalid != null) {
 			return invalid;
 		}
 		if (this.ledgerAccountRepository.existsByCode(code)) {
-			return ApiResponse.error(CommonErrorCode.CONFLICT, "Code '" + code + "' is already in use");
+			return HttpResponse.error(HttpStatus.CONFLICT.value(), "Code '" + code + "' is already in use");
 		}
 		LedgerAccount ledgerAccount = new LedgerAccount();
 		ledgerAccount.setCode(code);
 		ledgerAccount.setName(name);
 		ledgerAccount.setType(type);
-		return ApiResponse.ok(this.ledgerAccountRepository.save(ledgerAccount));
+		return HttpResponse.ok(this.ledgerAccountRepository.save(ledgerAccount));
 	}
 
 	@Override
@@ -73,24 +73,24 @@ public class LedgerAccountService implements LedgerAccountUseCase {
 
 	@Override
 	@Transactional(readOnly = true)
-	public PageResult<LedgerAccount> page(LedgerAccountPageQuery query) {
+	public HttpResponse<List<LedgerAccount>> page(LedgerAccountPageQuery query) {
 		return this.ledgerAccountRepository.findPage(query);
 	}
 
 	@Override
-	public ApiResponse<LedgerAccount> update(UUID id, String code, String name, LedgerAccountType type,
+	public HttpResponse<LedgerAccount> update(UUID id, String code, String name, LedgerAccountType type,
 			LedgerAccountStatus status) {
-		ApiResponse<LedgerAccount> invalid = validate(code, name, type);
+		HttpResponse<LedgerAccount> invalid = validate(code, name, type);
 		if (invalid != null) {
 			return invalid;
 		}
 		Optional<LedgerAccount> found = this.ledgerAccountRepository.findById(id);
 		if (found.isEmpty()) {
-			return ApiResponse.error(CommonErrorCode.NOT_FOUND, "No ledger account exists with id " + id);
+			return HttpResponse.error(HttpStatus.NOT_FOUND.value(), "No ledger account exists with id " + id);
 		}
 		LedgerAccount ledgerAccount = found.get();
 		if (!ledgerAccount.getCode().equals(code) && this.ledgerAccountRepository.existsByCode(code)) {
-			return ApiResponse.error(CommonErrorCode.CONFLICT, "Code '" + code + "' is already in use");
+			return HttpResponse.error(HttpStatus.CONFLICT.value(), "Code '" + code + "' is already in use");
 		}
 		ledgerAccount.setCode(code);
 		ledgerAccount.setName(name);
@@ -98,7 +98,7 @@ public class LedgerAccountService implements LedgerAccountUseCase {
 		if (status != null) {
 			ledgerAccount.setStatus(status);
 		}
-		return ApiResponse.ok(this.ledgerAccountRepository.save(ledgerAccount));
+		return HttpResponse.ok(this.ledgerAccountRepository.save(ledgerAccount));
 	}
 
 	/**
@@ -115,36 +115,36 @@ public class LedgerAccountService implements LedgerAccountUseCase {
 	 * @param type the type to check
 	 * @return the refusal, or {@code null} when there is nothing to refuse
 	 */
-	private static ApiResponse<LedgerAccount> validate(String code, String name, LedgerAccountType type) {
+	private static HttpResponse<LedgerAccount> validate(String code, String name, LedgerAccountType type) {
 		if (!StringUtils.hasText(code)) {
-			return ApiResponse.error(CommonErrorCode.VALIDATION_FAILED, "Code is required");
+			return HttpResponse.error(HttpStatus.BAD_REQUEST.value(), "Code is required");
 		}
 		if (code.length() > LedgerAccount.CODE_MAX_LENGTH) {
-			return ApiResponse.error(CommonErrorCode.VALIDATION_FAILED,
+			return HttpResponse.error(HttpStatus.BAD_REQUEST.value(),
 					"Code is longer than " + LedgerAccount.CODE_MAX_LENGTH + " characters");
 		}
 		if (!StringUtils.hasText(name)) {
-			return ApiResponse.error(CommonErrorCode.VALIDATION_FAILED, "Name is required");
+			return HttpResponse.error(HttpStatus.BAD_REQUEST.value(), "Name is required");
 		}
 		if (name.length() > LedgerAccount.NAME_MAX_LENGTH) {
-			return ApiResponse.error(CommonErrorCode.VALIDATION_FAILED,
+			return HttpResponse.error(HttpStatus.BAD_REQUEST.value(),
 					"Name is longer than " + LedgerAccount.NAME_MAX_LENGTH + " characters");
 		}
 		if (type == null) {
-			return ApiResponse.error(CommonErrorCode.VALIDATION_FAILED, "Type is required");
+			return HttpResponse.error(HttpStatus.BAD_REQUEST.value(), "Type is required");
 		}
 		return null;
 	}
 
 	@Override
-	public ApiResponse<LedgerAccount> delete(UUID id) {
+	public HttpResponse<LedgerAccount> delete(UUID id) {
 		Optional<LedgerAccount> found = this.ledgerAccountRepository.findById(id);
 		if (found.isEmpty()) {
-			return ApiResponse.error(CommonErrorCode.NOT_FOUND, "No ledger account exists with id " + id);
+			return HttpResponse.error(HttpStatus.NOT_FOUND.value(), "No ledger account exists with id " + id);
 		}
 		LedgerAccount ledgerAccount = found.get();
 		this.ledgerAccountRepository.delete(ledgerAccount);
-		return ApiResponse.ok(ledgerAccount);
+		return HttpResponse.ok(ledgerAccount);
 	}
 
 }

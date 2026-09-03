@@ -33,21 +33,13 @@ import org.springframework.grpc.client.interceptor.DefaultDeadlineSetupClientInt
 import org.v31bank.grpc.client.HeaderPropagationClientInterceptor;
 
 /**
- * {@link AutoConfiguration Auto-configuration} for the calls a V31 service makes: gives
- * every one a deadline and carries the request identifier onward.
- *
- * <h2>Why a deadline is applied by default</h2>
- *
- * gRPC does not impose one. A call to a service that has stopped answering — not
- * refusing, answering nothing — waits until the connection breaks, which may be minutes.
- * The calling thread waits with it, and so does whoever is waiting on that thread. Under
- * load this is how one unhealthy service exhausts the thread pools of everything in front
- * of it while all of them look healthy.
+ * {@link AutoConfiguration Auto-configuration} for the calls a V31 service makes: every
+ * one gets a deadline, and the headers listed for propagation are carried onward.
  * <p>
- * Spring gRPC ships the interceptor for this but does not install it, so a call without a
- * deadline is what you get unless you ask otherwise. Here it is the other way round:
- * every call leaves with {@code v31.grpc.client.default-deadline} unless it set one of
- * its own, and removing it is a deliberate act.
+ * gRPC imposes no deadline, so a call to a service answering nothing waits until the
+ * connection breaks — under load, how one unhealthy service exhausts the pools in front
+ * of it while all of them look healthy. Spring gRPC ships the interceptor but does not
+ * install it; here it is installed and removing it is the deliberate act.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -58,10 +50,8 @@ import org.v31bank.grpc.client.HeaderPropagationClientInterceptor;
 public class V31GrpcClientAutoConfiguration {
 
 	/**
-	 * Applies the default deadline to any call that did not set one.
-	 * <p>
-	 * Set {@code v31.grpc.client.deadline.enabled} to {@code false} to leave calls
-	 * unbounded, which is what gRPC does on its own.
+	 * Applies the default deadline to any call that did not set one. Set
+	 * {@code v31.grpc.client.deadline.enabled} to {@code false} to leave calls unbounded.
 	 * @param properties the deadline to apply
 	 * @return the interceptor
 	 * @throws IllegalStateException if the configured duration is not positive, since a

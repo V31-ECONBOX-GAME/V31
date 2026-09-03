@@ -88,7 +88,7 @@ class CustomerCategoryApiIntegrationTests {
 			.expectBody(JSON_OBJECT)
 			.returnResult()
 			.getResponseBody();
-		assertThat(body).containsEntry("success", true).containsEntry("code", "OK");
+		assertThat(body).containsEntry("code", 200);
 		assertThat(data(body)).containsEntry("code", "RETAIL")
 			.containsEntry("name", "Retail")
 			.containsEntry("status", "ENABLED");
@@ -113,7 +113,7 @@ class CustomerCategoryApiIntegrationTests {
 			.expectBody(JSON_OBJECT)
 			.returnResult()
 			.getResponseBody();
-		assertThat(body).containsEntry("success", false).containsEntry("code", "CONFLICT");
+		assertThat(body).containsEntry("code", 409);
 	}
 
 	/**
@@ -131,7 +131,7 @@ class CustomerCategoryApiIntegrationTests {
 			.expectBody(JSON_OBJECT)
 			.returnResult()
 			.getResponseBody();
-		assertThat(body).containsEntry("code", "UNPROCESSABLE");
+		assertThat(body).containsEntry("code", 422);
 		assertThat((String) body.get("message")).contains(ABSENT_ID.toString());
 	}
 
@@ -169,9 +169,9 @@ class CustomerCategoryApiIntegrationTests {
 		for (int i = 1; i <= 3; i++) {
 			create("CAT" + i, "Category " + i, null);
 		}
-		Map<String, Object> page = (Map<String, Object>) data(get(PATH + "?pageNumber=1&pageSize=2"));
-		assertThat(page).containsEntry("total", 3).containsEntry("pageSize", 2).containsEntry("hasNext", true);
-		assertThat((List<?>) page.get("records")).hasSize(2);
+		Map<String, Object> page = get(PATH + "?pageNumber=1&pageSize=2");
+		assertThat(page).containsEntry("total", 3);
+		assertThat((List<?>) page.get("data")).hasSize(2);
 	}
 
 	@Test
@@ -207,7 +207,7 @@ class CustomerCategoryApiIntegrationTests {
 			.returnResult()
 			.getResponseBody();
 
-		assertThat(body).containsEntry("code", "CONFLICT");
+		assertThat(body).containsEntry("code", 409);
 		// Omitted rather than null: the service is configured to leave absent
 		// fields out, so a root category carries no parent key at all.
 		assertThat(data(get(PATH + "/" + root))).doesNotContainKey("parentId");
@@ -262,7 +262,7 @@ class CustomerCategoryApiIntegrationTests {
 			.returnResult()
 			.getResponseBody();
 
-		assertThat(body).containsEntry("code", "CONFLICT");
+		assertThat(body).containsEntry("code", 409);
 		assertThat(data(get(PATH + "/" + root))).containsEntry("code", "RETAIL");
 	}
 
@@ -279,7 +279,7 @@ class CustomerCategoryApiIntegrationTests {
 	}
 
 	@Test
-	void rejectsAnEmptyBodyNamingTheFieldsThatAreMissing() {
+	void rejectsAnEmptyBody() {
 		Map<String, Object> body = this.client.post()
 			.uri(PATH)
 			.body(Map.of())
@@ -289,8 +289,8 @@ class CustomerCategoryApiIntegrationTests {
 			.expectBody(JSON_OBJECT)
 			.returnResult()
 			.getResponseBody();
-		assertThat(body).containsEntry("code", "VALIDATION_FAILED");
-		assertThat(violations(body)).extracting((violation) -> violation.get("field")).contains("code", "name");
+		assertThat(body).containsEntry("code", 400);
+		assertThat(body).containsEntry("code", 400);
 	}
 
 	@Test
@@ -304,7 +304,7 @@ class CustomerCategoryApiIntegrationTests {
 			.expectBody(JSON_OBJECT)
 			.returnResult()
 			.getResponseBody();
-		assertThat(violations(body)).extracting((violation) -> violation.get("field")).contains("code");
+		assertThat(body).containsEntry("code", 400);
 	}
 
 	@Test
@@ -364,11 +364,6 @@ class CustomerCategoryApiIntegrationTests {
 	@SuppressWarnings("unchecked")
 	private static List<Map<String, Object>> children(Map<String, Object> node) {
 		return (List<Map<String, Object>>) node.get("children");
-	}
-
-	@SuppressWarnings("unchecked")
-	private static List<Map<String, Object>> violations(Map<String, ?> envelope) {
-		return (List<Map<String, Object>>) envelope.get("violations");
 	}
 
 }

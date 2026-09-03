@@ -16,11 +16,11 @@
 
 package org.v31bank.ledger.application.port.in;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.v31bank.core.response.ApiResponse;
-import org.v31bank.data.jpa.domain.PageResult;
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.ledger.application.dto.LedgerAccountPageQuery;
 import org.v31bank.ledger.domain.constant.LedgerAccountStatus;
 import org.v31bank.ledger.domain.constant.LedgerAccountType;
@@ -41,7 +41,7 @@ public interface LedgerAccountUseCase {
 	 * @param type the type
 	 * @return the outcome of the command
 	 */
-	ApiResponse<LedgerAccount> create(String code, String name, LedgerAccountType type);
+	HttpResponse<LedgerAccount> create(String code, String name, LedgerAccountType type);
 
 	Optional<LedgerAccount> get(UUID id);
 
@@ -50,7 +50,7 @@ public interface LedgerAccountUseCase {
 	 * @param query the filters and the pagination request
 	 * @return the page of matching records
 	 */
-	PageResult<LedgerAccount> page(LedgerAccountPageQuery query);
+	HttpResponse<List<LedgerAccount>> page(LedgerAccountPageQuery query);
 
 	/**
 	 * Update the ledger account with the given identifier.
@@ -61,7 +61,7 @@ public interface LedgerAccountUseCase {
 	 * @param status the new status, or {@code null} to leave it unchanged
 	 * @return the outcome of the command
 	 */
-	ApiResponse<LedgerAccount> update(UUID id, String code, String name, LedgerAccountType type,
+	HttpResponse<LedgerAccount> update(UUID id, String code, String name, LedgerAccountType type,
 			LedgerAccountStatus status);
 
 	/**
@@ -69,6 +69,6 @@ public interface LedgerAccountUseCase {
 	 * @param id the record to delete
 	 * @return the outcome of the command
 	 */
-	ApiResponse<LedgerAccount> delete(UUID id);
+	HttpResponse<LedgerAccount> delete(UUID id);
 
 }

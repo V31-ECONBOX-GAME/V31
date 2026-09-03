@@ -19,15 +19,9 @@ package org.v31bank.notification;
 import java.util.Map;
 import java.util.UUID;
 
-import io.grpc.Metadata;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
-import io.grpc.ServerCall;
-import io.grpc.ServerCallHandler;
-import io.grpc.ServerInterceptor;
-import io.grpc.ServerInterceptors;
 import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +34,6 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
-import org.v31bank.core.constant.ApiHeaders;
 import org.v31bank.ledger.api.v1.CreateLedgerAccountRequest;
 import org.v31bank.ledger.api.v1.CreateLedgerAccountResponse;
 import org.v31bank.ledger.api.v1.GetLedgerAccountRequest;
@@ -89,10 +82,7 @@ class LedgerAccountApiIntegrationTests {
 
 	private static Server startLedger() {
 		try {
-			return ServerBuilder.forPort(0)
-				.addService(ServerInterceptors.intercept(new FakeLedger(), new RequestIdRecorder()))
-				.build()
-				.start();
+			return ServerBuilder.forPort(0).addService(new FakeLedger()).build().start();
 		}
 		catch (java.io.IOException ex) {
 			throw new IllegalStateException("Could not start the stand-in ledger", ex);
@@ -126,7 +116,7 @@ class LedgerAccountApiIntegrationTests {
 			.expectBody(JSON_OBJECT)
 			.returnResult()
 			.getResponseBody();
-		assertThat(body).containsEntry("success", true).containsEntry("code", "OK");
+		assertThat(body).containsEntry("code", 200);
 		assertThat(data(body)).containsEntry("code", "ACC-1")
 			.containsEntry("name", "Cash")
 			.containsEntry("type", "ASSET")
@@ -139,52 +129,48 @@ class LedgerAccountApiIntegrationTests {
 	}
 
 	/**
-	 * The reason the ledger gave has to survive the hop. Reported as a {@code 500} the
-	 * caller would retry a request that can never succeed; reported without the code it
-	 * would have to read the message to find out what happened.
+	 * gRPC's status is not mapped onto an HTTP one, so a refusal the ledger chose and a
+	 * failure it did not both arrive as {@code 500}. The wording it wrote goes to the log
+	 * with the cause, not to the caller.
 	 */
 	@Test
-	void passesOnTheReasonTheLedgerRefused() {
-		FakeLedger.refuseWith(Status.ALREADY_EXISTS.withDescription("Code 'ACC-1' is already in use"), "CONFLICT");
+	void reportsAnythingTheLedgerRefusedAsAServerError() {
+		FakeLedger.refuseWith(Status.ALREADY_EXISTS.withDescription("Code 'ACC-1' is already in use"));
 
 		Map<String, Object> body = this.client.post()
 			.uri(PATH)
 			.body(Map.of("code", "ACC-1", "name", "Cash", "type", "ASSET"))
 			.exchange()
 			.expectStatus()
-			.isEqualTo(HttpStatus.CONFLICT)
+			.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
 			.expectBody(JSON_OBJECT)
 			.returnResult()
 			.getResponseBody();
 
-		assertThat(body).containsEntry("success", false)
-			.containsEntry("code", "CONFLICT")
-			.containsEntry("message", "Code 'ACC-1' is already in use");
+		assertThat(body).containsEntry("code", 500);
+		assertThat((String) body.get("message")).doesNotContain("ACC-1");
 	}
 
 	@Test
 	void reportsAnAccountTheLedgerDoesNotHaveAsNotFound() {
-		FakeLedger.refuseWith(Status.NOT_FOUND.withDescription("No ledger account exists with id " + ACCOUNT_ID),
-				"NOT_FOUND");
+		FakeLedger.refuseWith(Status.NOT_FOUND.withDescription("No ledger account exists with id " + ACCOUNT_ID));
 
 		this.client.get().uri(PATH + "/" + ACCOUNT_ID).exchange().expectStatus().isNotFound();
 	}
 
 	/**
-	 * A failure with no code on it did not come from a V31 service — it came from the
-	 * transport, a proxy, or a deadline. Its description is diagnostic text written for
-	 * whoever reads the logs, and must not be handed to the caller.
+	 * The description is diagnostic text written for whoever reads the logs, and must not
+	 * be handed to the caller.
 	 */
 	@Test
 	void saysNothingAboutAFailureTheLedgerDidNotChoose() {
-		FakeLedger.refuseWith(Status.UNAVAILABLE.withDescription("io exception: connect to ledger-primary refused"),
-				null);
+		FakeLedger.refuseWith(Status.UNAVAILABLE.withDescription("io exception: connect to ledger-primary refused"));
 
 		Map<String, Object> body = this.client.get()
 			.uri(PATH + "/" + ACCOUNT_ID)
 			.exchange()
 			.expectStatus()
-			.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE)
+			.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
 			.expectBody(JSON_OBJECT)
 			.returnResult()
 			.getResponseBody();
@@ -208,42 +194,8 @@ class LedgerAccountApiIntegrationTests {
 			.returnResult()
 			.getResponseBody();
 
-		assertThat(body).containsEntry("code", "VALIDATION_FAILED");
+		assertThat(body).containsEntry("code", 400);
 		assertThat(FakeLedger.calls).isZero();
-	}
-
-	/**
-	 * The identifier the request arrived with has to reach the ledger, or the two halves
-	 * of one request cannot be joined up in the logs.
-	 */
-	@Test
-	void carriesTheRequestIdentifierOnToTheLedger() {
-		this.client.post()
-			.uri(PATH)
-			.header(ApiHeaders.REQUEST_ID, "REQ-ACROSS-HOPS")
-			.body(Map.of("code", "ACC-1", "name", "Cash", "type", "ASSET"))
-			.exchange()
-			.expectStatus()
-			.isCreated();
-
-		assertThat(FakeLedger.lastRequestId).isEqualTo("REQ-ACROSS-HOPS");
-	}
-
-	/**
-	 * A request that arrived without one is still given one, so the call onward is not
-	 * the start of a second trace.
-	 */
-	@Test
-	void issuesAnIdentifierForARequestThatArrivedWithout() {
-		this.client.post()
-			.uri(PATH)
-			.body(Map.of("code", "ACC-1", "name", "Cash", "type", "ASSET"))
-			.exchange()
-			.expectStatus()
-			.isCreated();
-
-		assertThat(FakeLedger.lastRequestId).isNotBlank();
-		assertThat(UUID.fromString(FakeLedger.lastRequestId).version()).isEqualTo(7);
 	}
 
 	private Map<String, Object> get(String uri) {
@@ -267,30 +219,17 @@ class LedgerAccountApiIntegrationTests {
 	 */
 	static class FakeLedger extends LedgerAccountServiceGrpc.LedgerAccountServiceImplBase {
 
-		private static final Metadata.Key<String> ERROR_CODE = Metadata.Key.of("v31-error-code",
-				Metadata.ASCII_STRING_MARSHALLER);
-
-		static final Metadata.Key<String> REQUEST_ID = Metadata.Key.of("x-request-id",
-				Metadata.ASCII_STRING_MARSHALLER);
-
-		static volatile String lastRequestId;
-
 		static volatile int calls;
 
 		private static volatile Status refusal;
 
-		private static volatile String refusalCode;
-
 		static void reset() {
-			lastRequestId = null;
 			calls = 0;
 			refusal = null;
-			refusalCode = null;
 		}
 
-		static void refuseWith(Status status, String errorCode) {
+		static void refuseWith(Status status) {
 			refusal = status;
-			refusalCode = errorCode;
 		}
 
 		@Override
@@ -324,35 +263,11 @@ class LedgerAccountApiIntegrationTests {
 		private <T> void answer(StreamObserver<T> observer, T response) {
 			calls++;
 			if (refusal != null) {
-				observer.onError(asException(refusal, refusalCode));
+				observer.onError(refusal.asRuntimeException());
 				return;
 			}
 			observer.onNext(response);
 			observer.onCompleted();
-		}
-
-		private static StatusRuntimeException asException(Status status, String errorCode) {
-			Metadata trailers = new Metadata();
-			if (errorCode != null) {
-				trailers.put(ERROR_CODE, errorCode);
-			}
-			return status.asRuntimeException(trailers);
-		}
-
-	}
-
-	/**
-	 * Records what the client interceptor put on the call. Reading the metadata on the
-	 * far side is the only way to tell that the identifier was actually sent, rather than
-	 * merely present on the near side.
-	 */
-	static class RequestIdRecorder implements ServerInterceptor {
-
-		@Override
-		public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers,
-				ServerCallHandler<ReqT, RespT> next) {
-			FakeLedger.lastRequestId = headers.get(FakeLedger.REQUEST_ID);
-			return next.startCall(call, headers);
 		}
 
 	}

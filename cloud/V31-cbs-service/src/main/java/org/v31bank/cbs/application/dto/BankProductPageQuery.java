@@ -18,6 +18,7 @@ package org.v31bank.cbs.application.dto;
 
 import org.v31bank.cbs.domain.constant.BankProductCategory;
 import org.v31bank.cbs.domain.constant.BankProductStatus;
+import org.v31bank.core.request.PageQuery;
 
 /**
  * Paginated bank product query, using one-based page numbering.
@@ -31,24 +32,7 @@ import org.v31bank.cbs.domain.constant.BankProductStatus;
  * @author Xander Wang
  * @since 0.2.0
  */
-public class BankProductPageQuery {
-
-	/**
-	 * The number of the first page.
-	 */
-	public static final int FIRST_PAGE_NUMBER = 1;
-
-	/**
-	 * The page size applied when none is specified.
-	 */
-	public static final int DEFAULT_PAGE_SIZE = 10;
-
-	/**
-	 * One-based page number.
-	 */
-	private int pageNumber = FIRST_PAGE_NUMBER;
-
-	private int pageSize = DEFAULT_PAGE_SIZE;
+public class BankProductPageQuery extends PageQuery {
 
 	/**
 	 * Category to match.
@@ -59,22 +43,6 @@ public class BankProductPageQuery {
 	 * Status to match.
 	 */
 	private BankProductStatus status;
-
-	public int getPageNumber() {
-		return this.pageNumber;
-	}
-
-	public void setPageNumber(int pageNumber) {
-		this.pageNumber = pageNumber;
-	}
-
-	public int getPageSize() {
-		return this.pageSize;
-	}
-
-	public void setPageSize(int pageSize) {
-		this.pageSize = pageSize;
-	}
 
 	public BankProductCategory getCategory() {
 		return this.category;

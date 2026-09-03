@@ -16,10 +16,13 @@
 
 package org.v31bank.notification.application.port.out;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.v31bank.core.response.PageResponse;
+import org.springframework.web.server.ResponseStatusException;
+
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.notification.application.dto.LedgerAccountSummary;
 
 /**
@@ -30,10 +33,10 @@ import org.v31bank.notification.application.dto.LedgerAccountSummary;
  * database, a gRPC call or a cache, and swapping one for another touches only the
  * adapter.
  * <p>
- * Failures arrive as {@link org.v31bank.core.exception.ApiException}, carrying the code
- * the ledger reported. That is the point of the translation the adapter does: a remote
- * refusal reaches this layer looking like any other, and nothing here has to know what a
- * gRPC status is.
+ * Failures arrive as {@link ResponseStatusException}, carrying the code the ledger
+ * reported. That is the point of the translation the adapter does: a remote refusal
+ * reaches this layer looking like any other, and nothing here has to know what a gRPC
+ * status is.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -66,7 +69,7 @@ public interface LedgerAccountPort {
 	 * @param code fragment matched against the code, or {@code null} for no filter
 	 * @return the page of matching accounts
 	 */
-	PageResponse<LedgerAccountSummary> findPage(int pageNumber, int pageSize, String code);
+	HttpResponse<List<LedgerAccountSummary>> findPage(int pageNumber, int pageSize, String code);
 
 	/**
 	 * Update an account.

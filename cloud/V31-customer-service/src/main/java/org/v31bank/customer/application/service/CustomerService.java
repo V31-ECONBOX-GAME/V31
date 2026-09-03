@@ -16,18 +16,19 @@
 
 package org.v31bank.customer.application.service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.customer.application.dto.CustomerPageQuery;
 import org.v31bank.customer.application.port.in.CustomerUseCase;
 import org.v31bank.customer.application.port.out.CustomerPort;
 import org.v31bank.customer.domain.constant.CustomerStatus;
 import org.v31bank.customer.domain.model.Customer;
-import org.v31bank.data.jpa.domain.PageResult;
 
 /**
  * Default {@link CustomerUseCase} implementation.
@@ -61,7 +62,7 @@ public class CustomerService implements CustomerUseCase {
 
 	@Override
 	@Transactional(readOnly = true)
-	public PageResult<Customer> page(CustomerPageQuery query) {
+	public HttpResponse<List<Customer>> page(CustomerPageQuery query) {
 		return this.customerRepository.findPage(query.getEmail(), query.getStatus(), query);
 	}
 

@@ -29,26 +29,18 @@ import org.springframework.data.redis.core.script.RedisScript;
 import org.v31bank.core.util.Uuids;
 
 /**
- * Keeps two nodes from doing the same piece of work at the same time.
+ * Keeps two nodes from doing the same piece of work at the same time. A lock is a key set
+ * only if absent, carrying the holder's token and an expiry. Releasing compares the token
+ * and deletes in one script, so a holder whose lease already expired cannot delete its
+ * successor's lock.
  * <p>
- * A lock is a key set only if it is absent, carrying a token unique to whoever took it
- * and an expiry so that a node dying while holding one does not block the work forever.
- * Releasing compares the token before deleting, in a script so that the comparison and
- * the delete cannot be interleaved — without that, a holder whose lock had already
- * expired would delete the one its successor is now holding.
- *
- * <h2>What this is not</h2>
- *
- * It is not a guarantee that the work happens once. If the holder stalls longer than the
- * lease — a long garbage collection, a paused container, a network partition — the lease
- * expires, another node takes it, and both believe they hold it. No lock built on a
- * single expiring key avoids this.
+ * <strong>It does not guarantee the work happens once.</strong> If the holder stalls past
+ * the lease — a long GC, a paused container, a partition — another node takes it and both
+ * believe they hold it. No lock built on a single expiring key avoids this.
  * <p>
- * So it is worth having for work that is wasteful to repeat: a nightly reconciliation, a
- * batch of notifications, a cache rebuild. It is not what makes a payment happen once.
- * That has to come from somewhere the outcome is recorded atomically — an idempotency key
- * with a unique constraint behind it — and the lock only saves the second attempt from
- * doing the work before losing the race.
+ * So use it for work that is wasteful to repeat: a reconciliation, a batch of
+ * notifications, a cache rebuild. Making a payment happen once needs the outcome recorded
+ * atomically instead — an idempotency key with a unique constraint behind it.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -87,10 +79,8 @@ public class ValkeyLock {
 	}
 
 	/**
-	 * Take the lock if it is free, without waiting for it.
-	 * <p>
-	 * The lease has to outlast the work. A lease shorter than the work does not fail — it
-	 * silently lets a second holder in, which is the failure this is meant to prevent.
+	 * Take the lock if it is free, without waiting. The lease has to outlast the work: a
+	 * short one does not fail, it silently lets a second holder in.
 	 * @param key the key identifying what is being locked
 	 * @param lease how long the lock is held before it expires on its own
 	 * @return the token to release it with, or empty if somebody else holds it
@@ -121,18 +111,14 @@ public class ValkeyLock {
 	}
 
 	/**
-	 * Push the expiry out on a lock still held, for work that is taking longer than its
-	 * lease allowed for.
-	 * <p>
-	 * A caller whose work has no bound should be extending as it goes rather than taking
-	 * a very long lease at the start: a long lease is also how long the work stays
-	 * blocked after the node holding it dies.
+	 * Push the expiry out on a lock still held. Prefer extending as the work goes to
+	 * taking a long lease up front — a long lease is also how long the work stays blocked
+	 * after the holder dies.
 	 * @param key the key the lock was taken on
 	 * @param token the token {@link #acquire} returned
 	 * @param lease how much longer to hold it, from now
-	 * @return {@code true} if the lease was extended, {@code false} if it had already
-	 * expired and the lock is gone or held by someone else — in which case the caller is
-	 * no longer the holder and should stop
+	 * @return {@code true} if the lease was extended, {@code false} if the caller is no
+	 * longer the holder and should stop
 	 */
 	public boolean extend(String key, String token, Duration lease) {
 		Objects.requireNonNull(key, "key must not be null");

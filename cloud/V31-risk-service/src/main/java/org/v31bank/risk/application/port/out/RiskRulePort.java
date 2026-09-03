@@ -16,10 +16,11 @@
 
 package org.v31bank.risk.application.port.out;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.v31bank.data.jpa.domain.PageResult;
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.risk.application.dto.RiskRulePageQuery;
 import org.v31bank.risk.domain.model.RiskRule;
 
@@ -40,7 +41,7 @@ public interface RiskRulePort {
 	 * @param query the filters and the pagination request
 	 * @return the page of matching records
 	 */
-	PageResult<RiskRule> findPage(RiskRulePageQuery query);
+	HttpResponse<List<RiskRule>> findPage(RiskRulePageQuery query);
 
 	/**
 	 * Whether any record already uses the given code.

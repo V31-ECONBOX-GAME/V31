@@ -21,28 +21,18 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Generates time-ordered UUIDv7 identifiers (RFC 9562), which sort by when they were
- * issued and so append to an index instead of splitting a page per insert.
- * <p>
- * Entities get theirs from {@code @UuidGenerator(style = VERSION_7)}; this is for the
- * ones nothing else issues — events, outbox records, correlation identifiers. Identifiers
- * are strictly increasing even if the clock steps backwards, and the random parts come
- * from {@link SecureRandom} so one in a URL does not disclose the next.
+ * Generates time-ordered UUIDv7 identifiers (RFC 9562), which append to an index rather
+ * than splitting a page per insert.
  *
  * @author Xander Wang
  * @since 0.2.0
  */
 public final class Uuids {
 
-	/**
-	 * The counter occupies the 12 bits RFC 9562 calls {@code rand_a}.
-	 */
+	/** The 12 bits RFC 9562 calls {@code rand_a}. */
 	private static final int MAX_COUNTER = 0xFFF;
 
-	/**
-	 * Each millisecond seeds its counter in the bottom quarter of that range: still
-	 * unpredictable, still leaving room for 3072 identifiers.
-	 */
+	/** Seeds each millisecond in the bottom quarter, leaving room for 3072. */
 	private static final int COUNTER_SEED_MASK = 0x3FF;
 
 	private static final SecureRandom RANDOM = new SecureRandom();
@@ -52,10 +42,6 @@ public final class Uuids {
 	private Uuids() {
 	}
 
-	/**
-	 * Return a new time-ordered identifier.
-	 * @return a UUIDv7
-	 */
 	public static UUID timeOrdered() {
 		State state = nextState();
 		long timestamp = state.millis() & 0xFFFFFFFFFFFFL;
@@ -65,9 +51,9 @@ public final class Uuids {
 	}
 
 	/**
-	 * Advance the generator, borrowing from the next millisecond when the counter runs
-	 * out or the clock steps backwards rather than reusing a timestamp already issued.
-	 * @return the timestamp and counter this identifier is built from
+	 * Borrows from the next millisecond when the counter runs out or the clock steps
+	 * backwards, rather than reusing a timestamp already issued.
+	 * @return the timestamp and counter to build from
 	 */
 	private static State nextState() {
 		while (true) {

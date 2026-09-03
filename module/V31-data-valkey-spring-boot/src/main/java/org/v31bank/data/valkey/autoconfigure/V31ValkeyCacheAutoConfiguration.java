@@ -37,23 +37,15 @@ import org.v31bank.data.valkey.cache.ValkeyCacheErrorHandler;
 import org.v31bank.data.valkey.cache.ValkeyCachingConfigurer;
 
 /**
- * {@link AutoConfiguration Auto-configuration} for caching through Valkey: gives Spring's
- * cache abstraction the same JSON serialization the template uses, puts every cache under
- * this application's key prefix, and gives every cache an expiry.
- *
- * <h2>Why every cache expires</h2>
- *
- * Spring's default is no expiry at all. An entry written once then stays until something
- * evicts it, and an eviction missed — a write that went round the cache, a service that
- * crashed between updating the database and clearing the cache — is stale data that never
- * heals. A balance or a limit that is quietly wrong is worse than one that is briefly
- * missing, so entries are given a life and re-read when it ends.
- * {@code v31.data.valkey.cache.ttls} sets it per cache where ten minutes is the wrong
- * answer.
+ * {@link AutoConfiguration Auto-configuration} for caching through Valkey: the same JSON
+ * serialization the template uses, every cache under this application's key prefix, and
+ * every cache given an expiry.
  * <p>
- * This only takes effect where the application has switched caching on with
- * {@code @EnableCaching}; putting the module on the classpath does not start caching
- * anything.
+ * Spring's default is no expiry at all, so a missed eviction is stale data that never
+ * heals. {@code v31.data.valkey.cache.ttls} sets it per cache where ten minutes is wrong.
+ * <p>
+ * Takes effect only where the application switched caching on with
+ * {@code @EnableCaching}.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -99,10 +91,8 @@ public class V31ValkeyCacheAutoConfiguration {
 	}
 
 	/**
-	 * Keep an unreachable Valkey from failing every cached call.
-	 * <p>
-	 * Backs off entirely when the application supplies its own {@link CachingConfigurer},
-	 * since Spring accepts only one and the application's will be doing more than this.
+	 * Keep an unreachable Valkey from failing every cached call. Backs off when the
+	 * application supplies its own {@link CachingConfigurer}, since Spring accepts one.
 	 * @param properties whether failures are allowed out
 	 * @return the configurer carrying the error handler
 	 */
@@ -113,13 +103,9 @@ public class V31ValkeyCacheAutoConfiguration {
 	}
 
 	/**
-	 * Set an expiry, leaving the configuration alone when the value is not a positive
-	 * duration.
-	 * <p>
-	 * A zero or negative expiry is taken as a deliberate request for entries that never
-	 * expire, which Spring's default already does. It is not corrected here — silently
-	 * substituting a different lifetime for the one that was configured would be worse
-	 * than honouring an unwise one.
+	 * Set an expiry, leaving the configuration alone when the value is not positive — a
+	 * zero or negative expiry is read as a deliberate request for entries that never
+	 * expire rather than silently corrected.
 	 * @param configuration the configuration to vary
 	 * @param ttl how long an entry lives
 	 * @return the configuration, with the expiry applied where there was one

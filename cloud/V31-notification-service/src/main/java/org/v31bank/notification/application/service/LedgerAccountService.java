@@ -16,12 +16,13 @@
 
 package org.v31bank.notification.application.service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import org.v31bank.core.response.PageResponse;
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.notification.application.dto.LedgerAccountSummary;
 import org.v31bank.notification.application.port.in.LedgerAccountUseCase;
 import org.v31bank.notification.application.port.out.LedgerAccountPort;
@@ -56,7 +57,7 @@ public class LedgerAccountService implements LedgerAccountUseCase {
 	}
 
 	@Override
-	public PageResponse<LedgerAccountSummary> page(int pageNumber, int pageSize, String code) {
+	public HttpResponse<List<LedgerAccountSummary>> page(int pageNumber, int pageSize, String code) {
 		return this.ledgerAccountRepository.findPage(pageNumber, pageSize, code);
 	}
 

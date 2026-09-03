@@ -17,9 +17,11 @@
 package org.v31bank.customer.presentation.controller.v1;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,21 +32,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.v31bank.core.response.ApiResponse;
-import org.v31bank.core.response.CommonErrorCode;
-import org.v31bank.core.response.ErrorCode;
-import org.v31bank.core.response.PageResponse;
+import org.v31bank.core.response.HttpResponse;
 import org.v31bank.customer.application.dto.CustomerPageQuery;
 import org.v31bank.customer.application.port.in.CustomerUseCase;
 import org.v31bank.customer.domain.model.Customer;
 import org.v31bank.customer.presentation.dto.CustomerRequest;
 import org.v31bank.customer.presentation.dto.CustomerResponse;
-import org.v31bank.data.jpa.domain.PageResult;
 
 /**
  * REST endpoints for managing customers.
  * <p>
- * Every endpoint answers with an {@link ApiResponse}, so a caller parses one shape
+ * Every endpoint answers with an {@link HttpResponse}, so a caller parses one shape
  * whether the request succeeded or failed. The HTTP status keeps its usual meaning
  * alongside it.
  *
@@ -64,31 +62,30 @@ public class CustomerController {
 	}
 
 	@PostMapping
-	public ResponseEntity<ApiResponse<CustomerResponse>> create(@Valid @RequestBody CustomerRequest request) {
+	public ResponseEntity<HttpResponse<CustomerResponse>> create(@Valid @RequestBody CustomerRequest request) {
 		Customer customer = this.customerInputPort.create(request.email(), request.fullName());
 		return ResponseEntity.created(URI.create(PATH + "/" + customer.getId()))
-			.body(ApiResponse.ok(CustomerResponse.from(customer)));
+			.body(HttpResponse.ok(CustomerResponse.from(customer)));
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<ApiResponse<CustomerResponse>> get(@PathVariable UUID id) {
+	public ResponseEntity<HttpResponse<CustomerResponse>> get(@PathVariable UUID id) {
 		return this.customerInputPort.get(id)
-			.map((customer) -> ResponseEntity.ok(ApiResponse.ok(CustomerResponse.from(customer))))
+			.map((customer) -> ResponseEntity.ok(HttpResponse.ok(CustomerResponse.from(customer))))
 			.orElseGet(() -> notFound(id));
 	}
 
 	@GetMapping
-	public ApiResponse<PageResponse<CustomerResponse>> page(CustomerPageQuery query) {
-		PageResult<CustomerResponse> page = this.customerInputPort.page(query).map(CustomerResponse::from);
-		return ApiResponse
-			.ok(PageResponse.of(page.getRecords(), page.getTotal(), page.getPageNumber(), page.getPageSize()));
+	public HttpResponse<List<CustomerResponse>> page(CustomerPageQuery query) {
+		return this.customerInputPort.page(query)
+			.map((records) -> records.stream().map(CustomerResponse::from).toList());
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<ApiResponse<CustomerResponse>> update(@PathVariable UUID id,
+	public ResponseEntity<HttpResponse<CustomerResponse>> update(@PathVariable UUID id,
 			@Valid @RequestBody CustomerRequest request) {
 		return this.customerInputPort.update(id, request.email(), request.fullName(), request.status())
-			.map((customer) -> ResponseEntity.ok(ApiResponse.ok(CustomerResponse.from(customer))))
+			.map((customer) -> ResponseEntity.ok(HttpResponse.ok(CustomerResponse.from(customer))))
 			.orElseGet(() -> notFound(id));
 	}
 
@@ -99,23 +96,23 @@ public class CustomerController {
 	 * @return the response to send
 	 */
 	@DeleteMapping("/{id}")
-	public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
-		return this.customerInputPort.delete(id) ? ResponseEntity.ok(ApiResponse.ok()) : notFound(id);
+	public ResponseEntity<HttpResponse<Void>> delete(@PathVariable UUID id) {
+		return this.customerInputPort.delete(id) ? ResponseEntity.ok(HttpResponse.ok()) : notFound(id);
 	}
 
-	private static <T> ResponseEntity<ApiResponse<T>> notFound(UUID id) {
-		return error(CommonErrorCode.NOT_FOUND, "No customer exists with id " + id);
+	private static <T> ResponseEntity<HttpResponse<T>> notFound(UUID id) {
+		return error(HttpStatus.NOT_FOUND.value(), "No customer exists with id " + id);
 	}
 
 	/**
-	 * Report a failure, taking the status from the code so that the two cannot disagree.
-	 * @param errorCode the reason the request failed
+	 * Report a failure, answering with the status the outcome carried.
+	 * @param code the status the request was refused with
 	 * @param message the message describing this occurrence
 	 * @param <T> the type this endpoint returns when it succeeds
 	 * @return the response to send
 	 */
-	private static <T> ResponseEntity<ApiResponse<T>> error(ErrorCode errorCode, String message) {
-		return ResponseEntity.status(errorCode.httpStatus()).body(ApiResponse.error(errorCode, message));
+	private static <T> ResponseEntity<HttpResponse<T>> error(int code, String message) {
+		return ResponseEntity.status(code).body(HttpResponse.error(code, message));
 	}
 
 }

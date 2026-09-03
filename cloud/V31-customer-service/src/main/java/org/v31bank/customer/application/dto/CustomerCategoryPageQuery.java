@@ -18,8 +18,8 @@ package org.v31bank.customer.application.dto;
 
 import java.util.UUID;
 
+import org.v31bank.core.request.PageQuery;
 import org.v31bank.customer.domain.constant.CustomerCategoryStatus;
-import org.v31bank.data.jpa.domain.PageQuery;
 
 /**
  * Paginated customer category query with optional filters.

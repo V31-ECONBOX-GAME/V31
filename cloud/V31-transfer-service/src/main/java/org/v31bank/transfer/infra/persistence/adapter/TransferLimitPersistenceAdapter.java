@@ -27,7 +27,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import org.v31bank.data.jpa.domain.PageResult;
+import org.v31bank.core.response.HttpResponse;
+import org.v31bank.data.jpa.util.JpaPages;
 import org.v31bank.transfer.application.dto.TransferLimitPageQuery;
 import org.v31bank.transfer.application.port.out.TransferLimitPort;
 import org.v31bank.transfer.domain.model.TransferLimit;
@@ -61,7 +62,7 @@ public class TransferLimitPersistenceAdapter implements TransferLimitPort {
 	}
 
 	@Override
-	public PageResult<TransferLimit> findPage(TransferLimitPageQuery query) {
+	public HttpResponse<List<TransferLimit>> findPage(TransferLimitPageQuery query) {
 		Specification<TransferLimit> spec = (root, criteriaQuery, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			if (StringUtils.hasText(query.getCode())) {
@@ -72,7 +73,7 @@ public class TransferLimitPersistenceAdapter implements TransferLimitPort {
 			}
 			return cb.and(predicates.toArray(Predicate[]::new));
 		};
-		return PageResult.of(this.jpaRepository.findAll(spec, query.toPageable(NEWEST_FIRST)));
+		return JpaPages.from(this.jpaRepository.findAll(spec, JpaPages.toPageable(query, NEWEST_FIRST)));
 	}
 
 	@Override

@@ -24,8 +24,8 @@ import org.springframework.grpc.client.interceptor.DefaultDeadlineSetupClientInt
 import org.springframework.grpc.server.exception.GrpcExceptionHandler;
 
 import org.v31bank.grpc.client.HeaderPropagationClientInterceptor;
-import org.v31bank.grpc.server.ApiExceptionGrpcExceptionHandler;
 import org.v31bank.grpc.server.HeaderPropagationServerInterceptor;
+import org.v31bank.grpc.server.RefusalGrpcExceptionHandler;
 import org.v31bank.grpc.server.UnexpectedExceptionGrpcExceptionHandler;
 import org.v31bank.grpc.web.HeaderPropagationFilter;
 
@@ -51,7 +51,7 @@ class V31GrpcAutoConfigurationTests {
 	@Test
 	void contributesTheExceptionHandlersAndThePropagationInterceptor() {
 		this.server.run((context) -> {
-			assertThat(context).hasSingleBean(ApiExceptionGrpcExceptionHandler.class);
+			assertThat(context).hasSingleBean(RefusalGrpcExceptionHandler.class);
 			assertThat(context).hasSingleBean(UnexpectedExceptionGrpcExceptionHandler.class);
 			assertThat(context).hasSingleBean(HeaderPropagationServerInterceptor.class);
 			assertThat(context.getBeansOfType(GrpcExceptionHandler.class)).hasSize(2);

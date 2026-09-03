@@ -16,7 +16,7 @@
 
 package org.v31bank.risk.application.dto;
 
-import org.v31bank.data.jpa.domain.PageQuery;
+import org.v31bank.core.request.PageQuery;
 import org.v31bank.risk.domain.constant.RiskRuleStatus;
 import org.v31bank.risk.domain.constant.RiskSeverity;
 
