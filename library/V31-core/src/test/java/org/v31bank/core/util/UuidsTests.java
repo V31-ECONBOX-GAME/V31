@@ -51,7 +51,7 @@ class UuidsTests {
 		long previous = Long.MIN_VALUE;
 		for (int i = 0; i < 20_000; i++) {
 			long current = Uuids.timeOrdered().getMostSignificantBits();
-			assertThat(current).as("identifier " + i + " did not advance").isGreaterThan(previous);
+			assertThat(current).as("identifier %d did not advance", i).isGreaterThan(previous);
 			previous = current;
 		}
 	}
@@ -62,7 +62,7 @@ class UuidsTests {
 		int perThread = 5_000;
 		try (ExecutorService executor = Executors.newFixedThreadPool(threads)) {
 			List<Callable<Set<UUID>>> tasks = IntStream.range(0, threads)
-				.<Callable<Set<UUID>>>mapToObj((i) -> () -> generate(perThread))
+				.<Callable<Set<UUID>>>mapToObj((_) -> () -> generate(perThread))
 				.toList();
 			Set<UUID> generated = new HashSet<>();
 			for (Future<Set<UUID>> future : executor.invokeAll(tasks)) {
@@ -76,8 +76,7 @@ class UuidsTests {
 	void leadsWithTheMillisecondItWasIssued() {
 		Instant before = Instant.now().minusSeconds(1);
 		Instant issued = Instant.ofEpochMilli(Uuids.timeOrdered().getMostSignificantBits() >>> 16);
-		assertThat(issued).as(issued + " should be after " + before).isAfter(before);
-		assertThat(issued).isBefore(Instant.now().plusSeconds(1));
+		assertThat(issued).isAfter(before).isBefore(Instant.now().plusSeconds(1));
 	}
 
 	private static Set<UUID> generate(int count) {
