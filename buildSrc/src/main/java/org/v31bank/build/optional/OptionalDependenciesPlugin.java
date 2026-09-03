@@ -26,28 +26,13 @@ import org.v31bank.build.constant.Configurations;
 import org.v31bank.build.util.SourceSets;
 
 /**
- * Adds Maven's optional dependencies, which Gradle has no equivalent of.
- * <p>
- * Declared by the project itself:
+ * Adds an {@code optional} configuration used here but not by consumers.
  *
  * <pre class="code">
  * plugins {
  *     id("org.v31bank.optional-dependencies")
  * }
- *
- * dependencies {
- *     optional("io.lettuce:lettuce-core")
- * }
  * </pre>
- *
- * The dependency is compiled and tested against here and left out of what a consumer
- * resolves. That is what an auto-configuration needs: it has to see the class it backs
- * off from, while a consumer that never turns the feature on must not be made to download
- * it. {@code compileOnly} would say the first half and lose the second at test time.
- * <p>
- * The configuration is left out of dependency management on purpose: it declares rather
- * than resolves, and every classpath it reaches already carries the platform, so an
- * optional dependency is named without a version like any other.
  *
  * @author Xander Wang
  * @since 0.2.0
