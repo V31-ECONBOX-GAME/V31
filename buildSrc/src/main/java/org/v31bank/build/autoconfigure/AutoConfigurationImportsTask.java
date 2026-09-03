@@ -45,8 +45,6 @@ import org.v31bank.build.constant.Locations;
  */
 public abstract class AutoConfigurationImportsTask extends DefaultTask {
 
-	public static final String FAILURE_REPORT = "failure-report.txt";
-
 	protected AutoConfigurationImportsTask() {
 		setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
 		getOutputDirectory().convention(getProject().getLayout().getBuildDirectory().dir(getName()));
@@ -74,7 +72,7 @@ public abstract class AutoConfigurationImportsTask extends DefaultTask {
 	}
 
 	protected File writeReport(String report) {
-		File reportFile = getOutputDirectory().file(FAILURE_REPORT).get().getAsFile();
+		File reportFile = getOutputDirectory().file(Locations.FAILURE_REPORT_FILE).get().getAsFile();
 		write(reportFile, report);
 		return reportFile;
 	}

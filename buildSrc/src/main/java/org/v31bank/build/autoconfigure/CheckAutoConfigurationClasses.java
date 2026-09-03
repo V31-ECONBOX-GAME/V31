@@ -43,6 +43,7 @@ import org.gradle.api.tasks.VerificationException;
 
 import org.v31bank.build.autoconfigure.AutoConfigurationClass.Attribute;
 import org.v31bank.build.autoconfigure.AutoConfigurationClass.Reference;
+import org.v31bank.build.constant.FileSuffixes;
 import org.v31bank.build.constant.Locations;
 
 /**
@@ -55,10 +56,7 @@ import org.v31bank.build.constant.Locations;
 public abstract class CheckAutoConfigurationClasses extends AutoConfigurationImportsTask {
 
 	private static final String CLASS_NAME_SUFFIX = "AutoConfiguration";
-
 	private static final String TEST_CLASS_NAME_SUFFIX = "TestAutoConfiguration";
-
-	private static final String CLASS_FILE_SUFFIX = ".class";
 
 	@Classpath
 	public abstract ConfigurableFileCollection getRequiredDependencies();
@@ -118,8 +116,7 @@ public abstract class CheckAutoConfigurationClasses extends AutoConfigurationImp
 	}
 
 	/**
-	 * A {@code Class} is loaded when the annotation is read: an optional one has to be a
-	 * string, a required one must not be, or a rename goes unnoticed.
+	 * Optional classes use Strings and required classes use class literals.
 	 * @param reference what one auto-configuration says about another
 	 * @param required every class the module always resolves
 	 * @param optionalOnly classes only an optional dependency brings
@@ -163,7 +160,7 @@ public abstract class CheckAutoConfigurationClasses extends AutoConfigurationImp
 				Path root = file.toPath();
 				walk(root, (classFile) -> classNames.add(classNameOf(root.relativize(classFile).toString())));
 			}
-			else if (file.getName().endsWith(".jar")) {
+			else if (file.getName().endsWith(FileSuffixes.JAR)) {
 				readJar(file, classNames);
 			}
 		}
@@ -175,7 +172,7 @@ public abstract class CheckAutoConfigurationClasses extends AutoConfigurationImp
 			jarFile.stream()
 				.filter((entry) -> !entry.isDirectory())
 				.map(JarEntry::getName)
-				.filter((name) -> name.endsWith(CLASS_FILE_SUFFIX))
+				.filter((name) -> name.endsWith(FileSuffixes.CLASS))
 				.map(CheckAutoConfigurationClasses::classNameOf)
 				.forEach(classNames::add);
 		}
@@ -187,7 +184,7 @@ public abstract class CheckAutoConfigurationClasses extends AutoConfigurationImp
 	private static void walk(Path root, Consumer<Path> classFiles) {
 		try (Stream<Path> files = Files.walk(root)) {
 			files.filter(Files::isRegularFile)
-				.filter((file) -> file.getFileName().toString().endsWith(CLASS_FILE_SUFFIX))
+				.filter((file) -> file.getFileName().toString().endsWith(FileSuffixes.CLASS))
 				.forEach(classFiles);
 		}
 		catch (IOException ex) {
@@ -196,7 +193,7 @@ public abstract class CheckAutoConfigurationClasses extends AutoConfigurationImp
 	}
 
 	private static String classNameOf(String classFilePath) {
-		String withoutSuffix = classFilePath.substring(0, classFilePath.length() - CLASS_FILE_SUFFIX.length());
+		String withoutSuffix = classFilePath.substring(0, classFilePath.length() - FileSuffixes.CLASS.length());
 		return withoutSuffix.replace(File.separatorChar, '/').replace('/', '.');
 	}
 

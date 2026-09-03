@@ -17,11 +17,8 @@
 package org.v31bank.build.constant;
 
 /**
- * The configurations this build's own logic declares or asks for by name.
- * <p>
- * A name two projects have to agree on lives here rather than on the plugin that happens
- * to create it, so that neither reads the other's constants. The usage a configuration is
- * labelled with sits beside it, because the label is part of how a consumer names it.
+ * The configuration names this build agrees on, kept here so no plugin reads another's
+ * constants.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -92,7 +89,7 @@ public final class Configurations {
 	public static final String AUTO_CONFIGURATION_METADATA_USAGE = "auto-configuration-metadata";
 
 	/**
-	 * Holds what a module resolves whatever a consumer asks for.
+	 * Holds everything a module always resolves.
 	 */
 	public static final String AUTO_CONFIGURATION_REQUIRED_CLASSPATH = "autoConfigurationRequiredClasspath";
 

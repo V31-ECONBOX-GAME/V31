@@ -36,6 +36,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.v31bank.build.constant.FileSuffixes;
+
 /**
  * An {@code @AutoConfiguration} class, read from its class file.
  *
@@ -49,8 +51,6 @@ public record AutoConfigurationClass(String name, List<Reference> references) {
 	private static final ClassDesc AUTO_CONFIGURATION = ClassDesc
 		.of("org.springframework.boot.autoconfigure.AutoConfiguration");
 
-	private static final String CLASS_FILE_SUFFIX = ".class";
-
 	/**
 	 * Read a class file.
 	 * @param classFile the file to read
@@ -61,7 +61,7 @@ public record AutoConfigurationClass(String name, List<Reference> references) {
 	}
 
 	/**
-	 * Read a class that is not a file — an entry inside a jar.
+	 * Read a class file from a JAR.
 	 * @param input the bytecode to read
 	 * @return the class, or empty when it carries no {@code @AutoConfiguration}
 	 */
@@ -74,7 +74,7 @@ public record AutoConfigurationClass(String name, List<Reference> references) {
 	}
 
 	public static Optional<Path> classFileOf(String className, Iterable<File> classpath) {
-		String relativePath = className.replace('.', '/') + CLASS_FILE_SUFFIX;
+		String relativePath = className.replace('.', '/') + FileSuffixes.CLASS;
 		for (File root : classpath) {
 			Path classFile = root.toPath().resolve(relativePath);
 			if (Files.isRegularFile(classFile)) {

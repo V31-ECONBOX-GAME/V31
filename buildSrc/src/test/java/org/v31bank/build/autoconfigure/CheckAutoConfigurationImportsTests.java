@@ -69,7 +69,7 @@ class CheckAutoConfigurationImportsTests {
 		CheckAutoConfigurationImports task = task();
 		assertThatExceptionOfType(VerificationException.class).isThrownBy(task::check)
 			.withMessageContaining(Locations.AUTO_CONFIGURATION_IMPORTS_FILE)
-			.withMessageContaining(AutoConfigurationImportsTask.FAILURE_REPORT);
+			.withMessageContaining(Locations.FAILURE_REPORT_FILE);
 		assertThat(report(task)).contains("'%s' was not found".formatted(B));
 	}
 
@@ -127,7 +127,7 @@ class CheckAutoConfigurationImportsTests {
 	}
 
 	private String report(AutoConfigurationImportsTask task) {
-		return read(outputDirectory(task).resolve(AutoConfigurationImportsTask.FAILURE_REPORT));
+		return read(outputDirectory(task).resolve(Locations.FAILURE_REPORT_FILE));
 	}
 
 	private Path outputDirectory(AutoConfigurationImportsTask task) {

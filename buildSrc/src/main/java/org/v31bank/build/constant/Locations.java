@@ -60,6 +60,11 @@ public final class Locations {
 	public static final String STARTER_METADATA_FILE = "starter-metadata.properties";
 
 	/**
+	 * The report an auto-configuration check writes, problems or not.
+	 */
+	public static final String FAILURE_REPORT_FILE = "failure-report.txt";
+
+	/**
 	 * Where a service's Flyway migrations live, beneath its own resources. Relative,
 	 * because every service that owns a schema has one.
 	 */

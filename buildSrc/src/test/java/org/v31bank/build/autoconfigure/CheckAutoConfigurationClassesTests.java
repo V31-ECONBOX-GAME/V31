@@ -72,7 +72,7 @@ class CheckAutoConfigurationClassesTests {
 		writeImports();
 		CheckAutoConfigurationClasses task = task();
 		assertThatExceptionOfType(VerificationException.class).isThrownBy(task::check)
-			.withMessageContaining(AutoConfigurationImportsTask.FAILURE_REPORT);
+			.withMessageContaining(Locations.FAILURE_REPORT_FILE);
 		assertThat(report(task)).contains(EXAMPLE).contains("is not registered in");
 	}
 
@@ -276,8 +276,7 @@ class CheckAutoConfigurationClassesTests {
 	}
 
 	private String report(AutoConfigurationImportsTask task) {
-		return read(
-				task.getOutputDirectory().file(AutoConfigurationImportsTask.FAILURE_REPORT).get().getAsFile().toPath());
+		return read(task.getOutputDirectory().file(Locations.FAILURE_REPORT_FILE).get().getAsFile().toPath());
 	}
 
 	private Path classes() {
