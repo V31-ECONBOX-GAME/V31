@@ -3,11 +3,9 @@
 		"-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
 		"https://checkstyle.org/dtds/suppressions_1_2.dtd">
 <suppressions>
-	<!-- A test's name and its assertions are its documentation -->
+	<suppress checks="JavadocPackage"/>
 	<suppress files="[\\/]src[\\/]test(Fixtures)?[\\/]java[\\/]" checks="Javadoc.*"/>
 	<suppress files="[\\/]src[\\/]intTest[\\/]java[\\/]" checks="Javadoc.*"/>
 	<suppress files="[\\/]src[\\/]test(Fixtures)?[\\/]java[\\/]" checks="SpringJavadoc"/>
 	<suppress files="[\\/]src[\\/]intTest[\\/]java[\\/]" checks="SpringJavadoc"/>
-	<!-- Ignore package-level Javadoc requirements -->
-	<suppress checks="JavadocPackage"/>
 </suppressions>

@@ -69,20 +69,12 @@ class HttpResponseTests {
 		assertThat(response.message()).isEqualTo("No account exists with id 7");
 	}
 
-	/**
-	 * Read off the code rather than carried beside it, so an instance cannot claim
-	 * success while reporting a failure.
-	 */
 	@Test
 	void successIsTheCode() {
 		assertThat(new HttpResponse<>(404, "gone", null).succeeded()).isFalse();
 		assertThat(new HttpResponse<>(HttpResponse.SUCCESS, "fine", "42").succeeded()).isTrue();
 	}
 
-	/**
-	 * {@code 0} is a count a page can legitimately have, so it cannot also stand for
-	 * "this is not a page".
-	 */
 	@Test
 	void carriesNoTotalWhenThePayloadIsNotAPage() {
 		assertThat(HttpResponse.ok("42").total()).isNull();
@@ -99,10 +91,6 @@ class HttpResponseTests {
 		assertThat(page.total()).isEqualTo(21);
 	}
 
-	/**
-	 * The total belongs to the query, not to the payload: converting the records leaves
-	 * it alone.
-	 */
 	@Test
 	void mapKeepsTheTotal() {
 		HttpResponse<List<Integer>> lengths = HttpResponse.page(List.of("aa", "bbb"), 21)
@@ -123,7 +111,7 @@ class HttpResponseTests {
 	@Test
 	void mapLeavesAFailureAlone() {
 		HttpResponse<String> failure = HttpResponse.error(404, "gone");
-		HttpResponse<Integer> mapped = failure.map((value) -> {
+		HttpResponse<Integer> mapped = failure.map((_) -> {
 			throw new AssertionError("the converter must not run when there is no payload");
 		});
 		assertThat(mapped.succeeded()).isFalse();

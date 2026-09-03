@@ -4,14 +4,12 @@
 		"https://checkstyle.org/dtds/configuration_1_3.dtd">
 <module name="com.puppycrawl.tools.checkstyle.Checker">
 	<module name="io.spring.javaformat.checkstyle.SpringChecks">
-		<!-- public here is what Gradle reflects on, not an API anyone outside this build reads -->
 		<property name="excludes"
 			value="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocPackageCheck,com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocVariableCheck"/>
 		<property name="headerFile" value="${config_loc}/checkstyle-header.txt"/>
 		<property name="projectRootPackage" value="org.v31bank"/>
 	</module>
 	<module name="com.puppycrawl.tools.checkstyle.TreeWalker">
-		<!-- Build logic reads and writes files; the JDK's own API is the one to use -->
 		<module name="com.puppycrawl.tools.checkstyle.checks.imports.IllegalImportCheck">
 			<property name="regexp" value="true"/>
 			<property name="illegalPkgs" value="^sun.*, ^org\.apache\.commons\.io.*, ^com\.google\.common.*"/>

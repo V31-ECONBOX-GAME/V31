@@ -42,10 +42,6 @@ class PageQueryTests {
 		assertThat(query(3, 10).normalizedPageNumber()).isEqualTo(3);
 	}
 
-	/**
-	 * The page size arrives from the caller, so it is the one number in a listing request
-	 * that can be used to ask for the whole table at once.
-	 */
 	@Test
 	void refusesToReturnMoreThanTheMaximumPage() {
 		assertThat(query(1, PageQuery.MAX_PAGE_SIZE + 1).normalizedPageSize()).isEqualTo(PageQuery.MAX_PAGE_SIZE);

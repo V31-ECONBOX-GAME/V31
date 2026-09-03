@@ -23,13 +23,6 @@ plugins {
 
 description = "V31 Dependencies"
 
-// The one thing another build imports. It settles two sets of versions at once: V31's
-// own artifacts, and the third-party libraries they were built and tested against. A
-// consumer that imports it names an artifact without a version and gets a combination
-// this build is known to work with.
-//
-// Adding a published project means adding it here too. Nothing checks that, so a
-// module left out is only noticed when a consumer cannot resolve it.
 bom {
     imports(SpringBootPlugin.BOM_COORDINATES)
 }

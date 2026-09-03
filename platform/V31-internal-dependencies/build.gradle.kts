@@ -20,10 +20,6 @@ plugins {
 
 description = "V31 Internal Dependencies"
 
-// Everything the published platform settles, plus anything only this build needs.
-// Not published: it is what V31 compiles against, not what anyone depends on. The
-// versions it decides reach consumers through the resolved versions written into
-// each published POM, not through this file.
 dependencies {
     api(enforcedPlatform(project(":platform:V31-dependencies")))
 
