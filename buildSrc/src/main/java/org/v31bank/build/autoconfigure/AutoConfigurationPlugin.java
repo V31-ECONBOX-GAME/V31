@@ -36,11 +36,7 @@ import org.v31bank.build.optional.OptionalDependenciesPlugin;
 import org.v31bank.build.util.SourceSets;
 
 /**
- * Configures a project as a V31 auto-configuration module: published, compiled with the
- * auto-configuration processor, describing what it offers, and checked against what it
- * says it registers.
- * <p>
- * Declared by the project itself, beside whichever java plugin it chose:
+ * Publishes an auto-configuration module and wires up its processor, metadata and checks.
  *
  * <pre class="code">
  * plugins {
@@ -114,23 +110,11 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 			.configure((check) -> check.dependsOn(checkImports, checkClasses));
 	}
 
-	/**
-	 * The imports file is read where it is written, so a check need not wait on
-	 * processResources to say what is already plain.
-	 * @param task the task to configure
-	 * @param main the main source set
-	 */
 	private void readMainSourceSet(AutoConfigurationImportsTask task, SourceSet main) {
 		task.getResources().from(SourceSets.of(main).resources().unwrap());
 		task.getClasspath().from(main.getOutput().getClassesDirs());
 	}
 
-	/**
-	 * implementation reaches api as well, which extends into it.
-	 * @param project the project to configure
-	 * @param main the main source set
-	 * @return the configuration to resolve
-	 */
 	private Configuration requiredClasspath(Project project, SourceSet main) {
 		ConfigurationContainer configurations = project.getConfigurations();
 		return configurations.resolvable(Configurations.AUTO_CONFIGURATION_REQUIRED_CLASSPATH,
@@ -140,12 +124,6 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 			.get();
 	}
 
-	/**
-	 * Names must end in Classpath: that is what the conventions match to attach the
-	 * platform.
-	 * @param project the project to configure
-	 * @return the configuration to resolve
-	 */
 	private Configuration optionalClasspath(Project project) {
 		ConfigurationContainer configurations = project.getConfigurations();
 		Configuration optional = configurations.getByName(Configurations.OPTIONAL);

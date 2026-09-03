@@ -29,8 +29,7 @@ import org.gradle.api.tasks.VerificationException;
 import org.v31bank.build.constant.Locations;
 
 /**
- * Fails when the imports file names a class that is missing or unannotated, or lists its
- * entries out of order.
+ * Fails an imports file that names a missing or unannotated class, or is not sorted.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -62,13 +61,6 @@ public abstract class CheckAutoConfigurationImports extends AutoConfigurationImp
 		return Optional.empty();
 	}
 
-	/**
-	 * File order decides nothing — before and after do — so alphabetical costs nothing
-	 * and makes a diff mean something. The expected content is written out rather than
-	 * described.
-	 * @param imports the registered class names, in file order
-	 * @return the problem, if the file is out of order
-	 */
 	private Optional<String> checkSorted(List<String> imports) {
 		List<String> sorted = imports.stream().sorted().toList();
 		if (sorted.equals(imports)) {

@@ -46,8 +46,8 @@ import org.v31bank.build.autoconfigure.AutoConfigurationClass.Reference;
 import org.v31bank.build.constant.Locations;
 
 /**
- * Fails when an {@code @AutoConfiguration} class goes unregistered, is misnamed, or
- * orders itself against another class in the wrong form.
+ * Fails an {@code @AutoConfiguration} class that is unregistered, misnamed, or ordered
+ * against another in the wrong form.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -103,8 +103,6 @@ public abstract class CheckAutoConfigurationClasses extends AutoConfigurationImp
 	}
 
 	private void checkOrdering(List<AutoConfigurationClass> autoConfigurations, Problems problems) {
-		// Reading two whole classpaths is not cheap and nothing needs it when no order is
-		// declared.
 		if (autoConfigurations.stream().allMatch((autoConfiguration) -> autoConfiguration.references().isEmpty())) {
 			return;
 		}
@@ -120,9 +118,8 @@ public abstract class CheckAutoConfigurationClasses extends AutoConfigurationImp
 	}
 
 	/**
-	 * The rule: naming a class loads it when the annotation is read, so a class that may
-	 * be absent must be referred to by name; one that is always there named as a string
-	 * is a name nothing will ever tell you has gone stale.
+	 * A {@code Class} is loaded when the annotation is read: an optional one has to be a
+	 * string, a required one must not be, or a rename goes unnoticed.
 	 * @param reference what one auto-configuration says about another
 	 * @param required every class the module always resolves
 	 * @param optionalOnly classes only an optional dependency brings
@@ -159,12 +156,6 @@ public abstract class CheckAutoConfigurationClasses extends AutoConfigurationImp
 		return autoConfigurations;
 	}
 
-	/**
-	 * A resolved classpath arrives as jars or as directories of compiled output; both
-	 * count.
-	 * @param classpath the classpath to read
-	 * @return the binary names it holds
-	 */
 	private static Set<String> classNamesIn(FileCollection classpath) {
 		Set<String> classNames = new HashSet<>();
 		for (File file : classpath.getFiles()) {
@@ -209,9 +200,6 @@ public abstract class CheckAutoConfigurationClasses extends AutoConfigurationImp
 		return withoutSuffix.replace(File.separatorChar, '/').replace('/', '.');
 	}
 
-	/**
-	 * Grouped by class so that a module with several problems is fixed in one pass.
-	 */
 	private static final class Problems {
 
 		private final Map<String, List<String>> byClassName = new TreeMap<>();

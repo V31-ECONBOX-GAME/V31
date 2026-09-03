@@ -4,7 +4,9 @@
 		"https://checkstyle.org/dtds/configuration_1_3.dtd">
 <module name="com.puppycrawl.tools.checkstyle.Checker">
 	<module name="io.spring.javaformat.checkstyle.SpringChecks">
-		<property name="excludes" value="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocPackageCheck"/>
+		<!-- public here is what Gradle reflects on, not an API anyone outside this build reads -->
+		<property name="excludes"
+			value="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocPackageCheck,com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocVariableCheck"/>
 		<property name="headerFile" value="${config_loc}/checkstyle-header.txt"/>
 		<property name="projectRootPackage" value="org.v31bank"/>
 	</module>

@@ -38,16 +38,13 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.v31bank.build.constant.Locations;
 
 /**
- * A check on a module's auto-configuration imports file and the classes it names.
+ * Shared by the checks on a module's auto-configuration imports.
  *
  * @author Xander Wang
  * @since 0.2.0
  */
 public abstract class AutoConfigurationImportsTask extends DefaultTask {
 
-	/**
-	 * The name of the report every check writes, whether or not it found anything.
-	 */
 	public static final String FAILURE_REPORT = "failure-report.txt";
 
 	protected AutoConfigurationImportsTask() {
@@ -55,18 +52,9 @@ public abstract class AutoConfigurationImportsTask extends DefaultTask {
 		getOutputDirectory().convention(getProject().getLayout().getBuildDirectory().dir(getName()));
 	}
 
-	/**
-	 * Not an input itself: one file out of it is, and getSource() is what declares that.
-	 * @return the resources to look in
-	 */
 	@Internal
 	public abstract ConfigurableFileCollection getResources();
 
-	/**
-	 * Absent means the module registers nothing, so the check is skipped rather than
-	 * failed.
-	 * @return the imports file
-	 */
 	@InputFiles
 	@SkipWhenEmpty
 	@PathSensitive(PathSensitivity.RELATIVE)
@@ -78,10 +66,6 @@ public abstract class AutoConfigurationImportsTask extends DefaultTask {
 	@Classpath
 	public abstract ConfigurableFileCollection getClasspath();
 
-	/**
-	 * Also what lets a check go up to date: a task declaring no output is always re-run.
-	 * @return the directory to report into
-	 */
 	@OutputDirectory
 	public abstract DirectoryProperty getOutputDirectory();
 

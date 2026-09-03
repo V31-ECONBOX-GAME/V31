@@ -109,3 +109,4 @@ gradlePlugin {
 	}
 }
 
+jar.dependsOn check

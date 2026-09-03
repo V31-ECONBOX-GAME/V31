@@ -36,8 +36,8 @@ public final class AutoConfigurationImports {
 	}
 
 	/**
-	 * The classes the file registers, in the order it lists them and without the comments
-	 * and blank lines Spring Boot's own reader passes over.
+	 * The classes it registers, in file order, minus the comments and blank lines Spring
+	 * Boot's own reader skips.
 	 * @param importsFile the file to read
 	 * @return the registered class names
 	 */

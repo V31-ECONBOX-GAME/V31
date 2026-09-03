@@ -41,8 +41,7 @@ import org.v31bank.build.constant.Locations;
 import org.v31bank.build.util.PropertiesFiles;
 
 /**
- * Writes a properties file naming a module and the auto-configurations it offers, for
- * something else in this build to collect from every module at once.
+ * What one module offers, written where the build can gather it across modules.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -66,10 +65,6 @@ public abstract class AutoConfigurationMetadata extends DefaultTask {
 	@OutputFile
 	public abstract RegularFileProperty getOutputFile();
 
-	/**
-	 * Both inputs come from one source set, and the task waits for it to be built.
-	 * @param sourceSet the source set to describe
-	 */
 	public void setSourceSet(SourceSet sourceSet) {
 		getAutoConfigurationImports()
 			.set(new File(sourceSet.getOutput().getResourcesDir(), Locations.AUTO_CONFIGURATION_IMPORTS_FILE));
@@ -87,10 +82,6 @@ public abstract class AutoConfigurationMetadata extends DefaultTask {
 		Files.write(outputFile, PropertiesFiles.render(metadata));
 	}
 
-	/**
-	 * Only public classes: nothing outside the module can name a package-private one.
-	 * @return the public class names
-	 */
 	private Set<String> publicClassNames() {
 		Set<String> publicClassNames = new LinkedHashSet<>();
 		for (String className : AutoConfigurationImports.read(getAutoConfigurationImports().getAsFile().get())) {

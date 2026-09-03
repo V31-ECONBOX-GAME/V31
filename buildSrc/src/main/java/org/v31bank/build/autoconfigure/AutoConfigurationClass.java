@@ -61,8 +61,7 @@ public record AutoConfigurationClass(String name, List<Reference> references) {
 	}
 
 	/**
-	 * Read a class from wherever it is held, which for a class inside a jar is not a
-	 * file.
+	 * Read a class that is not a file — an entry inside a jar.
 	 * @param input the bytecode to read
 	 * @return the class, or empty when it carries no {@code @AutoConfiguration}
 	 */
@@ -70,22 +69,10 @@ public record AutoConfigurationClass(String name, List<Reference> references) {
 		return of(parse(input));
 	}
 
-	/**
-	 * Whether anything outside the class's own package can name it, which is what decides
-	 * whether it is worth telling the rest of the build about.
-	 * @param classFile the file to read
-	 * @return whether the class is public
-	 */
 	public static boolean isPublic(Path classFile) {
 		return parse(classFile).flags().has(AccessFlag.PUBLIC);
 	}
 
-	/**
-	 * Where a class of the given name was compiled to.
-	 * @param className binary name of the class to look for
-	 * @param classpath the roots to look under
-	 * @return its class file, if one of the roots has it
-	 */
 	public static Optional<Path> classFileOf(String className, Iterable<File> classpath) {
 		String relativePath = className.replace('.', '/') + CLASS_FILE_SUFFIX;
 		for (File root : classpath) {
@@ -98,8 +85,6 @@ public record AutoConfigurationClass(String name, List<Reference> references) {
 	}
 
 	private static Optional<AutoConfigurationClass> of(ClassModel classModel) {
-		// @AutoConfiguration is retained at runtime, so only the visible attribute can
-		// hold it.
 		return classModel.findAttribute(Attributes.runtimeVisibleAnnotations())
 			.map(RuntimeVisibleAnnotationsAttribute::annotations)
 			.orElse(List.of())
@@ -163,24 +148,12 @@ public record AutoConfigurationClass(String name, List<Reference> references) {
 
 	public enum Attribute {
 
-		/**
-		 * {@code before}, holding classes.
-		 */
 		BEFORE("before"),
 
-		/**
-		 * {@code beforeName}, holding the same classes by name.
-		 */
 		BEFORE_NAME("beforeName"),
 
-		/**
-		 * {@code after}, holding classes.
-		 */
 		AFTER("after"),
 
-		/**
-		 * {@code afterName}, holding the same classes by name.
-		 */
 		AFTER_NAME("afterName");
 
 		private final String attributeName;
