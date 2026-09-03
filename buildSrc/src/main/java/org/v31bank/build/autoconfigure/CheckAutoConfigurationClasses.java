@@ -56,6 +56,7 @@ import org.v31bank.build.constant.Locations;
 public abstract class CheckAutoConfigurationClasses extends AutoConfigurationImportsTask {
 
 	private static final String CLASS_NAME_SUFFIX = "AutoConfiguration";
+
 	private static final String TEST_CLASS_NAME_SUFFIX = "TestAutoConfiguration";
 
 	@Classpath

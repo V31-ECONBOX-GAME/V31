@@ -17,16 +17,13 @@
 package org.v31bank.build.constant;
 
 /**
- * The project's own metadata.
+ * Project metadata.
  *
  * @author Xander Wang
  * @since 0.2.0
  */
 public final class Metadata {
 
-	/**
-	 * The project's name.
-	 */
 	public static final String NAME = "v31";
 
 	private Metadata() {

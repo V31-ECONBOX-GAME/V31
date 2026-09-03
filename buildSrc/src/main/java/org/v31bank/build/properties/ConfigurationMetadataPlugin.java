@@ -91,11 +91,6 @@ public class ConfigurationMetadataPlugin implements Plugin<Project> {
 	}
 
 	private void offerMetadata(Project project, Provider<File> metadata) {
-		ee(project);
-		project.getArtifacts().add(Configurations.CONFIGURATION_PROPERTIES_METADATA, metadata);
-	}
-
-	static void ee(Project project) {
 		ObjectFactory objects = project.getObjects();
 		project.getConfigurations()
 			.consumable(Configurations.CONFIGURATION_PROPERTIES_METADATA,
@@ -105,6 +100,7 @@ public class ConfigurationMetadataPlugin implements Plugin<Project> {
 						attributes.attribute(Usage.USAGE_ATTRIBUTE,
 								objects.named(Usage.class, Configurations.CONFIGURATION_PROPERTIES_METADATA_USAGE));
 					}));
+		project.getArtifacts().add(Configurations.CONFIGURATION_PROPERTIES_METADATA, metadata);
 	}
 
 }

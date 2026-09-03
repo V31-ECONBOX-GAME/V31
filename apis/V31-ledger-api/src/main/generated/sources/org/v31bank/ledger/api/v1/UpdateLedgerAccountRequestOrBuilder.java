@@ -7,88 +7,91 @@ package org.v31bank.ledger.api.v1;
 
 @com.google.protobuf.Generated
 public interface UpdateLedgerAccountRequestOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:v31.ledger.v1.UpdateLedgerAccountRequest)
-    com.google.protobuf.MessageOrBuilder {
+		// @@protoc_insertion_point(interface_extends:v31.ledger.v1.UpdateLedgerAccountRequest)
+		com.google.protobuf.MessageOrBuilder {
 
-  /**
-   * <code>string id = 1 [json_name = "id"];</code>
-   * @return The id.
-   */
-  java.lang.String getId();
-  /**
-   * <code>string id = 1 [json_name = "id"];</code>
-   * @return The bytes for id.
-   */
-  com.google.protobuf.ByteString
-      getIdBytes();
+	/**
+	 * <code>string id = 1 [json_name = "id"];</code>
+	 * @return The id.
+	 */
+	java.lang.String getId();
 
-  /**
-   * <pre>
-   * Unique across accounts. At most 32 characters.
-   * </pre>
-   *
-   * <code>string code = 2 [json_name = "code"];</code>
-   * @return The code.
-   */
-  java.lang.String getCode();
-  /**
-   * <pre>
-   * Unique across accounts. At most 32 characters.
-   * </pre>
-   *
-   * <code>string code = 2 [json_name = "code"];</code>
-   * @return The bytes for code.
-   */
-  com.google.protobuf.ByteString
-      getCodeBytes();
+	/**
+	 * <code>string id = 1 [json_name = "id"];</code>
+	 * @return The bytes for id.
+	 */
+	com.google.protobuf.ByteString getIdBytes();
 
-  /**
-   * <pre>
-   * At most 100 characters.
-   * </pre>
-   *
-   * <code>string name = 3 [json_name = "name"];</code>
-   * @return The name.
-   */
-  java.lang.String getName();
-  /**
-   * <pre>
-   * At most 100 characters.
-   * </pre>
-   *
-   * <code>string name = 3 [json_name = "name"];</code>
-   * @return The bytes for name.
-   */
-  com.google.protobuf.ByteString
-      getNameBytes();
+	/**
+	 * <pre>
+	 * Unique across accounts. At most 32 characters.
+	 * </pre>
+	 *
+	 * <code>string code = 2 [json_name = "code"];</code>
+	 * @return The code.
+	 */
+	java.lang.String getCode();
 
-  /**
-   * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
-   * @return The enum numeric value on the wire for type.
-   */
-  int getTypeValue();
-  /**
-   * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
-   * @return The type.
-   */
-  org.v31bank.ledger.api.v1.LedgerAccountType getType();
+	/**
+	 * <pre>
+	 * Unique across accounts. At most 32 characters.
+	 * </pre>
+	 *
+	 * <code>string code = 2 [json_name = "code"];</code>
+	 * @return The bytes for code.
+	 */
+	com.google.protobuf.ByteString getCodeBytes();
 
-  /**
-   * <pre>
-   * Leave unspecified to keep the current status.
-   * </pre>
-   *
-   * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
-   * @return The enum numeric value on the wire for status.
-   */
-  int getStatusValue();
-  /**
-   * <pre>
-   * Leave unspecified to keep the current status.
-   * </pre>
-   *
-   * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
-   * @return The status.
-   */
-  org.v31bank.ledger.api.v1.LedgerAccountStatus getStatus();
+	/**
+	 * <pre>
+	 * At most 100 characters.
+	 * </pre>
+	 *
+	 * <code>string name = 3 [json_name = "name"];</code>
+	 * @return The name.
+	 */
+	java.lang.String getName();
+
+	/**
+	 * <pre>
+	 * At most 100 characters.
+	 * </pre>
+	 *
+	 * <code>string name = 3 [json_name = "name"];</code>
+	 * @return The bytes for name.
+	 */
+	com.google.protobuf.ByteString getNameBytes();
+
+	/**
+	 * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
+	 * @return The enum numeric value on the wire for type.
+	 */
+	int getTypeValue();
+
+	/**
+	 * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
+	 * @return The type.
+	 */
+	org.v31bank.ledger.api.v1.LedgerAccountType getType();
+
+	/**
+	 * <pre>
+	 * Leave unspecified to keep the current status.
+	 * </pre>
+	 *
+	 * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
+	 * @return The enum numeric value on the wire for status.
+	 */
+	int getStatusValue();
+
+	/**
+	 * <pre>
+	 * Leave unspecified to keep the current status.
+	 * </pre>
+	 *
+	 * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
+	 * @return The status.
+	 */
+	org.v31bank.ledger.api.v1.LedgerAccountStatus getStatus();
+
 }

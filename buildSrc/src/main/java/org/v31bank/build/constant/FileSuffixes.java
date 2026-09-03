@@ -17,21 +17,15 @@
 package org.v31bank.build.constant;
 
 /**
- * The file suffixes this build matches on.
+ * File suffixes.
  *
  * @author Xander Wang
  * @since 0.2.0
  */
 public final class FileSuffixes {
 
-	/**
-	 * A compiled class.
-	 */
 	public static final String CLASS = ".class";
 
-	/**
-	 * An archive of them.
-	 */
 	public static final String JAR = ".jar";
 
 	private FileSuffixes() {

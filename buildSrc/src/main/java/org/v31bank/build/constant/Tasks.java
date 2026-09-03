@@ -17,62 +17,31 @@
 package org.v31bank.build.constant;
 
 /**
- * The tasks this build's own logic registers or looks up by name.
+ * Build task names.
  *
  * @author Xander Wang
  * @since 0.2.0
  */
 public final class Tasks {
 
-	/**
-	 * Fetches buf and the generators it runs, once for the whole build.
-	 */
 	public static final String INSTALL_PROTO_TOOLCHAIN = "installProtoToolchain";
 
-	/**
-	 * Generates one API project's sources from its {@code .proto}.
-	 */
 	public static final String GENERATE_PROTO_SOURCES = "generateProtoSources";
 
-	/**
-	 * Checks one API against the rules {@code buf.yaml} names.
-	 */
 	public static final String LINT_PROTO = "lintProto";
 
-	/**
-	 * Runs the tests that need more than the project they are in. Names the source set
-	 * they live in as well.
-	 */
 	public static final String INT_TEST = "intTest";
 
-	/**
-	 * Checks migration file names before a bad one is ever applied.
-	 */
 	public static final String VALIDATE_MIGRATION_NAMES = "validateMigrationNames";
 
-	/**
-	 * Checks the metadata the configuration processor generated.
-	 */
 	public static final String CHECK_CONFIGURATION_METADATA = "checkSpringConfigurationMetadata";
 
-	/**
-	 * Checks the metadata written by hand beside it.
-	 */
 	public static final String CHECK_ADDITIONAL_CONFIGURATION_METADATA = "checkAdditionalSpringConfigurationMetadata";
 
-	/**
-	 * Checks the metadata of a module that has nothing to generate it from.
-	 */
 	public static final String CHECK_MANUAL_CONFIGURATION_METADATA = "checkManualSpringConfigurationMetadata";
 
-	/**
-	 * Checks the imports file a module registers its auto-configurations in.
-	 */
 	public static final String CHECK_AUTO_CONFIGURATION_IMPORTS = "checkAutoConfigurationImports";
 
-	/**
-	 * Checks those classes against what the imports file claims.
-	 */
 	public static final String CHECK_AUTO_CONFIGURATION_CLASSES = "checkAutoConfigurationClasses";
 
 	private Tasks() {

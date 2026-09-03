@@ -17,30 +17,17 @@
 package org.v31bank.build.constant;
 
 /**
- * The projects this build's own logic names by path.
- * <p>
- * {@code settings.gradle.kts} spells them out a second time because it is evaluated
- * before buildSrc is compiled, so nothing here is reachable from it.
+ * Project paths.
  *
  * @author Xander Wang
  * @since 0.2.0
  */
 public final class Projects {
 
-	/**
-	 * The root project, which holds what the whole build shares.
-	 */
 	public static final String ROOT = ":";
 
-	/**
-	 * The published BOM, which constrains every published V31 artifact.
-	 */
 	public static final String DEPENDENCIES = ":platform:V31-dependencies";
 
-	/**
-	 * The published BOM plus whatever only this build needs, imported into every Java
-	 * project as an enforced platform.
-	 */
 	public static final String INTERNAL_DEPENDENCIES = ":platform:V31-internal-dependencies";
 
 	private Projects() {
