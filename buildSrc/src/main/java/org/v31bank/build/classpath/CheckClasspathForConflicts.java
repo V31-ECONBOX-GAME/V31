@@ -41,10 +41,6 @@ import org.gradle.api.tasks.TaskAction;
 
 /**
  * Fails when two jars on the classpath contain the same entry.
- * <p>
- * Which copy wins is decided by classpath order, which nothing in the build guarantees
- * and no test observes. The wrong one is loaded silently and the symptom turns up
- * somewhere unrelated at runtime.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -85,20 +81,12 @@ public abstract class CheckClasspathForConflicts extends ClasspathCheck {
 		}
 	}
 
-	/**
-	 * The escape hatch for a duplicate that is known and harmless.
-	 * @param predicate matches the entry names to accept
-	 */
 	public void ignore(Predicate<String> predicate) {
 		this.ignores.add(predicate);
 	}
 
 	private static final class ClasspathContents {
 
-		/**
-		 * Entries jars are expected to disagree about: every jar carries its own licence
-		 * and its own module descriptor.
-		 */
 		private static final Set<String> IGNORED_NAMES = new HashSet<>(Arrays.asList("about.html", "changelog.txt",
 				"LICENSE", "license.txt", "module-info.class", "notice.txt", "readme.txt"));
 
@@ -113,7 +101,7 @@ public abstract class CheckClasspathForConflicts extends ClasspathCheck {
 				.stream()
 				.filter((entry) -> entry.getValue().size() > 1)
 				.filter((entry) -> canConflict(entry.getKey(), ignores))
-				.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (first, second) -> first, TreeMap::new));
+				.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (first, _) -> first, TreeMap::new));
 		}
 
 		private boolean canConflict(String name, List<Predicate<String>> ignores) {

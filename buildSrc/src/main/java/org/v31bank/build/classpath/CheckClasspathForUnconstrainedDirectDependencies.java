@@ -34,12 +34,7 @@ import org.gradle.api.artifacts.result.ResolvedDependencyResult;
 import org.gradle.api.tasks.TaskAction;
 
 /**
- * Fails when a starter declares a dependency whose version nothing constrains.
- * <p>
- * Naming a starter is meant to settle a set of versions that were built and tested
- * together. An unconstrained dependency still resolves to <em>something</em>, so nothing
- * fails here, and which version a consumer ends up with depends on the rest of their
- * graph. Which platform supplies the constraint is not checked, only that one exists.
+ * Fails when a starter declares a dependency nothing constrains.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -56,12 +51,6 @@ public abstract class CheckClasspathForUnconstrainedDirectDependencies extends C
 		}
 	}
 
-	/**
-	 * The resolution result would hand these over directly, but only its root can be
-	 * carried into a task's execution.
-	 * @param root where the graph starts
-	 * @return every dependency edge in it
-	 */
 	private Stream<? extends DependencyResult> everyEdgeFrom(ResolvedComponentResult root) {
 		Set<ResolvedComponentResult> seen = new HashSet<>();
 		List<DependencyResult> edges = new ArrayList<>();
@@ -81,12 +70,6 @@ public abstract class CheckClasspathForUnconstrainedDirectDependencies extends C
 		return edges.stream();
 	}
 
-	/**
-	 * Project dependencies drop out here: they carry this build's version by
-	 * construction, so there is nothing for a platform to constrain.
-	 * @param dependencies the edges to reduce
-	 * @return their {@code group:module} identifiers
-	 */
 	private Set<String> moduleIds(Stream<? extends DependencyResult> dependencies) {
 		return dependencies.map(DependencyResult::getRequested)
 			.filter(ModuleComponentSelector.class::isInstance)

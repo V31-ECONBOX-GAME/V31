@@ -26,17 +26,11 @@ import org.gradle.api.plugins.JavaPlatformPlugin;
 import org.v31bank.build.constant.Configurations;
 
 /**
- * Plugin for defining a bom.
- * <p>
- * Applied on its own, without {@code java-platform} beside it:
+ * Turns a project into a bom, applying {@code java-platform} itself.
  *
  * <pre class="code">
  * plugins {
  *     id("org.v31bank.bom")
- * }
- *
- * bom {
- *     imports(SpringBootPlugin.BOM_COORDINATES)
  * }
  * </pre>
  *

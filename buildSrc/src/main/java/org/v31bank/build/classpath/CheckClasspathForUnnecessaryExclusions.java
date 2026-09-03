@@ -43,39 +43,18 @@ import org.v31bank.build.constant.Projects;
 
 /**
  * Fails when a dependency excludes something it never brings in.
- * <p>
- * An exclusion is a claim about someone else's dependency graph, and that graph moves
- * under it. An exclusion that matches nothing is silent by construction, so it outlives
- * the upstream release that made it necessary while still reading as a live decision.
  *
  * @author Xander Wang
  * @since 0.2.0
  */
 public abstract class CheckClasspathForUnnecessaryExclusions extends ClasspathCheck {
 
-	/**
-	 * The resolved classpath does not change when an unnecessary exclusion is added or
-	 * removed, so without this input the check would stay up to date across the very edit
-	 * that introduces the problem.
-	 * @return the exclusions declared by each dependency
-	 */
 	@Input
 	public abstract MapProperty<String, Set<String>> getExclusionsByDependencyId();
 
-	/**
-	 * Filled in with providers rather than values, so the standalone resolutions happen
-	 * when this check runs and not while every build is being configured.
-	 * @return the modules each dependency resolves to
-	 */
 	@Internal
 	public abstract MapProperty<String, Set<String>> getResolvedByDependencyId();
 
-	/**
-	 * Both maps are built at configuration time because both need the
-	 * {@link Configuration} and the project behind it, neither of which may be carried
-	 * into the task's execution.
-	 * @param classpath the configuration to check
-	 */
 	@Override
 	public void setClasspath(Configuration classpath) {
 		super.setClasspath(classpath);
