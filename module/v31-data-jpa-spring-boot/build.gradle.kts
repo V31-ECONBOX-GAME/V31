@@ -26,14 +26,12 @@ dependencies {
     api(project(":library:v31-core"))
     api("org.springframework.boot:spring-boot-data-jpa")
 
-    // Compiled against here, absent for a consumer: anything running an
-    // auto-configuration already has it.
     optional("org.springframework.boot:spring-boot-autoconfigure")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-test")
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.assertj:assertj-core")
 
-    // A real persistence unit, so the auditing this module configures is asserted
-    // by what reaches a row rather than by which beans exist.
-    testImplementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    testRuntimeOnly("com.zaxxer:HikariCP")
     testRuntimeOnly("com.h2database:h2")
 }
