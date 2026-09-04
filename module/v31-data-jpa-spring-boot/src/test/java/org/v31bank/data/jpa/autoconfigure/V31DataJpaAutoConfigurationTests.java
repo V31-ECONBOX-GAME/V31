@@ -92,7 +92,7 @@ class V31DataJpaAutoConfigurationTests {
 	private static AuditedRecord save(PlatformTransactionManager transactionManager,
 			EntityManagerFactory entityManagerFactory) {
 		EntityManager entityManager = SharedEntityManagerCreator.createSharedEntityManager(entityManagerFactory);
-		return new TransactionTemplate(transactionManager).execute((status) -> {
+		return new TransactionTemplate(transactionManager).execute((_) -> {
 			AuditedRecord record = new AuditedRecord();
 			entityManager.persist(record);
 			entityManager.flush();
