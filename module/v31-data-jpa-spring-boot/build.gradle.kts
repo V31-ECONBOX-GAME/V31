@@ -34,4 +34,5 @@ dependencies {
 
     testRuntimeOnly("com.zaxxer:HikariCP")
     testRuntimeOnly("com.h2database:h2")
+    testRuntimeOnly("ch.qos.logback:logback-classic")
 }

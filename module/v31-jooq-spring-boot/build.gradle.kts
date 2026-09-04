@@ -18,18 +18,16 @@ plugins {
     `java-library`
     id("org.v31bank.auto-configuration")
     id("org.v31bank.configuration-properties")
+    id("org.v31bank.optional-dependencies")
 }
 
 description = "V31 jOOQ auto-configuration"
 
 dependencies {
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-
-    api("org.springframework.boot:spring-boot")
-    api("org.springframework.boot:spring-boot-autoconfigure")
-    api("org.springframework.boot:spring-boot-jooq")
-    api("org.jooq:jooq")
     api(project(":library:v31-core"))
+    api("org.springframework.boot:spring-boot-jooq")
+
+    optional("org.springframework.boot:spring-boot-autoconfigure")
 
     // Not referenced in code: javac reads the JAXB annotations on
     // `org.jooq.conf.Settings` when resolving the `DefaultConfiguration.set(...)`
