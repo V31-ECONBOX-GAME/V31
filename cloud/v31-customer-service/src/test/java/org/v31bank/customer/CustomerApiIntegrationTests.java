@@ -31,16 +31,12 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
 import org.v31bank.customer.infra.persistence.jpa.JpaCustomerRepository;
+import org.v31bank.customer.presentation.controller.v1.CustomerController;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for the customer endpoints.
- * <p>
- * The whole service is started and driven over HTTP against a real PostgreSQL, so what is
- * exercised is what runs: the controller, the use case, JPA, the schema Flyway built, and
- * the response envelope. A test that mocked the repository would pass whether or not the
- * column widths, the unique constraints or the audit columns were right.
+ * Tests for {@link CustomerController}.
  *
  * @author Xander Wang
  */
@@ -85,11 +81,6 @@ class CustomerApiIntegrationTests {
 			.containsEntry("status", "ACTIVE");
 	}
 
-	/**
-	 * The identifier and the audit fields come from the JPA starter rather than from
-	 * anything in this service, which is exactly why they are worth asserting here
-	 * instead of trusting.
-	 */
 	@Test
 	void issuesATimeOrderedIdentifierAndStampsTheAuditFields() {
 		Map<String, Object> created = create("grace@v31bank.org", "Grace Hopper");
@@ -134,11 +125,6 @@ class CustomerApiIntegrationTests {
 		assertThat(records(page)).hasSize(5);
 	}
 
-	/**
-	 * The failure a page query is most likely to have is not returning the wrong count
-	 * but returning the same row twice, which only shows up when the pages are put back
-	 * together.
-	 */
 	@Test
 	void doesNotRepeatOrDropARecordAcrossPages() {
 		createMany(25);
@@ -236,11 +222,6 @@ class CustomerApiIntegrationTests {
 		return (List<Map<String, Object>>) envelope.get("data");
 	}
 
-	/**
-	 * A body missing the fields the record cannot do without is the caller's mistake.
-	 * Before the shared handler existed this reached the database and came back as a
-	 * {@code 500}, telling the caller to retry a request that could never succeed.
-	 */
 	@Test
 	void rejectsAnEmptyBody() {
 		Map<String, Object> body = this.client.post()
@@ -255,10 +236,6 @@ class CustomerApiIntegrationTests {
 		assertThat(body).containsEntry("code", 400);
 	}
 
-	/**
-	 * The constraint matches the column, so a value too long to store is refused at the
-	 * edge rather than by the database.
-	 */
 	@Test
 	void rejectsAValueLongerThanTheColumnHolds() {
 		Map<String, Object> body = this.client.post()
@@ -273,10 +250,6 @@ class CustomerApiIntegrationTests {
 		assertThat(body).containsEntry("code", 400);
 	}
 
-	/**
-	 * A failure is parsed by the same client code as a success, so it has to arrive in
-	 * the same envelope rather than in whatever the framework would have sent.
-	 */
 	@Test
 	void reportsAFrameworkRejectionInTheSameEnvelope() {
 		Map<String, Object> body = this.client.post()

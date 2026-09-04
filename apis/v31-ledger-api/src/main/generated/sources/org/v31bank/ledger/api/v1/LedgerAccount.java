@@ -6,10 +6,6 @@
 package org.v31bank.ledger.api.v1;
 
 /**
- * <pre>
- * An account in the chart of accounts.
- * </pre>
- *
  * Protobuf type {@code v31.ledger.v1.LedgerAccount}
  */
 @com.google.protobuf.Generated
@@ -62,10 +58,6 @@ private static final long serialVersionUID = 0L;
   @SuppressWarnings("serial")
   private volatile java.lang.Object id_ = "";
   /**
-   * <pre>
-   * Time-ordered UUIDv7, as text.
-   * </pre>
-   *
    * <code>string id = 1 [json_name = "id"];</code>
    * @return The id.
    */
@@ -83,10 +75,6 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <pre>
-   * Time-ordered UUIDv7, as text.
-   * </pre>
-   *
    * <code>string id = 1 [json_name = "id"];</code>
    * @return The bytes for id.
    */
@@ -504,10 +492,6 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * <pre>
-   * An account in the chart of accounts.
-   * </pre>
-   *
    * Protobuf type {@code v31.ledger.v1.LedgerAccount}
    */
   public static final class Builder extends
@@ -750,10 +734,6 @@ private static final long serialVersionUID = 0L;
 
     private java.lang.Object id_ = "";
     /**
-     * <pre>
-     * Time-ordered UUIDv7, as text.
-     * </pre>
-     *
      * <code>string id = 1 [json_name = "id"];</code>
      * @return The id.
      */
@@ -770,10 +750,6 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <pre>
-     * Time-ordered UUIDv7, as text.
-     * </pre>
-     *
      * <code>string id = 1 [json_name = "id"];</code>
      * @return The bytes for id.
      */
@@ -791,10 +767,6 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <pre>
-     * Time-ordered UUIDv7, as text.
-     * </pre>
-     *
      * <code>string id = 1 [json_name = "id"];</code>
      * @param value The id to set.
      * @return This builder for chaining.
@@ -808,10 +780,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <pre>
-     * Time-ordered UUIDv7, as text.
-     * </pre>
-     *
      * <code>string id = 1 [json_name = "id"];</code>
      * @return This builder for chaining.
      */
@@ -822,10 +790,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <pre>
-     * Time-ordered UUIDv7, as text.
-     * </pre>
-     *
      * <code>string id = 1 [json_name = "id"];</code>
      * @param value The bytes for id to set.
      * @return This builder for chaining.

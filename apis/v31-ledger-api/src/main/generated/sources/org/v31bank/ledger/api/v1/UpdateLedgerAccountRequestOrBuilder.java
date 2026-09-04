@@ -23,19 +23,11 @@ public interface UpdateLedgerAccountRequestOrBuilder extends
       getIdBytes();
 
   /**
-   * <pre>
-   * Unique across accounts. At most 32 characters.
-   * </pre>
-   *
    * <code>string code = 2 [json_name = "code"];</code>
    * @return The code.
    */
   java.lang.String getCode();
   /**
-   * <pre>
-   * Unique across accounts. At most 32 characters.
-   * </pre>
-   *
    * <code>string code = 2 [json_name = "code"];</code>
    * @return The bytes for code.
    */
@@ -43,19 +35,11 @@ public interface UpdateLedgerAccountRequestOrBuilder extends
       getCodeBytes();
 
   /**
-   * <pre>
-   * At most 100 characters.
-   * </pre>
-   *
    * <code>string name = 3 [json_name = "name"];</code>
    * @return The name.
    */
   java.lang.String getName();
   /**
-   * <pre>
-   * At most 100 characters.
-   * </pre>
-   *
    * <code>string name = 3 [json_name = "name"];</code>
    * @return The bytes for name.
    */
@@ -74,19 +58,11 @@ public interface UpdateLedgerAccountRequestOrBuilder extends
   org.v31bank.ledger.api.v1.LedgerAccountType getType();
 
   /**
-   * <pre>
-   * Leave unspecified to keep the current status.
-   * </pre>
-   *
    * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
    * @return The enum numeric value on the wire for status.
    */
   int getStatusValue();
   /**
-   * <pre>
-   * Leave unspecified to keep the current status.
-   * </pre>
-   *
    * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
    * @return The status.
    */

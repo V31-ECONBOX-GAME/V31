@@ -58,10 +58,6 @@ class TreesTests {
 		assertThat(root.getChildren()).containsExactly(first, second, third);
 	}
 
-	/**
-	 * A node with no position given goes after the ones that have one, rather than
-	 * sorting as if it were at the top.
-	 */
 	@Test
 	void putsAnUnpositionedNodeLast() {
 		Category root = category("root", null, 1);
@@ -73,11 +69,6 @@ class TreesTests {
 		assertThat(root.getChildren()).containsExactly(positioned, unpositioned);
 	}
 
-	/**
-	 * Two siblings can share a position — the categories in the platform are ordered by a
-	 * hand-entered number. Falling back to the identifier keeps the order the same from
-	 * one request to the next, which is what a paged listing needs.
-	 */
 	@Test
 	void ordersEquallyPositionedSiblingsTheSameWayEveryTime() {
 		Category root = category("root", null, 1);
@@ -90,10 +81,6 @@ class TreesTests {
 		assertThat(root.getChildren()).first().isSameAs(earlier);
 	}
 
-	/**
-	 * A page of a table is a slice, so a node whose parent is on another page has nothing
-	 * to hang under. Dropping it would lose a record from a listing.
-	 */
 	@Test
 	void treatsANodeWhoseParentIsAbsentAsARoot() {
 		Category orphan = category("orphan", UUID.randomUUID(), 1);
@@ -112,10 +99,6 @@ class TreesTests {
 		assertThat(self.getChildren()).isEmpty();
 	}
 
-	/**
-	 * Building twice from the same objects has to give the same answer: the entities come
-	 * from a persistence context that hands back the identical instance.
-	 */
 	@Test
 	void doesNotAccumulateChildrenWhenBuiltAgain() {
 		Category root = category("root", null, 1);
@@ -140,9 +123,6 @@ class TreesTests {
 		return category;
 	}
 
-	/**
-	 * Stands in for a tree-shaped entity such as a customer category.
-	 */
 	static class Category extends TreeEntity<Category> {
 
 		private final String name;

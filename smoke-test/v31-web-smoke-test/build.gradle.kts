@@ -23,9 +23,5 @@ description = "V31 web smoke test"
 dependencies {
     implementation(project(":starter:v31-web-spring-boot-starter"))
 
-    testImplementation("org.springframework.boot:spring-boot-test")
-    testImplementation("org.springframework:spring-test")
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("org.assertj:assertj-core")
-    testRuntimeOnly("ch.qos.logback:logback-classic")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

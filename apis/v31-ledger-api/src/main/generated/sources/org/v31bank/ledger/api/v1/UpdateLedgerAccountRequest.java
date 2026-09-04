@@ -6,15 +6,6 @@
 package org.v31bank.ledger.api.v1;
 
 /**
- * <pre>
- * A full replacement: every field is written as sent, so send the current value
- * for anything not being changed. Status is the one exception.
- *
- * Code, name and type are required, on the same terms as on create: an omitted
- * one arrives empty or unspecified and is refused with INVALID_ARGUMENT, never
- * written.
- * </pre>
- *
  * Protobuf type {@code v31.ledger.v1.UpdateLedgerAccountRequest}
  */
 @com.google.protobuf.Generated
@@ -105,10 +96,6 @@ private static final long serialVersionUID = 0L;
   @SuppressWarnings("serial")
   private volatile java.lang.Object code_ = "";
   /**
-   * <pre>
-   * Unique across accounts. At most 32 characters.
-   * </pre>
-   *
    * <code>string code = 2 [json_name = "code"];</code>
    * @return The code.
    */
@@ -126,10 +113,6 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <pre>
-   * Unique across accounts. At most 32 characters.
-   * </pre>
-   *
    * <code>string code = 2 [json_name = "code"];</code>
    * @return The bytes for code.
    */
@@ -152,10 +135,6 @@ private static final long serialVersionUID = 0L;
   @SuppressWarnings("serial")
   private volatile java.lang.Object name_ = "";
   /**
-   * <pre>
-   * At most 100 characters.
-   * </pre>
-   *
    * <code>string name = 3 [json_name = "name"];</code>
    * @return The name.
    */
@@ -173,10 +152,6 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <pre>
-   * At most 100 characters.
-   * </pre>
-   *
    * <code>string name = 3 [json_name = "name"];</code>
    * @return The bytes for name.
    */
@@ -216,10 +191,6 @@ private static final long serialVersionUID = 0L;
   public static final int STATUS_FIELD_NUMBER = 5;
   private int status_ = 0;
   /**
-   * <pre>
-   * Leave unspecified to keep the current status.
-   * </pre>
-   *
    * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
    * @return The enum numeric value on the wire for status.
    */
@@ -227,10 +198,6 @@ private static final long serialVersionUID = 0L;
     return status_;
   }
   /**
-   * <pre>
-   * Leave unspecified to keep the current status.
-   * </pre>
-   *
    * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
    * @return The status.
    */
@@ -440,15 +407,6 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * <pre>
-   * A full replacement: every field is written as sent, so send the current value
-   * for anything not being changed. Status is the one exception.
-   *
-   * Code, name and type are required, on the same terms as on create: an omitted
-   * one arrives empty or unspecified and is refused with INVALID_ARGUMENT, never
-   * written.
-   * </pre>
-   *
    * Protobuf type {@code v31.ledger.v1.UpdateLedgerAccountRequest}
    */
   public static final class Builder extends
@@ -712,10 +670,6 @@ private static final long serialVersionUID = 0L;
 
     private java.lang.Object code_ = "";
     /**
-     * <pre>
-     * Unique across accounts. At most 32 characters.
-     * </pre>
-     *
      * <code>string code = 2 [json_name = "code"];</code>
      * @return The code.
      */
@@ -732,10 +686,6 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <pre>
-     * Unique across accounts. At most 32 characters.
-     * </pre>
-     *
      * <code>string code = 2 [json_name = "code"];</code>
      * @return The bytes for code.
      */
@@ -753,10 +703,6 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <pre>
-     * Unique across accounts. At most 32 characters.
-     * </pre>
-     *
      * <code>string code = 2 [json_name = "code"];</code>
      * @param value The code to set.
      * @return This builder for chaining.
@@ -770,10 +716,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <pre>
-     * Unique across accounts. At most 32 characters.
-     * </pre>
-     *
      * <code>string code = 2 [json_name = "code"];</code>
      * @return This builder for chaining.
      */
@@ -784,10 +726,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <pre>
-     * Unique across accounts. At most 32 characters.
-     * </pre>
-     *
      * <code>string code = 2 [json_name = "code"];</code>
      * @param value The bytes for code to set.
      * @return This builder for chaining.
@@ -804,10 +742,6 @@ private static final long serialVersionUID = 0L;
 
     private java.lang.Object name_ = "";
     /**
-     * <pre>
-     * At most 100 characters.
-     * </pre>
-     *
      * <code>string name = 3 [json_name = "name"];</code>
      * @return The name.
      */
@@ -824,10 +758,6 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <pre>
-     * At most 100 characters.
-     * </pre>
-     *
      * <code>string name = 3 [json_name = "name"];</code>
      * @return The bytes for name.
      */
@@ -845,10 +775,6 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <pre>
-     * At most 100 characters.
-     * </pre>
-     *
      * <code>string name = 3 [json_name = "name"];</code>
      * @param value The name to set.
      * @return This builder for chaining.
@@ -862,10 +788,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <pre>
-     * At most 100 characters.
-     * </pre>
-     *
      * <code>string name = 3 [json_name = "name"];</code>
      * @return This builder for chaining.
      */
@@ -876,10 +798,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <pre>
-     * At most 100 characters.
-     * </pre>
-     *
      * <code>string name = 3 [json_name = "name"];</code>
      * @param value The bytes for name to set.
      * @return This builder for chaining.
@@ -948,10 +866,6 @@ private static final long serialVersionUID = 0L;
 
     private int status_ = 0;
     /**
-     * <pre>
-     * Leave unspecified to keep the current status.
-     * </pre>
-     *
      * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
      * @return The enum numeric value on the wire for status.
      */
@@ -959,10 +873,6 @@ private static final long serialVersionUID = 0L;
       return status_;
     }
     /**
-     * <pre>
-     * Leave unspecified to keep the current status.
-     * </pre>
-     *
      * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
      * @param value The enum numeric value on the wire for status to set.
      * @return This builder for chaining.
@@ -974,10 +884,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <pre>
-     * Leave unspecified to keep the current status.
-     * </pre>
-     *
      * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
      * @return The status.
      */
@@ -987,10 +893,6 @@ private static final long serialVersionUID = 0L;
       return result == null ? org.v31bank.ledger.api.v1.LedgerAccountStatus.UNRECOGNIZED : result;
     }
     /**
-     * <pre>
-     * Leave unspecified to keep the current status.
-     * </pre>
-     *
      * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
      * @param value The status to set.
      * @throws IllegalArgumentException if UNRECOGNIZED is provided.
@@ -1004,10 +906,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <pre>
-     * Leave unspecified to keep the current status.
-     * </pre>
-     *
      * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
      * @return This builder for chaining.
      */

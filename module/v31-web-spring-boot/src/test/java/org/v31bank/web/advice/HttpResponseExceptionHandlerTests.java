@@ -77,11 +77,6 @@ class HttpResponseExceptionHandlerTests {
 			.andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()));
 	}
 
-	/**
-	 * The envelope is the five members a caller is told about and nothing else. A field
-	 * that appears only sometimes is one a caller writes code against and then finds
-	 * missing.
-	 */
 	@Test
 	void sendsNothingBeyondTheEnvelope() throws Exception {
 		this.mvc.perform(get("/refuse/404"))
@@ -93,11 +88,6 @@ class HttpResponseExceptionHandlerTests {
 			.andExpect(jsonPath("$.message").exists());
 	}
 
-	/**
-	 * The value is what makes a validation failure dangerous to echo: these endpoints are
-	 * sent names, e-mail addresses and account identifiers, and the response is the one
-	 * part of a failure a caller is most likely to log.
-	 */
 	@Test
 	void keepsTheRejectedValueOutOfTheResponse() throws Exception {
 		this.mvc
@@ -107,12 +97,6 @@ class HttpResponseExceptionHandlerTests {
 			.andExpect(jsonPath("$..*[?(@ == 'ada@v31bank.org')]").doesNotExist());
 	}
 
-	/**
-	 * The log file is the other place a rejected value ends up. Spring's own message for
-	 * a validation failure quotes every one of them, and a rejected request is the most
-	 * common kind there is — so logging that message would put customer data in the log
-	 * of every service, at volume.
-	 */
 	@Test
 	void keepsTheRejectedValueOutOfTheLogToo() throws Exception {
 		ListAppender<ILoggingEvent> appender = attachAppender();
@@ -136,10 +120,6 @@ class HttpResponseExceptionHandlerTests {
 			.andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()));
 	}
 
-	/**
-	 * The message names a table, a constraint or a host often enough that it cannot be
-	 * sent to whoever made the call.
-	 */
 	@Test
 	void saysNothingAboutAnUnrecognisedFailure() throws Exception {
 		this.mvc.perform(get("/explode"))
@@ -150,11 +130,6 @@ class HttpResponseExceptionHandlerTests {
 				.not(org.hamcrest.Matchers.containsString("jdbc:postgresql://ledger-primary.internal:5432"))));
 	}
 
-	/**
-	 * Spring raises {@code ResponseStatusException} with any status in {@code 100..999},
-	 * and {@link HttpStatus} has a constant for only some of them. Answering is this
-	 * class's whole job, so a status it cannot name must still produce an envelope.
-	 */
 	@Test
 	void stillAnswersWithTheEnvelopeForAStatusItCannotName() throws Exception {
 		this.mvc.perform(get("/nonstandard"))
@@ -199,14 +174,6 @@ class HttpResponseExceptionHandlerTests {
 		return validator;
 	}
 
-	/**
-	 * Stands in for a service's controller, raising what one raises.
-	 * <p>
-	 * The path variables are named explicitly rather than left to be read off the
-	 * bytecode. A module is compiled without the Spring Boot plugin, which is what adds
-	 * {@code -parameters} to the services, so a name omitted here would resolve or not
-	 * depending on a compiler flag this module does not control.
-	 */
 	@RestController
 	static class TestController {
 

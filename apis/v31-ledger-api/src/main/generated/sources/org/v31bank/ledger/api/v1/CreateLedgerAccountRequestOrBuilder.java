@@ -11,19 +11,11 @@ public interface CreateLedgerAccountRequestOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <pre>
-   * Unique across accounts. At most 32 characters.
-   * </pre>
-   *
    * <code>string code = 1 [json_name = "code"];</code>
    * @return The code.
    */
   java.lang.String getCode();
   /**
-   * <pre>
-   * Unique across accounts. At most 32 characters.
-   * </pre>
-   *
    * <code>string code = 1 [json_name = "code"];</code>
    * @return The bytes for code.
    */
@@ -31,19 +23,11 @@ public interface CreateLedgerAccountRequestOrBuilder extends
       getCodeBytes();
 
   /**
-   * <pre>
-   * At most 100 characters.
-   * </pre>
-   *
    * <code>string name = 2 [json_name = "name"];</code>
    * @return The name.
    */
   java.lang.String getName();
   /**
-   * <pre>
-   * At most 100 characters.
-   * </pre>
-   *
    * <code>string name = 2 [json_name = "name"];</code>
    * @return The bytes for name.
    */

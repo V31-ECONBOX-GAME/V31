@@ -6,21 +6,12 @@
 package org.v31bank.ledger.api.v1;
 
 /**
- * <pre>
- * Which side of the balance sheet an account belongs to.
- * </pre>
- *
  * Protobuf enum {@code v31.ledger.v1.LedgerAccountType}
  */
 @com.google.protobuf.Generated
 public enum LedgerAccountType
     implements com.google.protobuf.ProtocolMessageEnum {
   /**
-   * <pre>
-   * Never sent. Proto3 gives every enum a zero value, and leaving it unnamed
-   * would make "not set" indistinguishable from the first real member.
-   * </pre>
-   *
    * <code>LEDGER_ACCOUNT_TYPE_UNSPECIFIED = 0;</code>
    */
   LEDGER_ACCOUNT_TYPE_UNSPECIFIED(0),
@@ -57,11 +48,6 @@ public enum LedgerAccountType
       "LedgerAccountType");
   }
   /**
-   * <pre>
-   * Never sent. Proto3 gives every enum a zero value, and leaving it unnamed
-   * would make "not set" indistinguishable from the first real member.
-   * </pre>
-   *
    * <code>LEDGER_ACCOUNT_TYPE_UNSPECIFIED = 0;</code>
    */
   public static final int LEDGER_ACCOUNT_TYPE_UNSPECIFIED_VALUE = 0;

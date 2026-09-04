@@ -1,3 +1,17 @@
+// Copyright 2026-present the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 syntax = "proto3";
 
 package v31.ledger.v1;
@@ -6,31 +20,20 @@ import "google/protobuf/timestamp.proto";
 
 option java_package = "org.v31bank.ledger.api.v1";
 
-// The chart of accounts, as other services see it.
-//
-// This file is the contract. A field is never renumbered and never reused: a
-// caller compiled against an older copy reads by number, so changing what a
-// number means silently corrupts data rather than failing to compile. Removing
-// one means reserving it.
 service LedgerAccountService {
 
   rpc CreateLedgerAccount(CreateLedgerAccountRequest) returns (CreateLedgerAccountResponse);
 
   rpc GetLedgerAccount(GetLedgerAccountRequest) returns (GetLedgerAccountResponse);
 
-  // Returns one page, newest first.
   rpc ListLedgerAccounts(ListLedgerAccountsRequest) returns (ListLedgerAccountsResponse);
 
   rpc UpdateLedgerAccount(UpdateLedgerAccountRequest) returns (UpdateLedgerAccountResponse);
 
-  // Returns the account that was removed.
   rpc DeleteLedgerAccount(DeleteLedgerAccountRequest) returns (DeleteLedgerAccountResponse);
 }
 
-// Which side of the balance sheet an account belongs to.
 enum LedgerAccountType {
-  // Never sent. Proto3 gives every enum a zero value, and leaving it unnamed
-  // would make "not set" indistinguishable from the first real member.
   LEDGER_ACCOUNT_TYPE_UNSPECIFIED = 0;
   LEDGER_ACCOUNT_TYPE_ASSET = 1;
   LEDGER_ACCOUNT_TYPE_LIABILITY = 2;
@@ -39,16 +42,13 @@ enum LedgerAccountType {
   LEDGER_ACCOUNT_TYPE_EXPENSE = 5;
 }
 
-// Whether an account is still posted to.
 enum LedgerAccountStatus {
   LEDGER_ACCOUNT_STATUS_UNSPECIFIED = 0;
   LEDGER_ACCOUNT_STATUS_ACTIVE = 1;
   LEDGER_ACCOUNT_STATUS_CLOSED = 2;
 }
 
-// An account in the chart of accounts.
 message LedgerAccount {
-  // Time-ordered UUIDv7, as text.
   string id = 1;
   string code = 2;
   string name = 3;
@@ -58,13 +58,8 @@ message LedgerAccount {
   google.protobuf.Timestamp last_modified_date = 7;
 }
 
-// Every field is required. A proto3 scalar has no presence, so an omitted one
-// arrives as an empty string or an unspecified enum; both are refused with
-// INVALID_ARGUMENT rather than stored.
 message CreateLedgerAccountRequest {
-  // Unique across accounts. At most 32 characters.
   string code = 1;
-  // At most 100 characters.
   string name = 2;
   LedgerAccountType type = 3;
 }
@@ -73,8 +68,6 @@ message GetLedgerAccountRequest {
   string id = 1;
 }
 
-// One message per RPC rather than the account itself, so that an answer can grow a
-// field later without every caller having to be told the shape changed.
 message CreateLedgerAccountResponse {
   LedgerAccount ledger_account = 1;
 }
@@ -87,25 +80,15 @@ message UpdateLedgerAccountResponse {
   LedgerAccount ledger_account = 1;
 }
 
-// Carries the account that was removed.
 message DeleteLedgerAccountResponse {
   LedgerAccount ledger_account = 1;
 }
 
-// A full replacement: every field is written as sent, so send the current value
-// for anything not being changed. Status is the one exception.
-//
-// Code, name and type are required, on the same terms as on create: an omitted
-// one arrives empty or unspecified and is refused with INVALID_ARGUMENT, never
-// written.
 message UpdateLedgerAccountRequest {
   string id = 1;
-  // Unique across accounts. At most 32 characters.
   string code = 2;
-  // At most 100 characters.
   string name = 3;
   LedgerAccountType type = 4;
-  // Leave unspecified to keep the current status.
   LedgerAccountStatus status = 5;
 }
 
@@ -114,19 +97,13 @@ message DeleteLedgerAccountRequest {
 }
 
 message ListLedgerAccountsRequest {
-  // One-based, to match the rest of the platform. Zero means the first page.
   int32 page_number = 1;
-  // Zero means the server's default of 10; anything above 500 is clamped to it.
   int32 page_size = 2;
-  // Fragment matched against the code, case-insensitive. Empty means no filter.
   string code = 3;
-  // Unspecified means no filter.
   LedgerAccountType type = 4;
   LedgerAccountStatus status = 5;
 }
 
-// Mirrors the shape the REST layer returns, so a caller reading both sees the
-// same pagination.
 message ListLedgerAccountsResponse {
   repeated LedgerAccount records = 1;
   int64 total = 2;

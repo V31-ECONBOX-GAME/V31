@@ -54,10 +54,6 @@ class V31WebAutoConfigurationTests {
 		});
 	}
 
-	/**
-	 * A service with a reason to answer differently keeps that reason by declaring its
-	 * own bean, rather than by turning the module off and losing the rest of it.
-	 */
 	@Test
 	void backsOffFromAnApplicationSuppliedHandler() {
 		this.runner.withUserConfiguration(CustomHandlerConfiguration.class).run((context) -> {
@@ -66,9 +62,6 @@ class V31WebAutoConfigurationTests {
 		});
 	}
 
-	/**
-	 * A batch job or a message consumer has no controllers for an advice to advise.
-	 */
 	@Test
 	void addsNothingOutsideAWebApplication() {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(V31WebAutoConfiguration.class))

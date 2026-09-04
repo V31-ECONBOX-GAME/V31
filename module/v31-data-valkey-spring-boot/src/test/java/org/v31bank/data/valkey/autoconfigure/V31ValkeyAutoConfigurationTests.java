@@ -106,12 +106,6 @@ class V31ValkeyAutoConfigurationTests {
 		});
 	}
 
-	/**
-	 * The platform stores instants and decimal amounts everywhere. A serializer that
-	 * turns an {@code Instant} into a number of seconds, or a {@code BigDecimal} into a
-	 * double, corrupts the value silently — which is the whole reason those types were
-	 * chosen.
-	 */
 	@Test
 	void readsBackInstantsAndAmountsUnchanged() {
 		this.runner.run((context) -> {
@@ -199,17 +193,10 @@ class V31ValkeyAutoConfigurationTests {
 		return properties;
 	}
 
-	/**
-	 * A value of a type under {@code org.v31bank}, which the default trusted packages
-	 * cover.
-	 */
 	public record Balance(String asset, String amount) {
 
 	}
 
-	/**
-	 * Carries the two types the platform is most exposed to losing precision on.
-	 */
 	public record Movement(Instant at, BigDecimal amount) {
 
 	}

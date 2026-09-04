@@ -3,13 +3,6 @@ package org.v31bank.ledger.api.v1;
 import static io.grpc.MethodDescriptor.generateFullMethodName;
 
 /**
- * <pre>
- * The chart of accounts, as other services see it.
- * This file is the contract. A field is never renumbered and never reused: a
- * caller compiled against an older copy reads by number, so changing what a
- * number means silently corrupts data rather than failing to compile. Removing
- * one means reserving it.
- * </pre>
  */
 @io.grpc.stub.annotations.GrpcGenerated
 public final class LedgerAccountServiceGrpc {
@@ -234,13 +227,6 @@ public final class LedgerAccountServiceGrpc {
   }
 
   /**
-   * <pre>
-   * The chart of accounts, as other services see it.
-   * This file is the contract. A field is never renumbered and never reused: a
-   * caller compiled against an older copy reads by number, so changing what a
-   * number means silently corrupts data rather than failing to compile. Removing
-   * one means reserving it.
-   * </pre>
    */
   public interface AsyncService {
 
@@ -259,9 +245,6 @@ public final class LedgerAccountServiceGrpc {
     }
 
     /**
-     * <pre>
-     * Returns one page, newest first.
-     * </pre>
      */
     default void listLedgerAccounts(org.v31bank.ledger.api.v1.ListLedgerAccountsRequest request,
         io.grpc.stub.StreamObserver<org.v31bank.ledger.api.v1.ListLedgerAccountsResponse> responseObserver) {
@@ -276,9 +259,6 @@ public final class LedgerAccountServiceGrpc {
     }
 
     /**
-     * <pre>
-     * Returns the account that was removed.
-     * </pre>
      */
     default void deleteLedgerAccount(org.v31bank.ledger.api.v1.DeleteLedgerAccountRequest request,
         io.grpc.stub.StreamObserver<org.v31bank.ledger.api.v1.DeleteLedgerAccountResponse> responseObserver) {
@@ -288,13 +268,6 @@ public final class LedgerAccountServiceGrpc {
 
   /**
    * Base class for the server implementation of the service LedgerAccountService.
-   * <pre>
-   * The chart of accounts, as other services see it.
-   * This file is the contract. A field is never renumbered and never reused: a
-   * caller compiled against an older copy reads by number, so changing what a
-   * number means silently corrupts data rather than failing to compile. Removing
-   * one means reserving it.
-   * </pre>
    */
   public static abstract class LedgerAccountServiceImplBase
       implements io.grpc.BindableService, AsyncService {
@@ -306,13 +279,6 @@ public final class LedgerAccountServiceGrpc {
 
   /**
    * A stub to allow clients to do asynchronous rpc calls to service LedgerAccountService.
-   * <pre>
-   * The chart of accounts, as other services see it.
-   * This file is the contract. A field is never renumbered and never reused: a
-   * caller compiled against an older copy reads by number, so changing what a
-   * number means silently corrupts data rather than failing to compile. Removing
-   * one means reserving it.
-   * </pre>
    */
   public static final class LedgerAccountServiceStub
       extends io.grpc.stub.AbstractAsyncStub<LedgerAccountServiceStub> {
@@ -344,9 +310,6 @@ public final class LedgerAccountServiceGrpc {
     }
 
     /**
-     * <pre>
-     * Returns one page, newest first.
-     * </pre>
      */
     public void listLedgerAccounts(org.v31bank.ledger.api.v1.ListLedgerAccountsRequest request,
         io.grpc.stub.StreamObserver<org.v31bank.ledger.api.v1.ListLedgerAccountsResponse> responseObserver) {
@@ -363,9 +326,6 @@ public final class LedgerAccountServiceGrpc {
     }
 
     /**
-     * <pre>
-     * Returns the account that was removed.
-     * </pre>
      */
     public void deleteLedgerAccount(org.v31bank.ledger.api.v1.DeleteLedgerAccountRequest request,
         io.grpc.stub.StreamObserver<org.v31bank.ledger.api.v1.DeleteLedgerAccountResponse> responseObserver) {
@@ -376,13 +336,6 @@ public final class LedgerAccountServiceGrpc {
 
   /**
    * A stub to allow clients to do synchronous rpc calls to service LedgerAccountService.
-   * <pre>
-   * The chart of accounts, as other services see it.
-   * This file is the contract. A field is never renumbered and never reused: a
-   * caller compiled against an older copy reads by number, so changing what a
-   * number means silently corrupts data rather than failing to compile. Removing
-   * one means reserving it.
-   * </pre>
    */
   public static final class LedgerAccountServiceBlockingV2Stub
       extends io.grpc.stub.AbstractBlockingStub<LedgerAccountServiceBlockingV2Stub> {
@@ -412,9 +365,6 @@ public final class LedgerAccountServiceGrpc {
     }
 
     /**
-     * <pre>
-     * Returns one page, newest first.
-     * </pre>
      */
     public org.v31bank.ledger.api.v1.ListLedgerAccountsResponse listLedgerAccounts(org.v31bank.ledger.api.v1.ListLedgerAccountsRequest request) throws io.grpc.StatusException {
       return io.grpc.stub.ClientCalls.blockingV2UnaryCall(
@@ -429,9 +379,6 @@ public final class LedgerAccountServiceGrpc {
     }
 
     /**
-     * <pre>
-     * Returns the account that was removed.
-     * </pre>
      */
     public org.v31bank.ledger.api.v1.DeleteLedgerAccountResponse deleteLedgerAccount(org.v31bank.ledger.api.v1.DeleteLedgerAccountRequest request) throws io.grpc.StatusException {
       return io.grpc.stub.ClientCalls.blockingV2UnaryCall(
@@ -441,13 +388,6 @@ public final class LedgerAccountServiceGrpc {
 
   /**
    * A stub to allow clients to do limited synchronous rpc calls to service LedgerAccountService.
-   * <pre>
-   * The chart of accounts, as other services see it.
-   * This file is the contract. A field is never renumbered and never reused: a
-   * caller compiled against an older copy reads by number, so changing what a
-   * number means silently corrupts data rather than failing to compile. Removing
-   * one means reserving it.
-   * </pre>
    */
   public static final class LedgerAccountServiceBlockingStub
       extends io.grpc.stub.AbstractBlockingStub<LedgerAccountServiceBlockingStub> {
@@ -477,9 +417,6 @@ public final class LedgerAccountServiceGrpc {
     }
 
     /**
-     * <pre>
-     * Returns one page, newest first.
-     * </pre>
      */
     public org.v31bank.ledger.api.v1.ListLedgerAccountsResponse listLedgerAccounts(org.v31bank.ledger.api.v1.ListLedgerAccountsRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
@@ -494,9 +431,6 @@ public final class LedgerAccountServiceGrpc {
     }
 
     /**
-     * <pre>
-     * Returns the account that was removed.
-     * </pre>
      */
     public org.v31bank.ledger.api.v1.DeleteLedgerAccountResponse deleteLedgerAccount(org.v31bank.ledger.api.v1.DeleteLedgerAccountRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
@@ -506,13 +440,6 @@ public final class LedgerAccountServiceGrpc {
 
   /**
    * A stub to allow clients to do ListenableFuture-style rpc calls to service LedgerAccountService.
-   * <pre>
-   * The chart of accounts, as other services see it.
-   * This file is the contract. A field is never renumbered and never reused: a
-   * caller compiled against an older copy reads by number, so changing what a
-   * number means silently corrupts data rather than failing to compile. Removing
-   * one means reserving it.
-   * </pre>
    */
   public static final class LedgerAccountServiceFutureStub
       extends io.grpc.stub.AbstractFutureStub<LedgerAccountServiceFutureStub> {
@@ -544,9 +471,6 @@ public final class LedgerAccountServiceGrpc {
     }
 
     /**
-     * <pre>
-     * Returns one page, newest first.
-     * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<org.v31bank.ledger.api.v1.ListLedgerAccountsResponse> listLedgerAccounts(
         org.v31bank.ledger.api.v1.ListLedgerAccountsRequest request) {
@@ -563,9 +487,6 @@ public final class LedgerAccountServiceGrpc {
     }
 
     /**
-     * <pre>
-     * Returns the account that was removed.
-     * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<org.v31bank.ledger.api.v1.DeleteLedgerAccountResponse> deleteLedgerAccount(
         org.v31bank.ledger.api.v1.DeleteLedgerAccountRequest request) {

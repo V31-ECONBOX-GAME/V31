@@ -6,11 +6,6 @@
 package org.v31bank.ledger.api.v1;
 
 /**
- * <pre>
- * Mirrors the shape the REST layer returns, so a caller reading both sees the
- * same pagination.
- * </pre>
- *
  * Protobuf type {@code v31.ledger.v1.ListLedgerAccountsResponse}
  */
 @com.google.protobuf.Generated
@@ -376,11 +371,6 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * <pre>
-   * Mirrors the shape the REST layer returns, so a caller reading both sees the
-   * same pagination.
-   * </pre>
-   *
    * Protobuf type {@code v31.ledger.v1.ListLedgerAccountsResponse}
    */
   public static final class Builder extends

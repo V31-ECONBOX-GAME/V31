@@ -42,10 +42,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link V31DataJpaAutoConfiguration}.
- * <p>
- * Run against a real persistence unit rather than an empty context: auditing is only
- * meaningfully configured if a saved row comes back stamped, and
- * {@code @EnableJpaAuditing} cannot start without a metamodel to work against.
  *
  * @author Xander Wang
  */
@@ -66,10 +62,6 @@ class V31DataJpaAutoConfigurationTests {
 		});
 	}
 
-	/**
-	 * The point of the module: a row saved through an ordinary repository carries who
-	 * wrote it and when, without the service having to remember to set either.
-	 */
 	@Test
 	void stampsARowWithoutTheApplicationSettingAnything() {
 		this.runner.run((context) -> {
@@ -95,10 +87,6 @@ class V31DataJpaAutoConfigurationTests {
 			.run((context) -> assertThat(context).doesNotHaveBean(AuditorAware.class));
 	}
 
-	/**
-	 * The fixed auditor stands in for a real one. A service that knows who is calling has
-	 * to be able to say so without turning the rest of the module off.
-	 */
 	@Test
 	void backsOffFromAnApplicationSuppliedAuditor() {
 		this.runner.withUserConfiguration(CustomAuditorConfiguration.class).run((context) -> {
@@ -148,9 +136,6 @@ class V31DataJpaAutoConfigurationTests {
 
 	}
 
-	/**
-	 * Stands in for any entity in the platform, all of which extend {@link BaseEntity}.
-	 */
 	@Entity
 	@Table(name = "audited_record")
 	static class AuditedRecord extends BaseEntity {

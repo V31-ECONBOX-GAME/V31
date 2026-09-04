@@ -6,11 +6,6 @@
 package org.v31bank.ledger.api.v1;
 
 /**
- * <pre>
- * One message per RPC rather than the account itself, so that an answer can grow a
- * field later without every caller having to be told the shape changed.
- * </pre>
- *
  * Protobuf type {@code v31.ledger.v1.CreateLedgerAccountResponse}
  */
 @com.google.protobuf.Generated
@@ -247,11 +242,6 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * <pre>
-   * One message per RPC rather than the account itself, so that an answer can grow a
-   * field later without every caller having to be told the shape changed.
-   * </pre>
-   *
    * Protobuf type {@code v31.ledger.v1.CreateLedgerAccountResponse}
    */
   public static final class Builder extends

@@ -32,10 +32,6 @@ class FixedAuditorAwareTests {
 		assertThat(new FixedAuditorAware("system").getCurrentAuditor()).contains("system");
 	}
 
-	/**
-	 * An empty result leaves the audit columns unset rather than stamping them with the
-	 * word "null", which would read as a real user in an audit trail.
-	 */
 	@Test
 	void reportsNobodyWhenThereIsNoAuditor() {
 		assertThat(new FixedAuditorAware(null).getCurrentAuditor()).isEmpty();

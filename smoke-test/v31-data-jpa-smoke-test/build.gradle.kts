@@ -24,9 +24,5 @@ dependencies {
     implementation(project(":starter:v31-data-jpa-spring-boot-starter"))
     runtimeOnly("com.h2database:h2")
 
-    testImplementation("org.springframework.boot:spring-boot-test")
-    testImplementation("org.springframework:spring-test")
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("org.assertj:assertj-core")
-    testRuntimeOnly("ch.qos.logback:logback-classic")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

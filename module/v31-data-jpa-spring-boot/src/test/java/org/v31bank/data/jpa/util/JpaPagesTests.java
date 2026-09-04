@@ -36,10 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class JpaPagesTests {
 
-	/**
-	 * The API counts pages from one and Spring Data counts them from zero. Getting this
-	 * wrong returns the second page to a caller who asked for the first.
-	 */
 	@Test
 	void countsFromOneWhileSpringDataCountsFromZero() {
 		assertThat(pageable(1, 10).getPageNumber()).isZero();

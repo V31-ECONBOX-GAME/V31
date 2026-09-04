@@ -60,20 +60,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
 /**
- * End-to-end tests over a real gRPC server and channel.
- * <p>
- * Run over the in-process transport, which is a real gRPC stack — interceptors, metadata,
- * statuses, context propagation and all — without a socket. The service is defined by
- * hand rather than generated, so the test needs no protobuf compiler and stays about the
- * behaviour this module adds.
+ * Tests for {@link HeaderPropagationClientInterceptor},
+ * {@link HeaderPropagationServerInterceptor}, {@link RefusalGrpcExceptionHandler} and
+ * {@link UnexpectedExceptionGrpcExceptionHandler}, over a real server and channel.
  *
  * @author Xander Wang
  */
 class GrpcEndToEndTests {
 
-	/**
-	 * What the handler is asked to do, sent as the request.
-	 */
 	private static final String ECHO_DEADLINE = "echo-deadline";
 
 	private static final String ECHO_TENANT = "echo-tenant";
@@ -124,10 +118,6 @@ class GrpcEndToEndTests {
 		}
 	}
 
-	/**
-	 * gRPC's status describes what the transport saw, not what an HTTP caller should do
-	 * about it, so nothing is mapped: every failed call is a {@code 500}.
-	 */
 	@Test
 	void everyFailedCallArrivesAsAServerError() throws IOException {
 		Channel client = start(Duration.ZERO);
@@ -140,11 +130,6 @@ class GrpcEndToEndTests {
 		}
 	}
 
-	/**
-	 * The description still crosses the wire for whoever reads a log or calls this
-	 * service with something other than a V31 client; it is the caller-side translation
-	 * that stops passing it on.
-	 */
 	@Test
 	void aRefusalStillReachesAGrpcClientAsInternal() throws IOException {
 		Channel client = start(Duration.ZERO);
@@ -165,10 +150,6 @@ class GrpcEndToEndTests {
 			.doesNotContain("customer_category");
 	}
 
-	/**
-	 * Whatever a status carries — a transport's socket error, a proxy's wording, the
-	 * method name grpc-java puts on {@code UNIMPLEMENTED} — none of it is passed on.
-	 */
 	@Test
 	void noDescriptionEverReachesTheCaller() {
 		for (Status status : new Status[] { Status.UNAVAILABLE.withDescription("io exception"),
@@ -227,14 +208,6 @@ class GrpcEndToEndTests {
 		return ClientCalls.blockingUnaryCall(channel, METHOD, CallOptions.DEFAULT, request);
 	}
 
-	/**
-	 * Start a server carrying this module's interceptors and return a channel carrying
-	 * its client-side ones.
-	 * @param defaultDeadline the deadline to apply, or {@link Duration#ZERO} to leave
-	 * calls without one
-	 * @return the channel to call through
-	 * @throws IOException if the server could not start
-	 */
 	private Channel start(Duration defaultDeadline) throws IOException {
 		String name = InProcessServerBuilder.generateName();
 		GrpcExceptionHandlerInterceptor exceptions = new GrpcExceptionHandlerInterceptor(
@@ -252,11 +225,6 @@ class GrpcEndToEndTests {
 		return ClientInterceptors.intercept(this.channel, interceptors);
 	}
 
-	/**
-	 * A service that does whatever the request names, so that one method covers every
-	 * case under test.
-	 * @return the service definition
-	 */
 	private static ServerServiceDefinition probeService() {
 		return ServerServiceDefinition.builder("v31.Probe")
 			.addMethod(METHOD, ServerCalls.asyncUnaryCall((String request, StreamObserver<String> observer) -> {

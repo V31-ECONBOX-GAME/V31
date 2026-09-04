@@ -6,10 +6,6 @@
 package org.v31bank.ledger.api.v1;
 
 /**
- * <pre>
- * Whether an account is still posted to.
- * </pre>
- *
  * Protobuf enum {@code v31.ledger.v1.LedgerAccountStatus}
  */
 @com.google.protobuf.Generated

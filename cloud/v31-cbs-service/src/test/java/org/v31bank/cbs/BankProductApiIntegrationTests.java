@@ -33,15 +33,12 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
+import org.v31bank.cbs.presentation.controller.v1.BankProductController;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for the bank product endpoints.
- * <p>
- * Driven over HTTP against a real Valkey. Everything this service does that is worth
- * testing only exists on a real server: a page is a range of a sorted set, a combined
- * filter is an intersection into a temporary key, and the uniqueness of a code rests on
- * {@code SET NX} being atomic. A fake would answer all three without proving any of them.
+ * Tests for {@link BankProductController}.
  *
  * @author Xander Wang
  */
@@ -50,11 +47,6 @@ class BankProductApiIntegrationTests {
 
 	private static final String PATH = "/api/v1/bank-products";
 
-	/**
-	 * Every endpoint here answers with the same JSON envelope, so the bodies are read
-	 * through one type token rather than {@code Map.class}, which would hand back a raw
-	 * {@code Map} and force an unchecked conversion at each call site.
-	 */
 	private static final ParameterizedTypeReference<Map<String, Object>> JSON_OBJECT = new ParameterizedTypeReference<>() {
 	};
 
@@ -94,11 +86,6 @@ class BankProductApiIntegrationTests {
 			.containsEntry("status", "DRAFT");
 	}
 
-	/**
-	 * The rate is a {@code BigDecimal} and travels as JSON. A serializer that turned it
-	 * into a double would corrupt it silently, which is the whole reason the type was
-	 * chosen.
-	 */
 	@Test
 	void keepsTheRateExact() {
 		create("SAV-USD-01", "SAVINGS");
@@ -133,11 +120,6 @@ class BankProductApiIntegrationTests {
 		assertThat(this.valkey.opsForZSet().zCard("v31it:cbs:product:index")).isEqualTo(1);
 	}
 
-	/**
-	 * A code becomes part of a key. One containing the separator would address a key
-	 * outside this service's namespace, so it is refused — and refused as a bad request
-	 * rather than escaping as a server error.
-	 */
 	@Test
 	void refusesACodeThatWouldEscapeTheNamespace() {
 		this.client.post()
@@ -178,10 +160,6 @@ class BankProductApiIntegrationTests {
 		assertThat(get(PATH + "?category=SAVINGS")).containsEntry("total", 1);
 	}
 
-	/**
-	 * No single sorted set answers both filters, so the two are intersected into a
-	 * temporary key. It has to be cleaned up, or every filtered query leaves one behind.
-	 */
 	@Test
 	void intersectsTwoFiltersAndLeavesNothingBehind() {
 		create("SAV-1", "SAVINGS");
@@ -208,11 +186,6 @@ class BankProductApiIntegrationTests {
 		assertThat(this.valkey.opsForZSet().score("v31it:cbs:product:index:status:ACTIVE", id)).isNotNull();
 	}
 
-	/**
-	 * A product that has been offered may have accounts opened against it, and those
-	 * accounts refer to it for the terms they earn. Withdrawing it stops new ones;
-	 * deleting it would leave the existing accounts describing terms nobody can produce.
-	 */
 	@Test
 	void refusesToDeleteAProductThatHasBeenOffered() {
 		String id = (String) create("SAV-USD-01", "SAVINGS").get("id");
@@ -282,11 +255,6 @@ class BankProductApiIntegrationTests {
 		return (List<Map<String, Object>>) envelope.get("data");
 	}
 
-	/**
-	 * A body missing the fields the record cannot do without is the caller's mistake.
-	 * Before the shared handler existed this reached the database and came back as a
-	 * {@code 500}, telling the caller to retry a request that could never succeed.
-	 */
 	@Test
 	void rejectsAnEmptyBody() {
 		Map<String, Object> body = this.client.post()
@@ -301,10 +269,6 @@ class BankProductApiIntegrationTests {
 		assertThat(body).containsEntry("code", 400);
 	}
 
-	/**
-	 * The constraint matches the column, so a value too long to store is refused at the
-	 * edge rather than by the database.
-	 */
 	@Test
 	void rejectsAValueLongerThanTheColumnHolds() {
 		Map<String, Object> body = this.client.post()
@@ -319,10 +283,6 @@ class BankProductApiIntegrationTests {
 		assertThat(body).containsEntry("code", 400);
 	}
 
-	/**
-	 * A failure is parsed by the same client code as a success, so it has to arrive in
-	 * the same envelope rather than in whatever the framework would have sent.
-	 */
 	@Test
 	void reportsAFrameworkRejectionInTheSameEnvelope() {
 		Map<String, Object> body = this.client.post()

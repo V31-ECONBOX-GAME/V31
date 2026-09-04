@@ -27,23 +27,12 @@ import org.junit.jupiter.api.io.TempDir;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Resolves V31 from a repository the way a consumer does.
- * <p>
- * Every other test in this repository sees V31 as projects. A consumer sees coordinates
- * in a repository, and the two can disagree: the BOM names its artifacts by hand, so a
- * module that is published but never added to it resolves for this build and for nobody
- * else. Nothing else notices that, because nothing else asks by coordinate.
+ * Resolves V31 as a consumer does.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class BomIntegrationTests {
 
-	/**
-	 * Every artifact the BOM promises. Written out rather than derived, so that this
-	 * fails when the BOM and the build disagree — deriving it from the same place the BOM
-	 * comes from would make the two agree by construction and test nothing.
-	 */
 	private static final List<String> ARTIFACTS = List.of("v31-cbs-api", "v31-compliance-api", "v31-customer-api",
 			"v31-ledger-api", "v31-notification-api", "v31-risk-api", "v31-transfer-api", "v31-core",
 			"v31-data-jpa-spring-boot", "v31-data-valkey-spring-boot", "v31-grpc-spring-boot", "v31-jooq-spring-boot",
@@ -53,10 +42,6 @@ class BomIntegrationTests {
 	@TempDir
 	private Path consumer;
 
-	/**
-	 * The whole point of the BOM: a consumer names an artifact without a version and gets
-	 * one.
-	 */
 	@Test
 	void resolvesEveryArtifactTheBomNamesWithoutAVersion() throws IOException {
 		BuildResult result = new ConsumerBuild(this.consumer).resolve(ARTIFACTS);
@@ -66,20 +51,12 @@ class BomIntegrationTests {
 		}
 	}
 
-	/**
-	 * The versions the platform decides have to survive publication, or a consumer gets
-	 * an artifact it cannot use.
-	 */
 	@Test
 	void resolvesTheThirdPartyLibrariesTheArtifactsNeed() throws IOException {
 		BuildResult result = new ConsumerBuild(this.consumer).resolve(List.of("v31-data-jpa-spring-boot"));
 		assertThat(result.getOutput()).contains("spring-boot-", "spring-data-jpa-", "hibernate-core-");
 	}
 
-	/**
-	 * The internal platform is not published. A consumer importing the BOM must not end
-	 * up needing it.
-	 */
 	@Test
 	void needsNothingThatIsNotPublished() throws IOException {
 		BuildResult result = new ConsumerBuild(this.consumer).resolve(ARTIFACTS);

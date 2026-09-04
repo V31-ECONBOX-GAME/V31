@@ -41,13 +41,10 @@ import static org.mockito.Mockito.never;
 
 /**
  * Tests for {@link ValkeyLock}.
- * <p>
- * Stubbing generic Spring Data types means matching on raw {@code RedisScript} and
- * {@code ValueOperations}, which is unavoidable with Mockito and confined to this class.
  *
  * @author Xander Wang
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
+@SuppressWarnings({ "unchecked" })
 class ValkeyLockTests {
 
 	private static final Duration LEASE = Duration.ofSeconds(30);

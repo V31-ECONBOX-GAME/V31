@@ -11,19 +11,11 @@ public interface LedgerAccountOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <pre>
-   * Time-ordered UUIDv7, as text.
-   * </pre>
-   *
    * <code>string id = 1 [json_name = "id"];</code>
    * @return The id.
    */
   java.lang.String getId();
   /**
-   * <pre>
-   * Time-ordered UUIDv7, as text.
-   * </pre>
-   *
    * <code>string id = 1 [json_name = "id"];</code>
    * @return The bytes for id.
    */

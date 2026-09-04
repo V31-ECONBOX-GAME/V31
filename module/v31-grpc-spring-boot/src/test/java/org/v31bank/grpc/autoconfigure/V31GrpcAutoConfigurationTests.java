@@ -32,7 +32,8 @@ import org.v31bank.grpc.web.HeaderPropagationFilter;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for the gRPC auto-configurations.
+ * Tests for {@link V31GrpcServerAutoConfiguration},
+ * {@link V31GrpcClientAutoConfiguration} and {@link V31GrpcWebAutoConfiguration}.
  *
  * @author Xander Wang
  */

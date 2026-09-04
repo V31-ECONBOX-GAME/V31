@@ -42,11 +42,6 @@ class DataAccessExceptionHandlerTests {
 		.setControllerAdvice(new DataAccessExceptionHandler(), new HttpResponseExceptionHandler())
 		.build();
 
-	/**
-	 * Two requests creating the same record both pass the uniqueness check and one loses
-	 * at the index. Reported as a {@code 500} it tells the caller to retry something that
-	 * will never succeed.
-	 */
 	@Test
 	void reportsAWriteTheDatabaseRefusedAsAConflict() throws Exception {
 		this.mvc.perform(get("/duplicate"))
@@ -69,19 +64,12 @@ class DataAccessExceptionHandlerTests {
 			.andExpect(jsonPath("$.message").value("The record changed while this request was in flight"));
 	}
 
-	/**
-	 * Its precedence has to hold, or the catch-all in the other advice claims these first
-	 * and answers {@code 500}.
-	 */
 	@Test
 	void takesPrecedenceOverTheCatchAll() throws Exception {
 		this.mvc.perform(get("/duplicate")).andExpect(status().isConflict());
 		this.mvc.perform(get("/other")).andExpect(status().isInternalServerError());
 	}
 
-	/**
-	 * Raises what a repository raises.
-	 */
 	@RestController
 	static class TestController {
 

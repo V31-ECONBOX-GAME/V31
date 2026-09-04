@@ -42,18 +42,12 @@ import org.v31bank.ledger.api.v1.LedgerAccount;
 import org.v31bank.ledger.api.v1.LedgerAccountServiceGrpc;
 import org.v31bank.ledger.api.v1.LedgerAccountStatus;
 import org.v31bank.ledger.api.v1.LedgerAccountType;
+import org.v31bank.notification.presentation.controller.v1.LedgerAccountController;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for the ledger account endpoints this service serves by calling the
- * ledger over gRPC.
- * <p>
- * The service is started and driven over HTTP as it would be in production; the ledger
- * behind it is an in-process gRPC server rather than the real one, so what is exercised
- * here is this service's half — the controller, the adapter, the client interceptors, and
- * the translation of a remote refusal into the platform's envelope — without a second
- * process having to be running for the build to pass.
+ * Tests for {@link LedgerAccountController}. ledger over gRPC.
  *
  * @author Xander Wang
  */
@@ -67,11 +61,6 @@ class LedgerAccountApiIntegrationTests {
 
 	private static final UUID ACCOUNT_ID = UUID.fromString("019fbe70-0000-7000-8000-00000000ab01");
 
-	/**
-	 * Started as the class loads, so its port is known by the time the context asks for
-	 * it. On a real port rather than in-process: that is the transport the service uses
-	 * in production, and it is what the configured channel factory knows how to reach.
-	 */
 	private static final Server SERVER = startLedger();
 
 	@DynamicPropertySource
@@ -127,11 +116,6 @@ class LedgerAccountApiIntegrationTests {
 		assertThat(data(get(PATH + "/" + ACCOUNT_ID))).containsEntry("code", "ACC-1");
 	}
 
-	/**
-	 * gRPC's status is not mapped onto an HTTP one, so a refusal the ledger chose and a
-	 * failure it did not both arrive as {@code 500}. The wording it wrote goes to the log
-	 * with the cause, not to the caller.
-	 */
 	@Test
 	void reportsAnythingTheLedgerRefusedAsAServerError() {
 		FakeLedger.refuseWith(Status.ALREADY_EXISTS.withDescription("Code 'ACC-1' is already in use"));
@@ -157,10 +141,6 @@ class LedgerAccountApiIntegrationTests {
 		this.client.get().uri(PATH + "/" + ACCOUNT_ID).exchange().expectStatus().isNotFound();
 	}
 
-	/**
-	 * The description is diagnostic text written for whoever reads the logs, and must not
-	 * be handed to the caller.
-	 */
 	@Test
 	void saysNothingAboutAFailureTheLedgerDidNotChoose() {
 		FakeLedger.refuseWith(Status.UNAVAILABLE.withDescription("io exception: connect to ledger-primary refused"));
@@ -177,10 +157,6 @@ class LedgerAccountApiIntegrationTests {
 		assertThat((String) body.get("message")).doesNotContain("io exception").doesNotContain("ledger-primary");
 	}
 
-	/**
-	 * Refused here rather than at the ledger: a request that cannot succeed should not
-	 * cost a network round trip, and the caller is told which field to fix.
-	 */
 	@Test
 	void rejectsAnEmptyBodyWithoutCallingTheLedger() {
 		Map<String, Object> body = this.client.post()
@@ -213,9 +189,6 @@ class LedgerAccountApiIntegrationTests {
 		return (Map<String, Object>) envelope.get("data");
 	}
 
-	/**
-	 * Stands in for the ledger, answering as it would and recording what reached it.
-	 */
 	static class FakeLedger extends LedgerAccountServiceGrpc.LedgerAccountServiceImplBase {
 
 		static volatile int calls;

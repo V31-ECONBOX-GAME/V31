@@ -33,16 +33,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
 import org.v31bank.compliance.infra.persistence.jooq.ComplianceCaseTable;
+import org.v31bank.compliance.presentation.controller.v1.ComplianceCaseController;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for the compliance case endpoints.
- * <p>
- * Driven over HTTP against a real PostgreSQL. jOOQ writes SQL for the dialect and the
- * tables it is pointed at, and the audit columns are filled by a listener the starter
- * attaches to the record API — none of which an in-memory substitute or a mocked
- * {@link DSLContext} would exercise.
+ * Tests for {@link ComplianceCaseController}.
  *
  * @author Xander Wang
  */
@@ -51,11 +47,6 @@ class ComplianceCaseApiIntegrationTests {
 
 	private static final String PATH = "/api/v1/compliance-cases";
 
-	/**
-	 * Every endpoint here answers with the same JSON envelope, so the bodies are read
-	 * through one type token rather than {@code Map.class}, which would hand back a raw
-	 * {@code Map} and force an unchecked conversion at each call site.
-	 */
 	private static final ParameterizedTypeReference<Map<String, Object>> JSON_OBJECT = new ParameterizedTypeReference<>() {
 	};
 
@@ -94,11 +85,6 @@ class ComplianceCaseApiIntegrationTests {
 			.containsEntry("status", "OPEN");
 	}
 
-	/**
-	 * The identifier and the audit columns are filled in by the listener the jOOQ starter
-	 * attaches, not by this service, which is why they are asserted here rather than
-	 * trusted.
-	 */
 	@Test
 	void issuesATimeOrderedIdentifierAndStampsTheAuditColumns() {
 		Map<String, Object> created = create("CASE-0001");
@@ -158,11 +144,6 @@ class ComplianceCaseApiIntegrationTests {
 		assertThat(seen).hasSize(25);
 	}
 
-	/**
-	 * The filter is matched with jOOQ's {@code containsIgnoreCase} rather than a
-	 * hand-built {@code like}, so a wildcard typed into it is matched literally instead
-	 * of turning into a scan of the whole table.
-	 */
 	@Test
 	void treatsAWildcardInTheFilterAsText() {
 		create("CASE-0001");
@@ -193,10 +174,6 @@ class ComplianceCaseApiIntegrationTests {
 			.containsEntry("summary", "escalated");
 	}
 
-	/**
-	 * A closed case records a decision that was reached and when. A regulator asking why
-	 * an account was frozen expects to find it, so it is kept.
-	 */
 	@Test
 	void refusesToDeleteACaseThatHasBeenConcluded() {
 		String id = (String) create("CASE-0001").get("id");
@@ -284,11 +261,6 @@ class ComplianceCaseApiIntegrationTests {
 		return (List<Map<String, Object>>) envelope.get("data");
 	}
 
-	/**
-	 * A body missing the fields the record cannot do without is the caller's mistake.
-	 * Before the shared handler existed this reached the database and came back as a
-	 * {@code 500}, telling the caller to retry a request that could never succeed.
-	 */
 	@Test
 	void rejectsAnEmptyBody() {
 		Map<String, Object> body = this.client.post()
@@ -303,10 +275,6 @@ class ComplianceCaseApiIntegrationTests {
 		assertThat(body).containsEntry("code", 400);
 	}
 
-	/**
-	 * The constraint matches the column, so a value too long to store is refused at the
-	 * edge rather than by the database.
-	 */
 	@Test
 	void rejectsAValueLongerThanTheColumnHolds() {
 		Map<String, Object> body = this.client.post()
@@ -321,10 +289,6 @@ class ComplianceCaseApiIntegrationTests {
 		assertThat(body).containsEntry("code", 400);
 	}
 
-	/**
-	 * A failure is parsed by the same client code as a success, so it has to arrive in
-	 * the same envelope rather than in whatever the framework would have sent.
-	 */
 	@Test
 	void reportsAFrameworkRejectionInTheSameEnvelope() {
 		Map<String, Object> body = this.client.post()

@@ -6,10 +6,6 @@
 package org.v31bank.ledger.api.v1;
 
 /**
- * <pre>
- * Carries the account that was removed.
- * </pre>
- *
  * Protobuf type {@code v31.ledger.v1.DeleteLedgerAccountResponse}
  */
 @com.google.protobuf.Generated
@@ -246,10 +242,6 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * <pre>
-   * Carries the account that was removed.
-   * </pre>
-   *
    * Protobuf type {@code v31.ledger.v1.DeleteLedgerAccountResponse}
    */
   public static final class Builder extends

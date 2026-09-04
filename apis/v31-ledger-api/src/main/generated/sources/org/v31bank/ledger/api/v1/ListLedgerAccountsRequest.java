@@ -54,10 +54,6 @@ private static final long serialVersionUID = 0L;
   public static final int PAGE_NUMBER_FIELD_NUMBER = 1;
   private int pageNumber_ = 0;
   /**
-   * <pre>
-   * One-based, to match the rest of the platform. Zero means the first page.
-   * </pre>
-   *
    * <code>int32 page_number = 1 [json_name = "pageNumber"];</code>
    * @return The pageNumber.
    */
@@ -69,10 +65,6 @@ private static final long serialVersionUID = 0L;
   public static final int PAGE_SIZE_FIELD_NUMBER = 2;
   private int pageSize_ = 0;
   /**
-   * <pre>
-   * Zero means the server's default of 10; anything above 500 is clamped to it.
-   * </pre>
-   *
    * <code>int32 page_size = 2 [json_name = "pageSize"];</code>
    * @return The pageSize.
    */
@@ -85,10 +77,6 @@ private static final long serialVersionUID = 0L;
   @SuppressWarnings("serial")
   private volatile java.lang.Object code_ = "";
   /**
-   * <pre>
-   * Fragment matched against the code, case-insensitive. Empty means no filter.
-   * </pre>
-   *
    * <code>string code = 3 [json_name = "code"];</code>
    * @return The code.
    */
@@ -106,10 +94,6 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <pre>
-   * Fragment matched against the code, case-insensitive. Empty means no filter.
-   * </pre>
-   *
    * <code>string code = 3 [json_name = "code"];</code>
    * @return The bytes for code.
    */
@@ -131,10 +115,6 @@ private static final long serialVersionUID = 0L;
   public static final int TYPE_FIELD_NUMBER = 4;
   private int type_ = 0;
   /**
-   * <pre>
-   * Unspecified means no filter.
-   * </pre>
-   *
    * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
    * @return The enum numeric value on the wire for type.
    */
@@ -142,10 +122,6 @@ private static final long serialVersionUID = 0L;
     return type_;
   }
   /**
-   * <pre>
-   * Unspecified means no filter.
-   * </pre>
-   *
    * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
    * @return The type.
    */
@@ -562,10 +538,6 @@ private static final long serialVersionUID = 0L;
 
     private int pageNumber_ ;
     /**
-     * <pre>
-     * One-based, to match the rest of the platform. Zero means the first page.
-     * </pre>
-     *
      * <code>int32 page_number = 1 [json_name = "pageNumber"];</code>
      * @return The pageNumber.
      */
@@ -574,10 +546,6 @@ private static final long serialVersionUID = 0L;
       return pageNumber_;
     }
     /**
-     * <pre>
-     * One-based, to match the rest of the platform. Zero means the first page.
-     * </pre>
-     *
      * <code>int32 page_number = 1 [json_name = "pageNumber"];</code>
      * @param value The pageNumber to set.
      * @return This builder for chaining.
@@ -590,10 +558,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <pre>
-     * One-based, to match the rest of the platform. Zero means the first page.
-     * </pre>
-     *
      * <code>int32 page_number = 1 [json_name = "pageNumber"];</code>
      * @return This builder for chaining.
      */
@@ -606,10 +570,6 @@ private static final long serialVersionUID = 0L;
 
     private int pageSize_ ;
     /**
-     * <pre>
-     * Zero means the server's default of 10; anything above 500 is clamped to it.
-     * </pre>
-     *
      * <code>int32 page_size = 2 [json_name = "pageSize"];</code>
      * @return The pageSize.
      */
@@ -618,10 +578,6 @@ private static final long serialVersionUID = 0L;
       return pageSize_;
     }
     /**
-     * <pre>
-     * Zero means the server's default of 10; anything above 500 is clamped to it.
-     * </pre>
-     *
      * <code>int32 page_size = 2 [json_name = "pageSize"];</code>
      * @param value The pageSize to set.
      * @return This builder for chaining.
@@ -634,10 +590,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <pre>
-     * Zero means the server's default of 10; anything above 500 is clamped to it.
-     * </pre>
-     *
      * <code>int32 page_size = 2 [json_name = "pageSize"];</code>
      * @return This builder for chaining.
      */
@@ -650,10 +602,6 @@ private static final long serialVersionUID = 0L;
 
     private java.lang.Object code_ = "";
     /**
-     * <pre>
-     * Fragment matched against the code, case-insensitive. Empty means no filter.
-     * </pre>
-     *
      * <code>string code = 3 [json_name = "code"];</code>
      * @return The code.
      */
@@ -670,10 +618,6 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <pre>
-     * Fragment matched against the code, case-insensitive. Empty means no filter.
-     * </pre>
-     *
      * <code>string code = 3 [json_name = "code"];</code>
      * @return The bytes for code.
      */
@@ -691,10 +635,6 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <pre>
-     * Fragment matched against the code, case-insensitive. Empty means no filter.
-     * </pre>
-     *
      * <code>string code = 3 [json_name = "code"];</code>
      * @param value The code to set.
      * @return This builder for chaining.
@@ -708,10 +648,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <pre>
-     * Fragment matched against the code, case-insensitive. Empty means no filter.
-     * </pre>
-     *
      * <code>string code = 3 [json_name = "code"];</code>
      * @return This builder for chaining.
      */
@@ -722,10 +658,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <pre>
-     * Fragment matched against the code, case-insensitive. Empty means no filter.
-     * </pre>
-     *
      * <code>string code = 3 [json_name = "code"];</code>
      * @param value The bytes for code to set.
      * @return This builder for chaining.
@@ -742,10 +674,6 @@ private static final long serialVersionUID = 0L;
 
     private int type_ = 0;
     /**
-     * <pre>
-     * Unspecified means no filter.
-     * </pre>
-     *
      * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
      * @return The enum numeric value on the wire for type.
      */
@@ -753,10 +681,6 @@ private static final long serialVersionUID = 0L;
       return type_;
     }
     /**
-     * <pre>
-     * Unspecified means no filter.
-     * </pre>
-     *
      * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
      * @param value The enum numeric value on the wire for type to set.
      * @return This builder for chaining.
@@ -768,10 +692,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <pre>
-     * Unspecified means no filter.
-     * </pre>
-     *
      * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
      * @return The type.
      */
@@ -781,10 +701,6 @@ private static final long serialVersionUID = 0L;
       return result == null ? org.v31bank.ledger.api.v1.LedgerAccountType.UNRECOGNIZED : result;
     }
     /**
-     * <pre>
-     * Unspecified means no filter.
-     * </pre>
-     *
      * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
      * @param value The type to set.
      * @throws IllegalArgumentException if UNRECOGNIZED is provided.
@@ -798,10 +714,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <pre>
-     * Unspecified means no filter.
-     * </pre>
-     *
      * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
      * @return This builder for chaining.
      */

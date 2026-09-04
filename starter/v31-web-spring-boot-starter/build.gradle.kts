@@ -23,9 +23,5 @@ description = "V31 Web starter"
 dependencies {
     api(project(":module:v31-web-spring-boot"))
     api("org.springframework.boot:spring-boot-starter-webmvc")
-
-    // Brought in by the starter rather than left to each service: the handler
-    // reports rejected fields, and a service that forgot the validator would
-    // silently never reject any.
     api("org.springframework.boot:spring-boot-starter-validation")
 }

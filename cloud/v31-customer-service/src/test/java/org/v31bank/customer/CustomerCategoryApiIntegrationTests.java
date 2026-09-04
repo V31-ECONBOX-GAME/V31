@@ -33,14 +33,12 @@ import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import org.v31bank.customer.presentation.controller.v1.CustomerCategoryController;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for the customer category endpoints.
- * <p>
- * The whole service is started and driven over HTTP against a real PostgreSQL, so what is
- * exercised is what runs: the controller, the use case, JPA, the self-referencing foreign
- * key Flyway built, and the response envelope.
+ * Tests for {@link CustomerCategoryController}.
  *
  * @author Xander Wang
  */
@@ -68,10 +66,6 @@ class CustomerCategoryApiIntegrationTests {
 	@BeforeEach
 	void setUp() {
 		this.client = RestTestClient.bindToServer().baseUrl("http://localhost:" + this.port).build();
-		// One statement rather than a row-at-a-time delete: the parent column
-		// references this same table, so deleting a parent before its children
-		// would trip the foreign key. Expressed in JPQL so it reaches the schema
-		// the service is mapped to rather than whatever the connection defaults to.
 		new TransactionTemplate(this.transactionManager).executeWithoutResult(
 				(status) -> this.entityManager.createQuery("delete from CustomerCategory").executeUpdate());
 	}
@@ -115,10 +109,6 @@ class CustomerCategoryApiIntegrationTests {
 		assertThat(body).containsEntry("code", 409);
 	}
 
-	/**
-	 * The parent is a foreign key. Left to the database this surfaces as a constraint
-	 * violation; the caller is told which parent was not found instead.
-	 */
 	@Test
 	void refusesAParentThatDoesNotExist() {
 		Map<String, Object> body = this.client.post()
@@ -186,11 +176,6 @@ class CustomerCategoryApiIntegrationTests {
 			.containsEntry("status", "DISABLED");
 	}
 
-	/**
-	 * The one rule in this service that cannot be enforced by a constraint. A node moved
-	 * under its own descendant makes a ring: the branch drops out of every tree query and
-	 * a walk up the parents never terminates.
-	 */
 	@Test
 	void refusesToMoveACategoryUnderItsOwnDescendant() {
 		String root = create("RETAIL", "Retail", null);
@@ -207,8 +192,6 @@ class CustomerCategoryApiIntegrationTests {
 			.getResponseBody();
 
 		assertThat(body).containsEntry("code", 409);
-		// Omitted rather than null: the service is configured to leave absent
-		// fields out, so a root category carries no parent key at all.
 		assertThat(data(get(PATH + "/" + root))).doesNotContainKey("parentId");
 	}
 
@@ -244,9 +227,6 @@ class CustomerCategoryApiIntegrationTests {
 		this.client.get().uri(PATH + "/" + id).exchange().expectStatus().isNotFound();
 	}
 
-	/**
-	 * Deleting a parent would leave its children pointing at a row that is gone.
-	 */
 	@Test
 	void refusesToDeleteACategoryThatStillHasChildren() {
 		String root = create("RETAIL", "Retail", null);
