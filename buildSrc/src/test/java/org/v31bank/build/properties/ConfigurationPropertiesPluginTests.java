@@ -17,6 +17,8 @@
 package org.v31bank.build.properties;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 import org.gradle.api.Project;
@@ -33,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.v31bank.build.constant.Configurations;
+import org.v31bank.build.constant.Locations;
 import org.v31bank.build.constant.Tasks;
 import org.v31bank.build.task.TaskDependencies;
 import org.v31bank.build.util.SourceSets;
@@ -146,6 +149,36 @@ class ConfigurationPropertiesPluginTests {
 			.contains(JavaPlugin.COMPILE_JAVA_TASK_NAME);
 	}
 
+	/**
+	 * The resources hold whatever the project ships; only the hand-written metadata is
+	 * this check's business.
+	 */
+	@Test
+	void checksOnlyTheHandWrittenMetadataAmongTheResources() throws IOException {
+		write("src/main/resources/" + Locations.ADDITIONAL_CONFIGURATION_METADATA_FILE, "{}");
+		write("src/main/resources/application.yaml", "v31:");
+		CheckAdditionalSpringConfigurationMetadata check = (CheckAdditionalSpringConfigurationMetadata) project()
+			.getTasks()
+			.getByName(Tasks.CHECK_ADDITIONAL_CONFIGURATION_METADATA);
+		assertThat(check.getSource().getFiles()).singleElement()
+			.satisfies((file) -> assertThat(file).hasName("additional-spring-configuration-metadata.json"));
+	}
+
+	@Test
+	void writesEachReportUnderItsOwnName() {
+		Project project = project();
+		File reports = new File(project.getLayout().getBuildDirectory().get().getAsFile(), "reports");
+		CheckSpringConfigurationMetadata generated = (CheckSpringConfigurationMetadata) project.getTasks()
+			.getByName(Tasks.CHECK_CONFIGURATION_METADATA);
+		CheckAdditionalSpringConfigurationMetadata handWritten = (CheckAdditionalSpringConfigurationMetadata) project
+			.getTasks()
+			.getByName(Tasks.CHECK_ADDITIONAL_CONFIGURATION_METADATA);
+		assertThat(generated.getReportLocation().get().getAsFile())
+			.isEqualTo(new File(reports, "spring-configuration-metadata/check.txt"));
+		assertThat(handWritten.getReportLocation().get().getAsFile())
+			.isEqualTo(new File(reports, "additional-spring-configuration-metadata/check.txt"));
+	}
+
 	@Test
 	void offersTheMetadataThroughAConfigurationThatSaysWhatItIs() {
 		Project project = project();
@@ -161,6 +194,12 @@ class ConfigurationPropertiesPluginTests {
 			.satisfies((artifact) -> assertThat(
 					TaskDependencies.namesOf(artifact.getBuildDependencies().getDependencies(null)))
 				.contains(JavaPlugin.COMPILE_JAVA_TASK_NAME));
+	}
+
+	private void write(String path, String content) throws IOException {
+		File file = new File(this.directory, path);
+		Files.createDirectories(file.getParentFile().toPath());
+		Files.writeString(file.toPath(), content);
 	}
 
 	private Project project() {

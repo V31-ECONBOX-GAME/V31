@@ -35,8 +35,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * Reads configuration metadata files and records what is wrong with them, all of it in
- * one pass rather than the first thing found.
+ * Analyses metadata files, one rule at a time, into a report.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -52,11 +51,6 @@ final class ConfigurationPropertiesAnalyzer {
 		this.sources = sources;
 	}
 
-	/**
-	 * The order carries no meaning, so holding it to one keeps a hand-written file
-	 * mergeable.
-	 * @param report where to record what was found
-	 */
 	void analyzeOrder(Report report) {
 		analyze(report, (metadata) -> {
 			Analysis analysis = new Analysis("Metadata element order:");
@@ -73,10 +67,6 @@ final class ConfigurationPropertiesAnalyzer {
 		});
 	}
 
-	/**
-	 * Which of two entries with one name wins is the reader's business, not the author's.
-	 * @param report where to record what was found
-	 */
 	void analyzeDuplicates(Report report) {
 		analyze(report, (metadata) -> {
 			Analysis analysis = new Analysis("Metadata element duplicates:");
@@ -92,16 +82,10 @@ final class ConfigurationPropertiesAnalyzer {
 		});
 	}
 
-	/**
-	 * The description is what an IDE shows whoever sets the property; without it they get
-	 * a name and nothing else. Exclusions are exact names or prefixes ending in '.*'.
-	 * @param report where to record what was found
-	 * @param exclusions names allowed to say nothing
-	 */
 	void analyzePropertyDescription(Report report, List<String> exclusions) {
 		analyze(report, (metadata) -> {
 			Analysis analysis = new Analysis("The following properties have no description:");
-			for (Map<String, Object> property : metadata.elements("properties")) {
+			for (Map<String, Object> property : metadata.array("properties")) {
 				String name = (String) property.get("name");
 				boolean deprecated = property.get("deprecation") != null;
 				boolean described = property.get("description") != null;
@@ -113,15 +97,10 @@ final class ConfigurationPropertiesAnalyzer {
 		});
 	}
 
-	/**
-	 * Without a version nobody upgrading can tell whether it was already gone where they
-	 * were.
-	 * @param report where to record what was found
-	 */
 	void analyzeDeprecationSince(Report report) {
 		analyze(report, (metadata) -> {
 			Analysis analysis = new Analysis("The following properties are deprecated without a 'since' version:");
-			for (Map<String, Object> property : metadata.elements("properties")) {
+			for (Map<String, Object> property : metadata.array("properties")) {
 				Object deprecation = property.get("deprecation");
 				if (deprecation instanceof Map<?, ?> details && !details.containsKey("since")) {
 					analysis.add((String) property.get("name"));

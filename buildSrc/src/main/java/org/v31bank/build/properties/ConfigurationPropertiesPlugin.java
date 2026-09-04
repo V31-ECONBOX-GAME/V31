@@ -38,10 +38,8 @@ import org.v31bank.build.util.Directories;
 import org.v31bank.build.util.SourceSets;
 
 /**
- * Configures a project that defines {@code @ConfigurationProperties}: its metadata is
- * generated completely, checked, and offered to whatever collects it.
- * <p>
- * Declared by the project itself, beside whichever java plugin it chose:
+ * Generates configuration metadata with {@code spring-boot-configuration-processor},
+ * checks it and offers it onward.
  *
  * <pre class="code">
  * plugins {
@@ -77,8 +75,7 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 	}
 
 	/**
-	 * An incremental run drops every description belonging to a class that did not
-	 * change.
+	 * Incremental compilation loses the descriptions of unchanged classes.
 	 * @param project the project to configure
 	 * @param main the main source set
 	 */
@@ -88,12 +85,6 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 			.configure((compile) -> compile.getOptions().setIncremental(false));
 	}
 
-	/**
-	 * The processor is pointed at the source directory, and the compile waits for
-	 * processResources so that an edit to the hand-written metadata recompiles.
-	 * @param project the project to configure
-	 * @param main the main source set
-	 */
 	private void readAdditionalMetadata(Project project, SourceSet main) {
 		project.getTasks().named(main.getCompileJavaTaskName(), JavaCompile.class).configure((compile) -> {
 			compile.getInputs()
@@ -141,12 +132,6 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 		project.getArtifacts().add(Configurations.CONFIGURATION_PROPERTIES_METADATA, generatedMetadata(project, main));
 	}
 
-	/**
-	 * Taken from the compile task, not the source set, so whatever reads it waits for it.
-	 * @param project the project to configure
-	 * @param main the main source set
-	 * @return where the generated metadata ends up
-	 */
 	private Provider<RegularFile> generatedMetadata(Project project, SourceSet main) {
 		return project.getTasks()
 			.named(main.getCompileJavaTaskName(), JavaCompile.class)

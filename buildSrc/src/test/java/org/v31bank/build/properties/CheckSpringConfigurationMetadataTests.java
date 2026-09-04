@@ -81,6 +81,18 @@ class CheckSpringConfigurationMetadataTests {
 		assertThatCode(task()::check).doesNotThrowAnyException();
 	}
 
+	/**
+	 * The processor writes an {@code ignored} section, which is an object where every
+	 * other section is an array. Nothing reads it, so nothing trips over it.
+	 */
+	@Test
+	void passesOnAModulesGeneratedMetadata() {
+		MetadataFiles.realMetadata(metadataFile());
+		CheckSpringConfigurationMetadata task = task();
+		assertThatCode(task::check).doesNotThrowAnyException();
+		assertThat(report()).content().contains("No problems found.");
+	}
+
 	private CheckSpringConfigurationMetadata task() {
 		Project project = ProjectBuilder.builder().withProjectDir(this.directory.toFile()).build();
 		CheckSpringConfigurationMetadata task = project.getTasks()

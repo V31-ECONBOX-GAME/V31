@@ -32,8 +32,8 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.v31bank.build.properties.ConfigurationPropertiesAnalyzer.Report;
 
 /**
- * Fails when a module's hand-written metadata is out of order, names something twice, or
- * deprecates a property without saying since when.
+ * Fails an {@code additional-spring-configuration-metadata.json} that is unsorted,
+ * duplicated, or deprecated without a {@code since}.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -57,11 +57,6 @@ public abstract class CheckAdditionalSpringConfigurationMetadata extends SourceT
 		return super.getSource();
 	}
 
-	/**
-	 * Descriptions are not required here: this file exists to add what the processor
-	 * could not work out, and demanding one per line would make the escape hatch harder
-	 * than the escape.
-	 */
 	@TaskAction
 	void check() {
 		ConfigurationPropertiesAnalyzer analyzer = new ConfigurationPropertiesAnalyzer(getSource().getFiles());

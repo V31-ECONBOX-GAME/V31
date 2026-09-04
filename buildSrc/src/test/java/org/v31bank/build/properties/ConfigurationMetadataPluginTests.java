@@ -92,6 +92,30 @@ class ConfigurationMetadataPluginTests {
 			.hasParent(new File(project.getLayout().getBuildDirectory().get().getAsFile(), "resources/main/META-INF"));
 	}
 
+	/**
+	 * The file does not exist until processResources has copied it, so a check that does
+	 * not wait for the copy fails validation on a clean build rather than running.
+	 */
+	@Test
+	void waitsForTheCopyThatShipsTheMetadata() {
+		CheckManualSpringConfigurationMetadata check = check(project());
+		assertThat(TaskDependencies.namesOf(check.getInputs().getFiles().getBuildDependencies().getDependencies(check)))
+			.contains(JavaPlugin.PROCESS_RESOURCES_TASK_NAME);
+	}
+
+	@Test
+	void writesItsReportUnderTheBuildDirectory() {
+		Project project = project();
+		assertThat(check(project).getReportLocation().get().getAsFile())
+			.isEqualTo(new File(project.getLayout().getBuildDirectory().get().getAsFile(),
+					"reports/manual-spring-configuration-metadata/check.txt"));
+	}
+
+	@Test
+	void asksAboutEveryPropertyUntilTheProjectExcludesOne() {
+		assertThat(check(project()).getExclusions().get()).isEmpty();
+	}
+
 	@Test
 	void offersTheMetadataThroughAConfigurationThatSaysWhatItIs() {
 		Configuration metadata = project().getConfigurations()
@@ -102,6 +126,11 @@ class ConfigurationMetadataPluginTests {
 		assertThat(metadata.getAttributes().getAttribute(Usage.USAGE_ATTRIBUTE)).extracting(Usage::getName)
 			.isEqualTo("configuration-properties-metadata");
 		assertThat(metadata.getArtifacts()).hasSize(1);
+	}
+
+	private CheckManualSpringConfigurationMetadata check(Project project) {
+		return (CheckManualSpringConfigurationMetadata) project.getTasks()
+			.getByName(Tasks.CHECK_MANUAL_CONFIGURATION_METADATA);
 	}
 
 	private Project project() {

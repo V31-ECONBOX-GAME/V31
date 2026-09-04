@@ -36,10 +36,7 @@ import org.v31bank.build.constant.Tasks;
 import org.v31bank.build.util.SourceSets;
 
 /**
- * Configures a project whose configuration metadata is written entirely by hand, with no
- * {@code @ConfigurationProperties} class for a processor to generate it from.
- * <p>
- * Declared by the project itself, beside whichever java plugin it chose:
+ * Checks hand-written configuration metadata and offers it onward.
  *
  * <pre class="code">
  * plugins {
@@ -77,12 +74,6 @@ public class ConfigurationMetadataPlugin implements Plugin<Project> {
 			.configure((lifecycle) -> lifecycle.dependsOn(check));
 	}
 
-	/**
-	 * Nothing generates it, so what processResources copied is what a consumer reads.
-	 * @param project the project to configure
-	 * @param main the main source set
-	 * @return where the metadata ends up
-	 */
 	private Provider<File> metadata(Project project, SourceSet main) {
 		return project.getTasks()
 			.named(main.getProcessResourcesTaskName(), ProcessResources.class)

@@ -36,7 +36,8 @@ import org.v31bank.build.optional.OptionalDependenciesPlugin;
 import org.v31bank.build.util.SourceSets;
 
 /**
- * Publishes an auto-configuration module and wires up its processor, metadata and checks.
+ * Generates configuration metadata with {@code spring-boot-autoconfigure-processor},
+ * checks it and offers it onward.
  *
  * <pre class="code">
  * plugins {

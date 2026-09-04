@@ -17,9 +17,11 @@
 package org.v31bank.build.properties;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -48,6 +50,24 @@ final class MetadataFiles {
 
 	static MetadataFiles metadata() {
 		return new MetadataFiles();
+	}
+
+	/**
+	 * A module's metadata as the processor really writes it, {@code ignored} section and
+	 * all.
+	 * @param file where to write it
+	 * @return the file
+	 */
+	static Path realMetadata(Path file) {
+		String name = "v31-grpc-spring-configuration-metadata.json";
+		try (InputStream input = MetadataFiles.class.getResourceAsStream(name)) {
+			Files.createDirectories(file.getParent());
+			Files.copy(input, file, StandardCopyOption.REPLACE_EXISTING);
+			return file;
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException("Failed to write " + file, ex);
+		}
 	}
 
 	MetadataFiles group(String name) {

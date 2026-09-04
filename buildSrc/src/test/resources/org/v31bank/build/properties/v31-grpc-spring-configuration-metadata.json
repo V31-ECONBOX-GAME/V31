@@ -1,0 +1,79 @@
+{
+  "groups": [
+    {
+      "name": "v31.grpc",
+      "type": "org.v31bank.grpc.autoconfigure.V31GrpcProperties",
+      "sourceType": "org.v31bank.grpc.autoconfigure.V31GrpcProperties"
+    },
+    {
+      "name": "v31.grpc.client",
+      "type": "org.v31bank.grpc.autoconfigure.V31GrpcProperties$Client",
+      "sourceType": "org.v31bank.grpc.autoconfigure.V31GrpcProperties",
+      "sourceMethod": "getClient()"
+    },
+    {
+      "name": "v31.grpc.client.deadline",
+      "type": "org.v31bank.grpc.autoconfigure.V31GrpcProperties$Deadline",
+      "sourceType": "org.v31bank.grpc.autoconfigure.V31GrpcProperties$Client",
+      "sourceMethod": "getDeadline()"
+    },
+    {
+      "name": "v31.grpc.propagation",
+      "type": "org.v31bank.grpc.autoconfigure.V31GrpcProperties$Propagation",
+      "sourceType": "org.v31bank.grpc.autoconfigure.V31GrpcProperties",
+      "sourceMethod": "getPropagation()"
+    },
+    {
+      "name": "v31.grpc.server",
+      "type": "org.v31bank.grpc.autoconfigure.V31GrpcProperties$Server",
+      "sourceType": "org.v31bank.grpc.autoconfigure.V31GrpcProperties",
+      "sourceMethod": "getServer()"
+    },
+    {
+      "name": "v31.grpc.server.exception-handling",
+      "type": "org.v31bank.grpc.autoconfigure.V31GrpcProperties$Server$ExceptionHandling",
+      "sourceType": "org.v31bank.grpc.autoconfigure.V31GrpcProperties$Server",
+      "sourceMethod": "getExceptionHandling()"
+    }
+  ],
+  "properties": [
+    {
+      "name": "v31.grpc.client.deadline.duration",
+      "type": "java.time.Duration",
+      "description": "How long a call may run before it is given up on. gRPC applies none of its own, so a call to a service answering nothing holds the caller's thread until the connection breaks — under load, how one unhealthy service exhausts the pools in front of it. Must be positive, checked at startup.",
+      "sourceType": "org.v31bank.grpc.autoconfigure.V31GrpcProperties$Deadline",
+      "defaultValue": "5s"
+    },
+    {
+      "name": "v31.grpc.client.deadline.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether a call that set no deadline is given one. Turning it off lets a call wait until the connection breaks, which should be a deliberate decision.",
+      "sourceType": "org.v31bank.grpc.autoconfigure.V31GrpcProperties$Deadline",
+      "defaultValue": true
+    },
+    {
+      "name": "v31.grpc.propagation.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to carry a request's context onward, into the calls made while serving it.",
+      "sourceType": "org.v31bank.grpc.autoconfigure.V31GrpcProperties$Propagation",
+      "defaultValue": true
+    },
+    {
+      "name": "v31.grpc.propagation.headers",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Header names carried onward, lower case as gRPC requires. Nothing secret belongs here: every name listed is copied onto every outgoing call, to every service reached.",
+      "sourceType": "org.v31bank.grpc.autoconfigure.V31GrpcProperties$Propagation"
+    },
+    {
+      "name": "v31.grpc.server.exception-handling.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to report a refused call with the platform's error code, and keep an unexpected failure's message off the wire.",
+      "sourceType": "org.v31bank.grpc.autoconfigure.V31GrpcProperties$Server$ExceptionHandling",
+      "defaultValue": true
+    }
+  ],
+  "hints": [],
+  "ignored": {
+    "properties": []
+  }
+}

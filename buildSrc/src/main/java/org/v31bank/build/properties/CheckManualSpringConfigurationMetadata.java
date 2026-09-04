@@ -35,8 +35,8 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.v31bank.build.properties.ConfigurationPropertiesAnalyzer.Report;
 
 /**
- * Fails when metadata written entirely by hand breaks any of the four rules, descriptions
- * included: there is no processor behind it to fall back on.
+ * Fails a hand-written {@code spring-configuration-metadata.json} that is unsorted,
+ * duplicated, undescribed, or deprecated without a {@code since}.
  *
  * @author Xander Wang
  * @since 0.2.0

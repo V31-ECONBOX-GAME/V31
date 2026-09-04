@@ -34,8 +34,8 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.v31bank.build.properties.ConfigurationPropertiesAnalyzer.Report;
 
 /**
- * Fails when a generated property has no description, which is the one thing the
- * processor cannot supply on its own.
+ * Fails a generated {@code spring-configuration-metadata.json} with an undescribed
+ * property.
  *
  * @author Xander Wang
  * @since 0.2.0

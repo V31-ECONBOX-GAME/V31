@@ -78,6 +78,17 @@ class CheckManualSpringConfigurationMetadataTests {
 			.contains("deprecated without a 'since' version");
 	}
 
+	/**
+	 * Every rule at once against a real file, {@code ignored} section and all.
+	 */
+	@Test
+	void passesOnAModulesMetadata() {
+		MetadataFiles.realMetadata(metadataFile());
+		CheckManualSpringConfigurationMetadata task = task();
+		assertThatCode(task::check).doesNotThrowAnyException();
+		assertThat(report()).content().contains("No problems found.");
+	}
+
 	private CheckManualSpringConfigurationMetadata task() {
 		Project project = ProjectBuilder.builder().withProjectDir(this.directory.toFile()).build();
 		CheckManualSpringConfigurationMetadata task = project.getTasks()
