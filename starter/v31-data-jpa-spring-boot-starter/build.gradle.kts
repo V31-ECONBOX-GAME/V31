@@ -21,6 +21,7 @@ plugins {
 description = "V31 Data JPA starter"
 
 dependencies {
+	api("org.springframework.boot:spring-boot-starter-data-jpa")
+
     api(project(":module:v31-data-jpa-spring-boot"))
-    api("org.springframework.boot:spring-boot-starter-data-jpa")
 }

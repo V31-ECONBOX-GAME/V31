@@ -25,6 +25,7 @@ import org.jooq.Record;
 import org.jooq.RecordContext;
 import org.jooq.RecordListener;
 
+import org.v31bank.core.AuditorSupplier;
 import org.v31bank.core.Uuids;
 
 /**

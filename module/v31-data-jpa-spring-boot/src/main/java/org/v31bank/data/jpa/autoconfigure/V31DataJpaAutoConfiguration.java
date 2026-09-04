@@ -16,17 +16,18 @@
 
 package org.v31bank.data.jpa.autoconfigure;
 
+import java.util.Optional;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-import org.v31bank.data.jpa.FixedAuditorAware;
+import org.v31bank.core.AuditorSupplier;
 
 /**
  * {@link AutoConfiguration Auto-configuration} for V31 Data JPA.
@@ -36,15 +37,13 @@ import org.v31bank.data.jpa.FixedAuditorAware;
  */
 @AutoConfiguration
 @ConditionalOnClass(AuditingEntityListener.class)
-@ConditionalOnBooleanProperty(name = "v31.data.jpa.auditing.enabled", matchIfMissing = true)
-@EnableConfigurationProperties(V31DataJpaProperties.class)
 @EnableJpaAuditing
 public class V31DataJpaAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public AuditorAware<String> auditorAware(V31DataJpaProperties properties) {
-		return new FixedAuditorAware(properties.getAuditing().getDefaultAuditor());
+	public AuditorAware<String> auditorAware(ObjectProvider<AuditorSupplier> auditor) {
+		return () -> auditor.getIfAvailable(() -> Optional::empty).currentAuditor();
 	}
 
 }

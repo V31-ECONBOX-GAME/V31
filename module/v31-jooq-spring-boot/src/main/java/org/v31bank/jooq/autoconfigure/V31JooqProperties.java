@@ -49,25 +49,12 @@ public class V31JooqProperties {
 		 */
 		private boolean enabled = true;
 
-		/**
-		 * Auditor recorded when no application-provided AuditorSupplier bean exists.
-		 */
-		private String defaultAuditor = "system";
-
 		public boolean isEnabled() {
 			return this.enabled;
 		}
 
 		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
-		}
-
-		public String getDefaultAuditor() {
-			return this.defaultAuditor;
-		}
-
-		public void setDefaultAuditor(String defaultAuditor) {
-			this.defaultAuditor = defaultAuditor;
 		}
 
 	}

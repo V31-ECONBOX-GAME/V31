@@ -17,27 +17,18 @@
 plugins {
     `java-library`
     id("org.v31bank.auto-configuration")
-    id("org.v31bank.configuration-properties")
+    id("org.v31bank.optional-dependencies")
 }
 
 description = "V31 Data JPA auto-configuration"
 
 dependencies {
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-
     api(project(":library:v31-core"))
+    api("org.springframework.boot:spring-boot-data-jpa")
 
-    api("org.springframework.boot:spring-boot")
-    api("org.springframework.boot:spring-boot-autoconfigure")
-    api("org.springframework.data:spring-data-jpa")
-    api("jakarta.persistence:jakarta.persistence-api")
-    api("org.hibernate.orm:hibernate-core")
-
-    // Required by `@EnableJpaAuditing`, whose registrar installs a bean-configurer
-    // aspect. Declared here rather than left to the starter: an auto-configuration
-    // that cannot start on the dependencies its own module declares is one that
-    // fails for whoever depends on the module directly.
-    api("org.springframework:spring-aspects")
+    // Compiled against here, absent for a consumer: anything running an
+    // auto-configuration already has it.
+    optional("org.springframework.boot:spring-boot-autoconfigure")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 

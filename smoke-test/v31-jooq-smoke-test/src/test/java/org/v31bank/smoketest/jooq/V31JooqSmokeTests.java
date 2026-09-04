@@ -20,9 +20,10 @@ import org.jooq.DSLContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 
+import org.v31bank.core.AuditorSupplier;
 import org.v31bank.jooq.AuditRecordListener;
-import org.v31bank.jooq.AuditorSupplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,14 +31,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class V31JooqSmokeTests {
 
 	@Autowired
-	private DSLContext dslContext;
+	private ApplicationContext context;
 
 	@Autowired
-	private AuditorSupplier auditorSupplier;
+	private DSLContext dslContext;
 
 	@Test
-	void theStarterAloneContributesTheAuditor() {
-		assertThat(this.auditorSupplier.currentAuditor()).contains("smoke-test");
+	void theStarterAloneLeavesTheAuditorToTheApplication() {
+		assertThat(this.context.getBeansOfType(AuditorSupplier.class)).isEmpty();
 	}
 
 	@Test

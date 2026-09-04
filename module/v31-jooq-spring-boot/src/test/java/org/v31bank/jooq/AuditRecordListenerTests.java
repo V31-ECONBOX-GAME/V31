@@ -29,6 +29,8 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.junit.jupiter.api.Test;
 
+import org.v31bank.core.AuditorSupplier;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

@@ -25,9 +25,9 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
 
 /**
- * A parent and a sort order.
+ * A tree node.
  *
- * @param <T> the entity type
+ * @param <T> the model type
  * @author Xander Wang
  * @since 0.2.0
  */

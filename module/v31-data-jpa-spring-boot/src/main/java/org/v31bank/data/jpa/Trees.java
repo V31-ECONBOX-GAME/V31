@@ -25,14 +25,13 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Assembles flat {@link TreeNode} lists into trees.
+ * Flat nodes into trees.
  *
  * @author Xander Wang
  * @since 0.2.0
  */
 public final class Trees {
 
-	@SuppressWarnings("java:S1612")
 	private static final Comparator<TreeNode<?>> SIBLING_ORDER = Comparator
 		.comparing((TreeNode<?> node) -> node.getSortOrder(), Comparator.nullsLast(Comparator.naturalOrder()))
 		.thenComparing(Audited::getId, Comparator.nullsLast(Comparator.naturalOrder()));

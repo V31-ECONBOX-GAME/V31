@@ -35,8 +35,8 @@ class V31DataJpaSmokeTests {
 	}
 
 	@Test
-	void theAuditorComesFromApplicationProperties() {
-		assertThat(this.auditorAware.getCurrentAuditor()).contains("smoke-test");
+	void theAuditorAnswersNothingUntilTheApplicationSuppliesOne() {
+		assertThat(this.auditorAware.getCurrentAuditor()).isEmpty();
 	}
 
 }

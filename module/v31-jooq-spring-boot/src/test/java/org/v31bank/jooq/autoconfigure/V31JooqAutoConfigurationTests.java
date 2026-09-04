@@ -17,6 +17,7 @@
 package org.v31bank.jooq.autoconfigure;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.jooq.RecordListener;
 import org.jooq.RecordListenerProvider;
@@ -28,9 +29,8 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.v31bank.core.AuditorSupplier;
 import org.v31bank.jooq.AuditRecordListener;
-import org.v31bank.jooq.AuditorSupplier;
-import org.v31bank.jooq.FixedAuditorSupplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,23 +45,15 @@ class V31JooqAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(V31JooqAutoConfiguration.class));
 
 	@Test
-	void registersTheListenerAndAFallbackAuditor() {
+	void registersTheListenerWithoutAnAuditor() {
 		this.runner.run((context) -> {
 			assertThat(context).hasSingleBean(AuditRecordListener.class);
-			assertThat(context).hasSingleBean(AuditorSupplier.class);
-			assertThat(context.getBean(AuditorSupplier.class).currentAuditor()).contains("system");
+			assertThat(context).doesNotHaveBean(AuditorSupplier.class);
 		});
 	}
 
 	@Test
-	void recordsTheConfiguredDefaultAuditor() {
-		this.runner.withPropertyValues("v31.jooq.auditing.default-auditor=migration")
-			.run((context) -> assertThat(context.getBean(AuditorSupplier.class).currentAuditor())
-				.contains("migration"));
-	}
-
-	@Test
-	void backsOffFromAnApplicationSuppliedAuditor() {
+	void takesTheAuditorTheApplicationSupplies() {
 		this.runner.withUserConfiguration(CustomAuditorConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(AuditorSupplier.class);
 			assertThat(context.getBean(AuditorSupplier.class).currentAuditor()).contains("xander");
@@ -107,7 +99,7 @@ class V31JooqAutoConfigurationTests {
 
 		@Bean
 		AuditorSupplier auditorSupplier() {
-			return new FixedAuditorSupplier("xander");
+			return () -> Optional.of("xander");
 		}
 
 	}

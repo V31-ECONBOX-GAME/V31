@@ -28,7 +28,7 @@ import org.v31bank.core.HttpResponse;
 import org.v31bank.core.PageQuery;
 
 /**
- * Paging to and from Spring Data.
+ * Spring Data paging.
  *
  * @author Xander Wang
  * @since 0.2.0

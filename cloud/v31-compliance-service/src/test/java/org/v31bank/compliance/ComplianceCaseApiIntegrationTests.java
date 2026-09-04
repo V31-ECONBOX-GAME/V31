@@ -92,7 +92,7 @@ class ComplianceCaseApiIntegrationTests {
 		assertThat(created.get("createdDate")).asString().endsWith("Z");
 		assertThat(this.dsl.select(ComplianceCaseTable.COMPLIANCE_CASE.CREATED_BY)
 			.from(ComplianceCaseTable.COMPLIANCE_CASE)
-			.fetchOne(ComplianceCaseTable.COMPLIANCE_CASE.CREATED_BY)).isEqualTo("system");
+			.fetchOne(ComplianceCaseTable.COMPLIANCE_CASE.CREATED_BY)).isNull();
 	}
 
 	@Test

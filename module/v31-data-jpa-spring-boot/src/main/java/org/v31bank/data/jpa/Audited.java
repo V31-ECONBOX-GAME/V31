@@ -34,7 +34,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.v31bank.core.Uuids;
 
 /**
- * A UUIDv7 key and audit fields.
+ * Auditing for a model.
  *
  * @author Xander Wang
  * @since 0.2.0

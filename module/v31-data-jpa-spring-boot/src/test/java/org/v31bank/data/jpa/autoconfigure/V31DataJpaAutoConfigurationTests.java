@@ -35,8 +35,8 @@ import org.springframework.orm.jpa.SharedEntityManagerCreator;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import org.v31bank.core.AuditorSupplier;
 import org.v31bank.data.jpa.Audited;
-import org.v31bank.data.jpa.FixedAuditorAware;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,10 +55,10 @@ class V31DataJpaAutoConfigurationTests {
 				"spring.jpa.hibernate.ddl-auto=create-drop");
 
 	@Test
-	void registersAnAuditorSoAuditColumnsAreNeverLeftUnset() {
+	void registersAnAuditorThatAnswersNothingUntilOneIsSupplied() {
 		this.runner.run((context) -> {
 			assertThat(context).hasSingleBean(AuditorAware.class);
-			assertThat(auditor(context.getBean(AuditorAware.class))).contains("system");
+			assertThat(auditor(context.getBean(AuditorAware.class))).isEmpty();
 		});
 	}
 
@@ -67,8 +67,8 @@ class V31DataJpaAutoConfigurationTests {
 		this.runner.run((context) -> {
 			AuditedRecord saved = save(context.getBean(PlatformTransactionManager.class),
 					context.getBean(EntityManagerFactory.class));
-			assertThat(saved.getCreatedBy()).isEqualTo("system");
-			assertThat(saved.getLastModifiedBy()).isEqualTo("system");
+			assertThat(saved.getCreatedBy()).isNull();
+			assertThat(saved.getLastModifiedBy()).isNull();
 			assertThat(saved.getCreatedDate()).isNotNull();
 			assertThat(saved.getLastModifiedDate()).isNotNull();
 			assertThat(saved.getId()).isNotNull();
@@ -76,15 +76,9 @@ class V31DataJpaAutoConfigurationTests {
 	}
 
 	@Test
-	void appliesTheConfiguredAuditor() {
-		this.runner.withPropertyValues("v31.data.jpa.auditing.default-auditor=batch")
-			.run((context) -> assertThat(auditor(context.getBean(AuditorAware.class))).contains("batch"));
-	}
-
-	@Test
-	void addsNothingWhenAuditingIsTurnedOff() {
-		this.runner.withPropertyValues("v31.data.jpa.auditing.enabled=false")
-			.run((context) -> assertThat(context).doesNotHaveBean(AuditorAware.class));
+	void takesTheAuditorSuppliedByTheApplication() {
+		this.runner.withUserConfiguration(SuppliedAuditorConfiguration.class)
+			.run((context) -> assertThat(auditor(context.getBean(AuditorAware.class))).contains("grace"));
 	}
 
 	@Test
@@ -92,15 +86,6 @@ class V31DataJpaAutoConfigurationTests {
 		this.runner.withUserConfiguration(CustomAuditorConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(AuditorAware.class);
 			assertThat(auditor(context.getBean(AuditorAware.class))).contains("ada");
-		});
-	}
-
-	@Test
-	void bindsItsProperties() {
-		this.runner.run((context) -> {
-			V31DataJpaProperties properties = context.getBean(V31DataJpaProperties.class);
-			assertThat(properties.getAuditing().isEnabled()).isTrue();
-			assertThat(properties.getAuditing().getDefaultAuditor()).isEqualTo("system");
 		});
 	}
 
@@ -127,11 +112,21 @@ class V31DataJpaAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class SuppliedAuditorConfiguration {
+
+		@Bean
+		AuditorSupplier auditorSupplier() {
+			return () -> Optional.of("grace");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class CustomAuditorConfiguration {
 
 		@Bean
 		AuditorAware<String> auditorAware() {
-			return new FixedAuditorAware("ada");
+			return () -> Optional.of("ada");
 		}
 
 	}

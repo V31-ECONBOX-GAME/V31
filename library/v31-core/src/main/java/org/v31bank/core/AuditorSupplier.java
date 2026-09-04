@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.v31bank.jooq;
+package org.v31bank.core;
 
 import java.util.Optional;
 
 /**
- * Answers who is acting, for {@link AuditRecordListener}.
+ * Supplies the current auditor.
  *
  * @author Xander Wang
  * @since 0.2.0
