@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.v31bank.core.response.HttpResponse;
+import org.v31bank.core.HttpResponse;
 import org.v31bank.notification.application.dto.NotificationTemplatePageQuery;
 import org.v31bank.notification.domain.model.NotificationTemplate;
 
@@ -37,18 +37,8 @@ public interface NotificationTemplatePort {
 
 	Optional<NotificationTemplate> findById(UUID id);
 
-	/**
-	 * Find a page of records matching the filters carried by the query.
-	 * @param query the filters and the pagination request
-	 * @return the page of matching records
-	 */
 	HttpResponse<List<NotificationTemplate>> findPage(NotificationTemplatePageQuery query);
 
-	/**
-	 * Whether any record already uses the given code.
-	 * @param code the value to check
-	 * @return {@code true} if it is taken
-	 */
 	boolean existsByCode(String code);
 
 	void delete(NotificationTemplate notificationTemplate);

@@ -27,8 +27,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import org.v31bank.core.response.HttpResponse;
-import org.v31bank.data.jpa.util.JpaPages;
+import org.v31bank.core.HttpResponse;
+import org.v31bank.data.jpa.JpaPages;
 import org.v31bank.notification.application.dto.NotificationTemplatePageQuery;
 import org.v31bank.notification.application.port.out.NotificationTemplatePort;
 import org.v31bank.notification.domain.model.NotificationTemplate;

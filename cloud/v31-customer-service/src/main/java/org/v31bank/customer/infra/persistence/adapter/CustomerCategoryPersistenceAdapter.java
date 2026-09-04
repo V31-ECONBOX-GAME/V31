@@ -27,13 +27,13 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import org.v31bank.core.response.HttpResponse;
+import org.v31bank.core.HttpResponse;
 import org.v31bank.customer.application.dto.CustomerCategoryPageQuery;
 import org.v31bank.customer.application.port.out.CustomerCategoryPort;
 import org.v31bank.customer.domain.constant.CustomerCategoryStatus;
 import org.v31bank.customer.domain.model.CustomerCategory;
 import org.v31bank.customer.infra.persistence.jpa.JpaCustomerCategoryRepository;
-import org.v31bank.data.jpa.util.JpaPages;
+import org.v31bank.data.jpa.JpaPages;
 
 /**
  * {@link CustomerCategoryPort} adapter backed by Spring Data JPA.
@@ -44,10 +44,6 @@ import org.v31bank.data.jpa.util.JpaPages;
 @Repository
 public class CustomerCategoryPersistenceAdapter implements CustomerCategoryPort {
 
-	/**
-	 * Sibling ordering. PostgreSQL sorts nulls last on an ascending column, which matches
-	 * how unpositioned nodes are ordered once assembled into a tree.
-	 */
 	private static final Sort SIBLING_ORDER = Sort.by(Sort.Order.asc("sortOrder"), Sort.Order.asc("code"));
 
 	private final JpaCustomerCategoryRepository jpaRepository;

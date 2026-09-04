@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.v31bank.core.response.HttpResponse;
+import org.v31bank.core.HttpResponse;
 import org.v31bank.customer.application.dto.CustomerPageQuery;
 import org.v31bank.customer.domain.constant.CustomerStatus;
 import org.v31bank.customer.domain.model.Customer;
@@ -39,21 +39,8 @@ public interface CustomerUseCase {
 
 	HttpResponse<List<Customer>> page(CustomerPageQuery query);
 
-	/**
-	 * Update the customer with the given identifier.
-	 * @param id which customer to update
-	 * @param email the address to reach them at
-	 * @param fullName what to call them
-	 * @param status where they are in their lifecycle
-	 * @return the updated customer, or empty if no such customer exists
-	 */
 	Optional<Customer> update(UUID id, String email, String fullName, CustomerStatus status);
 
-	/**
-	 * Delete the customer with the given identifier.
-	 * @param id which customer to delete
-	 * @return {@code true} if the customer existed and was deleted
-	 */
 	boolean delete(UUID id);
 
 }

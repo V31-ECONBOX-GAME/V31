@@ -26,10 +26,9 @@ import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.server.ResponseStatusException;
 
-import org.v31bank.core.response.HttpResponse;
-import org.v31bank.grpc.client.GrpcErrors;
+import org.v31bank.core.HttpResponse;
+import org.v31bank.grpc.GrpcErrors;
 import org.v31bank.ledger.api.v1.CreateLedgerAccountRequest;
 import org.v31bank.ledger.api.v1.DeleteLedgerAccountRequest;
 import org.v31bank.ledger.api.v1.GetLedgerAccountRequest;
@@ -44,18 +43,6 @@ import org.v31bank.notification.application.port.out.LedgerAccountPort;
 
 /**
  * {@link LedgerAccountPort} adapter backed by a gRPC call to the ledger service.
- * <p>
- * The counterpart of a persistence adapter: everything that knows the accounts come from
- * another service over a wire is confined here, and the application layer above sees a
- * port like any other.
- *
- * <h2>Failures are translated, not propagated</h2>
- *
- * Every call goes through {@link GrpcErrors}, so a refusal from the ledger arrives here
- * as an {@link ResponseStatusException} carrying the code the ledger reported rather than
- * as a {@link StatusRuntimeException}. Without that, a status code would leak into the
- * application layer and every caller would have to know what {@code ALREADY_EXISTS}
- * means.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -78,13 +65,6 @@ public class LedgerAccountGrpcAdapter implements LedgerAccountPort {
 			.build())).getLedgerAccount());
 	}
 
-	/**
-	 * Look one up, taking {@code NOT_FOUND} as an answer rather than a failure.
-	 * <p>
-	 * Every other refusal is raised: an account this service is not allowed to see, or a
-	 * ledger that is down, is not the same as an account that does not exist, and
-	 * returning empty for those would hide a problem behind a blank result.
-	 */
 	@Override
 	public Optional<LedgerAccountSummary> findById(UUID id) {
 		try {
@@ -135,14 +115,6 @@ public class LedgerAccountGrpcAdapter implements LedgerAccountPort {
 			.getLedgerAccount());
 	}
 
-	/**
-	 * Turn a message into this service's own view of an account.
-	 * <p>
-	 * The enum names lose the prefix the contract carries: what reaches a message
-	 * template should read {@code ASSET}, not {@code LEDGER_ACCOUNT_TYPE_ASSET}.
-	 * @param account the message received
-	 * @return the summary
-	 */
 	private static LedgerAccountSummary toSummary(org.v31bank.ledger.api.v1.LedgerAccount account) {
 		return new LedgerAccountSummary(UUID.fromString(account.getId()), account.getCode(), account.getName(),
 				strip(account.getType().name(), "LEDGER_ACCOUNT_TYPE_"),
@@ -150,15 +122,6 @@ public class LedgerAccountGrpcAdapter implements LedgerAccountPort {
 				toInstant(account.getLastModifiedDate()));
 	}
 
-	/**
-	 * Read a type to send, leaving it unset when there is nothing to say.
-	 * <p>
-	 * A value this build does not recognise is refused here rather than sent as
-	 * "unspecified", which the ledger would read as "no filter" or "no type" and act on
-	 * silently.
-	 * @param type the value to send, which may be {@code null}
-	 * @return the value for the wire
-	 */
 	private static LedgerAccountType toType(String type) {
 		if (!StringUtils.hasText(type)) {
 			return LedgerAccountType.LEDGER_ACCOUNT_TYPE_UNSPECIFIED;

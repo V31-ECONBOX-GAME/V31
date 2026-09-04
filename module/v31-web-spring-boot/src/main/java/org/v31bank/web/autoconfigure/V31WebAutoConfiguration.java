@@ -27,13 +27,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataAccessException;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import org.v31bank.web.advice.DataAccessExceptionHandler;
-import org.v31bank.web.advice.HttpResponseExceptionHandler;
+import org.v31bank.web.DataAccessExceptionHandler;
+import org.v31bank.web.HttpResponseExceptionHandler;
 
 /**
- * {@link AutoConfiguration Auto-configuration} for V31 web support: every failure arrives
- * in the same envelope as a success. Both handlers back off from one the application
- * declared itself.
+ * {@link AutoConfiguration Auto-configuration} for V31 web support.
  *
  * @author Xander Wang
  * @since 0.2.0

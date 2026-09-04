@@ -16,7 +16,7 @@
 
 package org.v31bank.notification.application.dto;
 
-import org.v31bank.core.request.PageQuery;
+import org.v31bank.core.PageQuery;
 import org.v31bank.notification.domain.constant.NotificationChannel;
 import org.v31bank.notification.domain.constant.NotificationTemplateStatus;
 
@@ -28,19 +28,10 @@ import org.v31bank.notification.domain.constant.NotificationTemplateStatus;
  */
 public class NotificationTemplatePageQuery extends PageQuery {
 
-	/**
-	 * Code fragment to match, case-insensitive.
-	 */
 	private String code;
 
-	/**
-	 * Channel to match.
-	 */
 	private NotificationChannel channel;
 
-	/**
-	 * Status to match.
-	 */
 	private NotificationTemplateStatus status;
 
 	public String getCode() {

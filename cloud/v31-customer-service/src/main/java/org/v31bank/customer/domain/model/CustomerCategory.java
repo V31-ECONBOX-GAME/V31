@@ -24,22 +24,12 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 import org.v31bank.customer.domain.constant.CustomerCategoryStatus;
-import org.v31bank.data.jpa.domain.TreeEntity;
+import org.v31bank.data.jpa.TreeNode;
 
-/**
- * A node in the customer category hierarchy, for example
- * {@code Retail > High Net Worth > Private Banking}.
- * <p>
- * The parent reference and the ordering among siblings are inherited from
- * {@link TreeEntity}; a node without a parent is a root category.
- *
- * @author Xander Wang
- * @since 0.2.0
- */
 @Entity
 @Table(name = "customer_category",
 		uniqueConstraints = @UniqueConstraint(name = "uk_customer_category_code", columnNames = "code"))
-public class CustomerCategory extends TreeEntity<CustomerCategory> {
+public class CustomerCategory extends TreeNode<CustomerCategory> {
 
 	@Column(name = "code", length = 64, nullable = false)
 	private String code;

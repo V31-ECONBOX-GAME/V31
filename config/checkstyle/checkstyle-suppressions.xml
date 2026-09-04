@@ -8,4 +8,5 @@
 	<suppress files="[\\/]src[\\/]intTest[\\/]java[\\/]" checks="Javadoc.*"/>
 	<suppress files="[\\/]src[\\/]test(Fixtures)?[\\/]java[\\/]" checks="SpringJavadoc"/>
 	<suppress files="[\\/]src[\\/]intTest[\\/]java[\\/]" checks="SpringJavadoc"/>
+	<suppress files="[\\/]cloud[\\/]" checks="JavadocVariable"/>
 </suppressions>

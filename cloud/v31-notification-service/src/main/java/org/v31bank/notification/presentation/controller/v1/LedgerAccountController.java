@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.v31bank.core.response.HttpResponse;
+import org.v31bank.core.HttpResponse;
 import org.v31bank.notification.application.dto.LedgerAccountSummary;
 import org.v31bank.notification.application.port.in.LedgerAccountUseCase;
 import org.v31bank.notification.presentation.dto.LedgerAccountRequest;
@@ -41,10 +41,6 @@ import org.v31bank.notification.presentation.dto.LedgerAccountResponse;
 
 /**
  * The chart of accounts, as this service exposes it over HTTP.
- * <p>
- * Every call here becomes a gRPC call to the ledger. Nothing is stored on this side — the
- * point is that a caller cannot tell: the envelope, the pagination and the status codes
- * are the same as if the ledger had answered directly.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -77,13 +73,6 @@ public class LedgerAccountController {
 			.orElseGet(() -> error(HttpStatus.NOT_FOUND.value(), "No ledger account exists with id " + id));
 	}
 
-	/**
-	 * Return a page of accounts, newest first, as the ledger ordered them.
-	 * @param pageNumber the one-based page to fetch
-	 * @param pageSize the page size
-	 * @param code fragment matched against the code, or absent for no filter
-	 * @return the page of matching accounts
-	 */
 	@GetMapping
 	public HttpResponse<List<LedgerAccountResponse>> page(@RequestParam(defaultValue = "1") int pageNumber,
 			@RequestParam(defaultValue = "10") int pageSize, @RequestParam(required = false) String code) {
@@ -98,12 +87,6 @@ public class LedgerAccountController {
 				request.name(), request.type(), request.status())));
 	}
 
-	/**
-	 * Answer a delete with the envelope carrying the account that was removed, rather
-	 * than a bare {@code 204}, so that this endpoint is parsed like every other one.
-	 * @param id the account to delete
-	 * @return the response to send
-	 */
 	@DeleteMapping("/{id}")
 	public HttpResponse<LedgerAccountResponse> delete(@PathVariable UUID id) {
 		return HttpResponse.ok(LedgerAccountResponse.from(this.ledgerAccountInputPort.delete(id)));

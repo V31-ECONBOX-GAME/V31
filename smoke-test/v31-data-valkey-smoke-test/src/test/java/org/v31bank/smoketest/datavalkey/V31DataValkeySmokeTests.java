@@ -24,9 +24,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 
+import org.v31bank.data.valkey.ValkeyKeys;
+import org.v31bank.data.valkey.ValkeyLock;
 import org.v31bank.data.valkey.autoconfigure.V31ValkeyProperties;
-import org.v31bank.data.valkey.lock.ValkeyLock;
-import org.v31bank.data.valkey.util.ValkeyKeys;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

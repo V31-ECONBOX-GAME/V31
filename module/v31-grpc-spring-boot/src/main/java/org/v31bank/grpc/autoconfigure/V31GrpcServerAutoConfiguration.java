@@ -27,18 +27,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.grpc.server.GlobalServerInterceptor;
 import org.springframework.grpc.server.exception.GrpcExceptionHandler;
 
-import org.v31bank.grpc.server.HeaderPropagationServerInterceptor;
-import org.v31bank.grpc.server.RefusalGrpcExceptionHandler;
-import org.v31bank.grpc.server.UnexpectedExceptionGrpcExceptionHandler;
+import org.v31bank.grpc.HeaderPropagationServerInterceptor;
+import org.v31bank.grpc.RefusalGrpcExceptionHandler;
+import org.v31bank.grpc.UnexpectedExceptionGrpcExceptionHandler;
 
 /**
- * {@link AutoConfiguration Auto-configuration} for the calls a V31 service serves:
- * refusals reported with the platform's error codes, an unexpected failure's detail kept
- * off the wire, an identifier on every call.
- * <p>
- * Spring gRPC gathers every {@link GrpcExceptionHandler} bean and asks them in order, so
- * this contributes handlers rather than an interceptor — a service adds its own the same
- * way.
+ * {@link AutoConfiguration Auto-configuration} for the calls a service serves.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -48,10 +42,6 @@ import org.v31bank.grpc.server.UnexpectedExceptionGrpcExceptionHandler;
 @EnableConfigurationProperties(V31GrpcProperties.class)
 public class V31GrpcServerAutoConfiguration {
 
-	/**
-	 * Translates a refusal the caller is meant to see.
-	 * @return the handler
-	 */
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(name = "v31.grpc.server.exception-handling.enabled", matchIfMissing = true)
@@ -59,10 +49,6 @@ public class V31GrpcServerAutoConfiguration {
 		return new RefusalGrpcExceptionHandler();
 	}
 
-	/**
-	 * Answers everything else, last, without disclosing why.
-	 * @return the handler
-	 */
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(name = "v31.grpc.server.exception-handling.enabled", matchIfMissing = true)
@@ -70,12 +56,6 @@ public class V31GrpcServerAutoConfiguration {
 		return new UnexpectedExceptionGrpcExceptionHandler();
 	}
 
-	/**
-	 * Makes what a call arrived carrying reachable for the rest of it, including the
-	 * calls made onward.
-	 * @param properties the header names to carry
-	 * @return the interceptor
-	 */
 	@Bean
 	@GlobalServerInterceptor
 	@ConditionalOnMissingBean

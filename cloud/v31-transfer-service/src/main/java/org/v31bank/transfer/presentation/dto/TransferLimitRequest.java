@@ -26,17 +26,6 @@ import jakarta.validation.constraints.Size;
 
 import org.v31bank.transfer.domain.constant.TransferLimitStatus;
 
-/**
- * Request body for creating or updating a transfer limit.
- *
- * @param code the code, unique
- * @param name the display name
- * @param dailyMax the most that may be sent in a day, in the limit's own asset
- * @param status the status; ignored on create, where a record always starts
- * {@code ACTIVE}, and left unchanged on update when {@code null}
- * @author Xander Wang
- * @since 0.2.0
- */
 public record TransferLimitRequest(@NotBlank @Size(max = 32) String code, @NotBlank @Size(max = 100) String name,
 		@NotNull @PositiveOrZero @Digits(integer = 20, fraction = 18) BigDecimal dailyMax, TransferLimitStatus status) {
 

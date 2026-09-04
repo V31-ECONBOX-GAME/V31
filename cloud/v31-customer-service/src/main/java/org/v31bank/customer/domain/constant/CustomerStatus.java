@@ -24,21 +24,10 @@ package org.v31bank.customer.domain.constant;
  */
 public enum CustomerStatus {
 
-	/**
-	 * Onboarded, and free to transact.
-	 */
 	ACTIVE,
 
-	/**
-	 * Still on the books, but barred from transacting — a compliance hold, a suspected
-	 * takeover. Reversible, which is what makes it different from {@link #CLOSED}.
-	 */
 	FROZEN,
 
-	/**
-	 * The relationship has ended. Kept rather than deleted, because the ledger entries
-	 * behind it have to stay explicable.
-	 */
 	CLOSED
 
 }

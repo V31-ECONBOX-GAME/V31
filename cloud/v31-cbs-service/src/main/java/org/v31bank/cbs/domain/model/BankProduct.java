@@ -26,14 +26,6 @@ import org.v31bank.cbs.domain.constant.BankProductStatus;
 /**
  * A product the bank offers accounts against — a savings account, a term deposit, a
  * credit line.
- * <p>
- * Reference data: written rarely, read on nearly every account operation, and small
- * enough to hold entirely in memory. That is what makes Valkey a reasonable store for it
- * rather than only a cache in front of one.
- * <p>
- * The rate is a {@link BigDecimal} and the timestamps are {@link Instant}, which is what
- * the value serializer has to carry across untouched — a rate that comes back as a double
- * is a rate that is wrong.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -42,9 +34,6 @@ public class BankProduct {
 
 	private UUID id;
 
-	/**
-	 * Code the product is known by across the bank, unique and quoted on statements.
-	 */
 	private String code;
 
 	private String name;
@@ -53,9 +42,6 @@ public class BankProduct {
 
 	private BankProductStatus status = BankProductStatus.DRAFT;
 
-	/**
-	 * Annual rate as a fraction, so 2.5% is {@code 0.025}.
-	 */
 	private BigDecimal interestRate;
 
 	private Instant createdDate;

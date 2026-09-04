@@ -23,41 +23,14 @@ import java.util.UUID;
 import org.v31bank.customer.domain.constant.CustomerCategoryStatus;
 import org.v31bank.customer.domain.model.CustomerCategory;
 
-/**
- * API representation of a customer category.
- *
- * @param children the descendants, empty for the flat representation returned by the
- * paginated and single-node endpoints
- * @param id the identifier it was issued when it was created
- * @param parentId the category this one sits under, or {@code null} at the top
- * @param code the code it is known by, unique within the service
- * @param name what to call it
- * @param sortOrder where it belongs among its siblings
- * @param status where it is in its lifecycle
- * @param createdDate when it was created
- * @param lastModifiedDate when it was last changed
- * @param children the categories underneath it, deepest last
- * @author Xander Wang
- * @since 0.2.0
- */
 public record CustomerCategoryResponse(UUID id, UUID parentId, String code, String name, Integer sortOrder,
 		CustomerCategoryStatus status, Instant createdDate, Instant lastModifiedDate,
 		List<CustomerCategoryResponse> children) {
 
-	/**
-	 * Represent a single node, without its descendants.
-	 * @param category the category to represent
-	 * @return the flat representation
-	 */
 	public static CustomerCategoryResponse from(CustomerCategory category) {
 		return of(category, List.of());
 	}
 
-	/**
-	 * Represent a node together with the subtree already attached to it.
-	 * @param category the root of an assembled subtree
-	 * @return the nested representation
-	 */
 	public static CustomerCategoryResponse fromTree(CustomerCategory category) {
 		return of(category, category.getChildren().stream().map(CustomerCategoryResponse::fromTree).toList());
 	}

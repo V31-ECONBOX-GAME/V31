@@ -23,9 +23,6 @@ import java.util.Objects;
 /**
  * A Value Object is an object that combines a group of business-related fields into a
  * single meaningful concept.
- * <p>
- * The whole object is treated as a value, and any change to its components results in a
- * new value.
  *
  * @param amount how much, never negative
  * @param currency what the amount is denominated in

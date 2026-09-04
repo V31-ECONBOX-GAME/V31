@@ -37,42 +37,11 @@ import org.v31bank.cbs.domain.constant.BankProductCategory;
 import org.v31bank.cbs.domain.constant.BankProductStatus;
 import org.v31bank.cbs.domain.model.BankProduct;
 import org.v31bank.cbs.infra.persistence.valkey.BankProductValkeyKeys;
-import org.v31bank.core.response.HttpResponse;
-import org.v31bank.core.util.Uuids;
+import org.v31bank.core.HttpResponse;
+import org.v31bank.core.Uuids;
 
 /**
  * {@link BankProductPort} adapter backed by Valkey.
- *
- * <h2>How a page is produced</h2>
- *
- * A key-value store cannot answer "the third page, newest first" over a keyspace; finding
- * out would mean visiting every key. So the ordering is maintained instead of computed:
- * every write puts the product's identifier into sorted sets scored by creation time, and
- * a page is a range of one of them — logarithmic, with the total coming free from the
- * set's cardinality. Filtering by both category and status intersects the two sets into a
- * short-lived key, which is what a query planner would have done and here has to be said
- * out loud.
- *
- * <h2>Why everything is written as text</h2>
- *
- * The product is serialized to JSON here and stored through the string template, rather
- * than handed to the JSON template the Valkey starter installs. Both write the same bytes
- * for the product — the starter's serializer is what produces them either way, so a
- * stored value still names only a type this platform trusts. The difference is everything
- * around it: that template would serialize the identifiers going into the sorted sets as
- * JSON too, leaving every index member quoted, so an operator reading {@code ZRANGE}
- * during an incident could not paste what they saw into a {@code GET}. Sorted set members
- * share the value serializer, so the only way to keep them readable is to keep the whole
- * write on one string template — which also keeps it on one connection, and therefore in
- * one transaction.
- *
- * <h2>What is atomic and what is not</h2>
- *
- * The writes making up one change are sent as a single transaction, so nothing observes a
- * product whose indexes disagree with it. Valkey does not roll back, though: if one
- * command in that transaction fails the others still stand. The code claim is a separate
- * single command, and is genuinely atomic — that is what stands in for the unique
- * constraint a relational store would have provided.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -80,10 +49,6 @@ import org.v31bank.core.util.Uuids;
 @Repository
 public class BankProductPersistenceAdapter implements BankProductPort {
 
-	/**
-	 * How long an intersection survives if the request reading it dies before cleaning
-	 * up. Long enough to read a page, short enough not to accumulate.
-	 */
 	private static final Duration INTERSECTION_TTL = Duration.ofSeconds(30);
 
 	private final StringRedisTemplate valkey;
@@ -99,12 +64,6 @@ public class BankProductPersistenceAdapter implements BankProductPort {
 		this.keys = keys;
 	}
 
-	/**
-	 * Take the code, if it is free.
-	 * <p>
-	 * {@code SET NX} is one command and atomic on its own, which is the entire reason it
-	 * can stand in for a unique constraint. It belongs to no transaction and needs none.
-	 */
 	@Override
 	public boolean claimCode(String code, UUID id) {
 		return Boolean.TRUE.equals(this.valkey.opsForValue().setIfAbsent(this.keys.code(code), id.toString()));
@@ -115,15 +74,6 @@ public class BankProductPersistenceAdapter implements BankProductPort {
 		this.valkey.delete(this.keys.code(code));
 	}
 
-	/**
-	 * Write the product and rebuild its place in the indexes.
-	 * <p>
-	 * The identifier is removed from every category and status set before being added to
-	 * the two it now belongs to. Removing from all of them rather than from the ones it
-	 * used to be in is deliberate: the previous values are not carried into this call,
-	 * and with four categories and three statuses the difference is a handful of commands
-	 * inside a transaction that was being sent anyway.
-	 */
 	@Override
 	public BankProduct save(BankProduct product) {
 		String member = product.getId().toString();
@@ -133,8 +83,6 @@ public class BankProductPersistenceAdapter implements BankProductPort {
 		this.valkey.execute(new SessionCallback<Object>() {
 			@Override
 			public <K, V> Object execute(RedisOperations<K, V> operations) {
-				// SessionCallback is handed the template's operations without saying
-				// what they are keyed by; this template is the one built for strings.
 				@SuppressWarnings("unchecked")
 				RedisOperations<String, String> ops = (RedisOperations<String, String>) operations;
 				ops.multi();
@@ -187,8 +135,6 @@ public class BankProductPersistenceAdapter implements BankProductPort {
 		this.valkey.execute(new SessionCallback<Object>() {
 			@Override
 			public <K, V> Object execute(RedisOperations<K, V> operations) {
-				// SessionCallback is handed the template's operations without saying
-				// what they are keyed by; this template is the one built for strings.
 				@SuppressWarnings("unchecked")
 				RedisOperations<String, String> ops = (RedisOperations<String, String>) operations;
 				ops.multi();
@@ -205,12 +151,6 @@ public class BankProductPersistenceAdapter implements BankProductPort {
 		});
 	}
 
-	/**
-	 * Choose the sorted set a page comes from, building one where the filters asked for a
-	 * combination no single set holds.
-	 * @param query the filters
-	 * @return the key of the set to page over, temporary when it was intersected
-	 */
 	private String indexFor(BankProductPageQuery query) {
 		if (isIntersection(query)) {
 			String destination = this.keys.intersection(Uuids.timeOrdered().toString());
@@ -233,15 +173,6 @@ public class BankProductPersistenceAdapter implements BankProductPort {
 		return query.getCategory() != null && query.getStatus() != null;
 	}
 
-	/**
-	 * Fetch the products a page of identifiers refers to.
-	 * <p>
-	 * An identifier with nothing behind it is skipped rather than reported as a gap: it
-	 * means the product was deleted between the range being read and the values being
-	 * fetched, which is a page one request out of date, not an error.
-	 * @param members the identifiers, in the order they should appear
-	 * @return the products
-	 */
 	private List<BankProduct> read(Set<String> members) {
 		if (members == null || members.isEmpty()) {
 			return List.of();
@@ -254,12 +185,6 @@ public class BankProductPersistenceAdapter implements BankProductPort {
 		return values.stream().filter(Objects::nonNull).map(this::fromJson).toList();
 	}
 
-	/**
-	 * Render a product through the serializer the Valkey starter configured, so that what
-	 * is stored names its type and can only be read back as one this platform trusts.
-	 * @param product the product to render
-	 * @return the JSON to store
-	 */
 	private String toJson(BankProduct product) {
 		return new String(Objects.requireNonNull(this.serializer.serialize(product)), StandardCharsets.UTF_8);
 	}

@@ -25,14 +25,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-import org.v31bank.grpc.web.HeaderPropagationFilter;
+import org.v31bank.grpc.HeaderPropagationFilter;
 
 /**
- * {@link AutoConfiguration Auto-configuration} for where a request's context enters the
- * platform. The interceptors carry values between services, but the first hop is usually
- * an HTTP call from outside and something has to put them there to begin with.
- * <p>
- * Servlet applications only: a service speaking gRPC alone has no HTTP entry point.
+ * {@link AutoConfiguration Auto-configuration} for where a request's context enters.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -44,11 +40,6 @@ import org.v31bank.grpc.web.HeaderPropagationFilter;
 @EnableConfigurationProperties(V31GrpcProperties.class)
 public class V31GrpcWebAutoConfiguration {
 
-	/**
-	 * Reads the request's context off the incoming HTTP request.
-	 * @param properties the header names to carry
-	 * @return the filter
-	 */
 	@Bean
 	@ConditionalOnMissingBean
 	public HeaderPropagationFilter headerPropagationFilter(V31GrpcProperties properties) {

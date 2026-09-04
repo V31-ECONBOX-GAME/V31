@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.v31bank.core.response.HttpResponse;
+import org.v31bank.core.HttpResponse;
 import org.v31bank.ledger.application.dto.LedgerAccountPageQuery;
 import org.v31bank.ledger.application.port.in.LedgerAccountUseCase;
 import org.v31bank.ledger.domain.model.LedgerAccount;
@@ -41,10 +41,6 @@ import org.v31bank.ledger.presentation.dto.LedgerAccountResponse;
 
 /**
  * REST endpoints for managing ledger accounts.
- * <p>
- * Commands come back from the use case as an {@link HttpResponse} already carrying the
- * verdict, so this layer converts the payload to the wire record and puts the matching
- * status on the response.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -80,11 +76,6 @@ public class LedgerAccountController {
 			.orElseGet(() -> error(HttpStatus.NOT_FOUND.value(), "No ledger account exists with id " + id));
 	}
 
-	/**
-	 * Return a page of records, newest first.
-	 * @param query the filters and the pagination request
-	 * @return the page of matching records
-	 */
 	@GetMapping
 	public HttpResponse<List<LedgerAccountResponse>> page(LedgerAccountPageQuery query) {
 		return this.ledgerAccountInputPort.page(query)
@@ -98,12 +89,6 @@ public class LedgerAccountController {
 				request.status()));
 	}
 
-	/**
-	 * Answer a delete with the envelope carrying the record that was removed, rather than
-	 * a bare {@code 204}, so that this endpoint is parsed like every other one.
-	 * @param id the record to delete
-	 * @return the response to send
-	 */
 	@DeleteMapping("/{id}")
 	public ResponseEntity<HttpResponse<LedgerAccountResponse>> delete(@PathVariable UUID id) {
 		return toResponseEntity(this.ledgerAccountInputPort.delete(id));
@@ -114,11 +99,6 @@ public class LedgerAccountController {
 		return ResponseEntity.status(statusOf(result)).body(result.map(LedgerAccountResponse::from));
 	}
 
-	/**
-	 * Recover the HTTP status belonging to an outcome.
-	 * @param result the outcome to place
-	 * @return the status to answer with
-	 */
 	private static int statusOf(HttpResponse<?> result) {
 		return result.code();
 	}

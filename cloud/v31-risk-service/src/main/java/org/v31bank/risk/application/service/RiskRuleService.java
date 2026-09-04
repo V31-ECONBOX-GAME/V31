@@ -24,7 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.v31bank.core.response.HttpResponse;
+import org.v31bank.core.HttpResponse;
 import org.v31bank.risk.application.dto.RiskRulePageQuery;
 import org.v31bank.risk.application.port.in.RiskRuleUseCase;
 import org.v31bank.risk.application.port.out.RiskRulePort;

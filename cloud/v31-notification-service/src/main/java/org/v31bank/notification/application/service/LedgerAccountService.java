@@ -22,17 +22,13 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import org.v31bank.core.response.HttpResponse;
+import org.v31bank.core.HttpResponse;
 import org.v31bank.notification.application.dto.LedgerAccountSummary;
 import org.v31bank.notification.application.port.in.LedgerAccountUseCase;
 import org.v31bank.notification.application.port.out.LedgerAccountPort;
 
 /**
  * Default {@link LedgerAccountUseCase} implementation.
- * <p>
- * No {@code @Transactional}: nothing here touches a database, and the work is a call to
- * another service. A transaction held open around a remote call is a connection held for
- * as long as that service takes to answer.
  *
  * @author Xander Wang
  * @since 0.2.0

@@ -29,19 +29,6 @@ import org.v31bank.ledger.domain.model.LedgerAccount;
 
 /**
  * Where the wire contract and the domain model meet.
- * <p>
- * Neither knows about the other, which is the point: the proto file can gain a field
- * without the domain changing, and the domain can be reshaped without breaking a caller
- * compiled against an older copy of the contract. Everything that would otherwise couple
- * them is spent here.
- *
- * <h2>Enums do not map by name</h2>
- *
- * Proto3 requires every enum to have a zero value, and gives it to whatever is listed
- * first unless one is reserved for "not set". This contract reserves one, so the names
- * differ from the domain's by a prefix and by that extra member. Translating by
- * {@code valueOf} would work until the day someone reorders the proto, so the mapping is
- * written out.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -51,11 +38,6 @@ public final class LedgerAccountProtos {
 	private LedgerAccountProtos() {
 	}
 
-	/**
-	 * Render an account for the wire.
-	 * @param account the account to render
-	 * @return the message
-	 */
 	public static org.v31bank.ledger.api.v1.LedgerAccount toProto(LedgerAccount account) {
 		org.v31bank.ledger.api.v1.LedgerAccount.Builder builder = org.v31bank.ledger.api.v1.LedgerAccount.newBuilder()
 			.setId(account.getId().toString())
@@ -89,12 +71,6 @@ public final class LedgerAccountProtos {
 		};
 	}
 
-	/**
-	 * Read a type off the wire.
-	 * @param type the value received
-	 * @return the type, or {@code null} when the caller left it unset — which the caller
-	 * is entitled to do, and which each request decides the meaning of
-	 */
 	public static LedgerAccountType fromProto(org.v31bank.ledger.api.v1.LedgerAccountType type) {
 		return switch (type) {
 			case LEDGER_ACCOUNT_TYPE_ASSET -> LedgerAccountType.ASSET;
@@ -102,7 +78,6 @@ public final class LedgerAccountProtos {
 			case LEDGER_ACCOUNT_TYPE_EQUITY -> LedgerAccountType.EQUITY;
 			case LEDGER_ACCOUNT_TYPE_REVENUE -> LedgerAccountType.REVENUE;
 			case LEDGER_ACCOUNT_TYPE_EXPENSE -> LedgerAccountType.EXPENSE;
-			// Unset, or a member added by a newer contract than this build knows.
 			default -> null;
 		};
 	}
@@ -115,15 +90,6 @@ public final class LedgerAccountProtos {
 		};
 	}
 
-	/**
-	 * Read an identifier off the wire, refusing anything that is not one.
-	 * <p>
-	 * The field is a string on the wire because protobuf has no UUID, so this is the
-	 * boundary where that string has to become an identifier or be rejected.
-	 * @param id the value received
-	 * @return the identifier
-	 * @throws ResponseStatusException if it is not a UUID
-	 */
 	public static UUID toUuid(String id) {
 		try {
 			return UUID.fromString(id);

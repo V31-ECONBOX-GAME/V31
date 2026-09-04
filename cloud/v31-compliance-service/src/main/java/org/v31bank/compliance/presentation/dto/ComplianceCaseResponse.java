@@ -23,20 +23,6 @@ import org.v31bank.compliance.domain.constant.ComplianceCaseStatus;
 import org.v31bank.compliance.domain.constant.ComplianceCaseType;
 import org.v31bank.compliance.domain.model.ComplianceCase;
 
-/**
- * API representation of a compliance case.
- *
- * @param id the identifier it was issued when it was created
- * @param caseNumber the number the case is referred to by outside the system
- * @param customerId who the case is about
- * @param type which kind it is
- * @param status where it is in its lifecycle
- * @param summary what the case is about
- * @param createdDate when it was created
- * @param lastModifiedDate when it was last changed
- * @author Xander Wang
- * @since 0.2.0
- */
 public record ComplianceCaseResponse(UUID id, String caseNumber, UUID customerId, ComplianceCaseType type,
 		ComplianceCaseStatus status, String summary, Instant createdDate, Instant lastModifiedDate) {
 

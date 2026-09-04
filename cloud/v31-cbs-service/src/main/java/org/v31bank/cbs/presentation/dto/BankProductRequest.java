@@ -27,18 +27,6 @@ import jakarta.validation.constraints.Size;
 import org.v31bank.cbs.domain.constant.BankProductCategory;
 import org.v31bank.cbs.domain.constant.BankProductStatus;
 
-/**
- * Request body for adding or updating a bank product.
- *
- * @param code the code the product is known by, unique
- * @param name the display name
- * @param category what kind of account it opens
- * @param status the status; ignored on create, where a product always starts
- * {@code DRAFT}, and left unchanged on update when {@code null}
- * @param interestRate the annual rate as a fraction, so 2.5% is {@code 0.025}
- * @author Xander Wang
- * @since 0.2.0
- */
 public record BankProductRequest(@NotBlank @Size(max = 32) String code, @NotBlank @Size(max = 100) String name,
 		@NotNull BankProductCategory category, BankProductStatus status,
 		@NotNull @PositiveOrZero @Digits(integer = 3, fraction = 8) BigDecimal interestRate) {

@@ -23,19 +23,6 @@ import org.v31bank.ledger.domain.constant.LedgerAccountStatus;
 import org.v31bank.ledger.domain.constant.LedgerAccountType;
 import org.v31bank.ledger.domain.model.LedgerAccount;
 
-/**
- * API representation of a ledger account.
- *
- * @param id the identifier it was issued when it was created
- * @param code the code it is known by, unique within the service
- * @param name what to call it
- * @param type which kind it is
- * @param status where it is in its lifecycle
- * @param createdDate when it was created
- * @param lastModifiedDate when it was last changed
- * @author Xander Wang
- * @since 0.2.0
- */
 public record LedgerAccountResponse(UUID id, String code, String name, LedgerAccountType type,
 		LedgerAccountStatus status, Instant createdDate, Instant lastModifiedDate) {
 

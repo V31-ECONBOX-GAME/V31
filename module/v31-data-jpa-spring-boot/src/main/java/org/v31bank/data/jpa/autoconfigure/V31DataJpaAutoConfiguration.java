@@ -26,12 +26,10 @@ import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-import org.v31bank.data.jpa.audit.FixedAuditorAware;
+import org.v31bank.data.jpa.FixedAuditorAware;
 
 /**
- * {@link AutoConfiguration Auto-configuration} for V31 Data JPA support: enables JPA
- * auditing and registers a fallback {@link AuditorAware} so audit fields on
- * {@link org.v31bank.data.jpa.domain.BaseEntity} are populated automatically.
+ * {@link AutoConfiguration Auto-configuration} for V31 Data JPA.
  *
  * @author Xander Wang
  * @since 0.2.0

@@ -20,37 +20,22 @@ import java.util.UUID;
 
 import org.v31bank.compliance.domain.constant.ComplianceCaseStatus;
 import org.v31bank.compliance.domain.constant.ComplianceCaseType;
-import org.v31bank.core.request.PageQuery;
+import org.v31bank.core.PageQuery;
 
 /**
  * Paginated compliance case query with optional filters, using one-based page numbering.
- * <p>
- * The pagination itself comes from {@link PageQuery}; {@code JooqPages} turns it into a
- * limit and an offset.
  *
  * @author Xander Wang
  * @since 0.2.0
  */
 public class ComplianceCasePageQuery extends PageQuery {
 
-	/**
-	 * Case number fragment to match, case-insensitive.
-	 */
 	private String caseNumber;
 
-	/**
-	 * Return only the cases opened against this customer.
-	 */
 	private UUID customerId;
 
-	/**
-	 * Type to match.
-	 */
 	private ComplianceCaseType type;
 
-	/**
-	 * Status to match.
-	 */
 	private ComplianceCaseStatus status;
 
 	public String getCaseNumber() {

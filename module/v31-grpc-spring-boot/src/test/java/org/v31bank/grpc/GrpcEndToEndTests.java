@@ -49,13 +49,6 @@ import org.springframework.grpc.server.exception.GrpcExceptionHandlerInterceptor
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import org.v31bank.grpc.client.GrpcErrors;
-import org.v31bank.grpc.client.HeaderPropagationClientInterceptor;
-import org.v31bank.grpc.context.RequestContext;
-import org.v31bank.grpc.server.HeaderPropagationServerInterceptor;
-import org.v31bank.grpc.server.RefusalGrpcExceptionHandler;
-import org.v31bank.grpc.server.UnexpectedExceptionGrpcExceptionHandler;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 

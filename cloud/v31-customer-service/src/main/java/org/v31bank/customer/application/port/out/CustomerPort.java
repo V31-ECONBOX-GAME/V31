@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.v31bank.core.request.PageQuery;
-import org.v31bank.core.response.HttpResponse;
+import org.v31bank.core.HttpResponse;
+import org.v31bank.core.PageQuery;
 import org.v31bank.customer.domain.constant.CustomerStatus;
 import org.v31bank.customer.domain.model.Customer;
 
@@ -37,13 +37,6 @@ public interface CustomerPort {
 
 	Optional<Customer> findById(UUID id);
 
-	/**
-	 * Find a page of customers, optionally filtered.
-	 * @param email email fragment to match, or {@code null} for no filter
-	 * @param status status to match, or {@code null} for no filter
-	 * @param pageQuery the pagination request
-	 * @return the page of matching customers, newest first
-	 */
 	HttpResponse<List<Customer>> findPage(String email, CustomerStatus status, PageQuery pageQuery);
 
 	void delete(Customer customer);

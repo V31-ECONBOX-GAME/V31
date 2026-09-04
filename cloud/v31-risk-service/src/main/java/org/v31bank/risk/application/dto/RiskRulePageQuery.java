@@ -16,7 +16,7 @@
 
 package org.v31bank.risk.application.dto;
 
-import org.v31bank.core.request.PageQuery;
+import org.v31bank.core.PageQuery;
 import org.v31bank.risk.domain.constant.RiskRuleStatus;
 import org.v31bank.risk.domain.constant.RiskSeverity;
 
@@ -28,19 +28,10 @@ import org.v31bank.risk.domain.constant.RiskSeverity;
  */
 public class RiskRulePageQuery extends PageQuery {
 
-	/**
-	 * Code fragment to match, case-insensitive.
-	 */
 	private String code;
 
-	/**
-	 * Severity to match.
-	 */
 	private RiskSeverity severity;
 
-	/**
-	 * Status to match.
-	 */
 	private RiskRuleStatus status;
 
 	public String getCode() {

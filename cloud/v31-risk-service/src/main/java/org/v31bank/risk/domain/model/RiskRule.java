@@ -23,39 +23,26 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
-import org.v31bank.data.jpa.domain.BaseEntity;
+import org.v31bank.data.jpa.Audited;
 import org.v31bank.risk.domain.constant.RiskRuleStatus;
 import org.v31bank.risk.domain.constant.RiskSeverity;
 
 /**
  * A rule that decides whether an operation looks like something to stop.
- * <p>
- * Rules are held as data rather than code so that raising a threshold during an incident
- * does not need a deployment — and so that what was in force at the time a decision was
- * made can be reconstructed afterwards.
  *
  * @author Xander Wang
  * @since 0.2.0
  */
 @Entity
 @Table(name = "risk_rule", uniqueConstraints = @UniqueConstraint(name = "uk_risk_rule_code", columnNames = "code"))
-public class RiskRule extends BaseEntity {
+public class RiskRule extends Audited {
 
-	/**
-	 * The code the rule is known by, unique.
-	 */
 	@Column(name = "code", length = 32, nullable = false)
 	private String code;
 
-	/**
-	 * The display name.
-	 */
 	@Column(name = "name", length = 100, nullable = false)
 	private String name;
 
-	/**
-	 * How hard a match is acted on.
-	 */
 	@Enumerated(EnumType.STRING)
 	@Column(name = "severity", length = 20, nullable = false)
 	private RiskSeverity severity;

@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.v31bank.core.response.HttpResponse;
+import org.v31bank.core.HttpResponse;
 import org.v31bank.customer.application.dto.CustomerCategoryPageQuery;
 import org.v31bank.customer.application.port.in.CustomerCategoryUseCase;
 import org.v31bank.customer.domain.constant.CustomerCategoryStatus;
@@ -43,11 +43,6 @@ import org.v31bank.customer.presentation.dto.CustomerCategoryResponse;
 
 /**
  * REST endpoints for managing the customer category hierarchy.
- * <p>
- * Commands come back from the use case as an {@link HttpResponse} already carrying the
- * verdict, so this layer converts the payload from the domain model to the wire record
- * and puts the matching status on the response. It does not decide the outcome, and it
- * does not restate it.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -83,26 +78,12 @@ public class CustomerCategoryController {
 			.orElseGet(() -> error(HttpStatus.NOT_FOUND.value(), "No customer category exists with id " + id));
 	}
 
-	/**
-	 * Return a flat page of categories across the hierarchy. Pass {@code rootOnly} or
-	 * {@code parentId} to page through a single level.
-	 * @param query the filters and the pagination request
-	 * @return the page of matching categories
-	 */
 	@GetMapping
 	public HttpResponse<List<CustomerCategoryResponse>> page(CustomerCategoryPageQuery query) {
 		return this.customerCategoryInputPort.page(query)
 			.map((records) -> records.stream().map(CustomerCategoryResponse::from).toList());
 	}
 
-	/**
-	 * Return the hierarchy as nested nodes. Not paginated: a page of a tree would cut
-	 * arbitrary branches, so callers that need pagination use the flat endpoint with
-	 * {@code parentId} and expand one level at a time.
-	 * @param rootId the subtree to return, or {@code null} for every root
-	 * @param status status to match, or {@code null} for no filter
-	 * @return the root nodes, with descendants attached
-	 */
 	@GetMapping("/tree")
 	public HttpResponse<List<CustomerCategoryResponse>> tree(@RequestParam(required = false) UUID rootId,
 			@RequestParam(required = false) CustomerCategoryStatus status) {
@@ -119,33 +100,16 @@ public class CustomerCategoryController {
 				request.parentId(), request.sortOrder(), request.status()));
 	}
 
-	/**
-	 * Answer a delete with the envelope carrying the node that was removed, rather than a
-	 * bare {@code 204}, so that this endpoint is parsed like every other one.
-	 * @param id the category to delete
-	 * @return the response to send
-	 */
 	@DeleteMapping("/{id}")
 	public ResponseEntity<HttpResponse<CustomerCategoryResponse>> delete(@PathVariable UUID id) {
 		return toResponseEntity(this.customerCategoryInputPort.delete(id));
 	}
 
-	/**
-	 * Send a command outcome, converting its payload to the wire record and putting the
-	 * status that belongs with its code on the response.
-	 * @param result the outcome the use case reported
-	 * @return the response to send
-	 */
 	private static ResponseEntity<HttpResponse<CustomerCategoryResponse>> toResponseEntity(
 			HttpResponse<CustomerCategory> result) {
 		return ResponseEntity.status(statusOf(result)).body(result.map(CustomerCategoryResponse::from));
 	}
 
-	/**
-	 * Recover the HTTP status belonging to an outcome.
-	 * @param result the outcome to place
-	 * @return the status to answer with
-	 */
 	private static int statusOf(HttpResponse<?> result) {
 		return result.code();
 	}

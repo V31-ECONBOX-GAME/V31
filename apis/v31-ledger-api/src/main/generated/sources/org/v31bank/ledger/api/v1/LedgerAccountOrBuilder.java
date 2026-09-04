@@ -7,94 +7,101 @@ package org.v31bank.ledger.api.v1;
 
 @com.google.protobuf.Generated
 public interface LedgerAccountOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:v31.ledger.v1.LedgerAccount)
-    com.google.protobuf.MessageOrBuilder {
+		// @@protoc_insertion_point(interface_extends:v31.ledger.v1.LedgerAccount)
+		com.google.protobuf.MessageOrBuilder {
 
-  /**
-   * <code>string id = 1 [json_name = "id"];</code>
-   * @return The id.
-   */
-  java.lang.String getId();
-  /**
-   * <code>string id = 1 [json_name = "id"];</code>
-   * @return The bytes for id.
-   */
-  com.google.protobuf.ByteString
-      getIdBytes();
+	/**
+	 * <code>string id = 1 [json_name = "id"];</code>
+	 * @return The id.
+	 */
+	java.lang.String getId();
 
-  /**
-   * <code>string code = 2 [json_name = "code"];</code>
-   * @return The code.
-   */
-  java.lang.String getCode();
-  /**
-   * <code>string code = 2 [json_name = "code"];</code>
-   * @return The bytes for code.
-   */
-  com.google.protobuf.ByteString
-      getCodeBytes();
+	/**
+	 * <code>string id = 1 [json_name = "id"];</code>
+	 * @return The bytes for id.
+	 */
+	com.google.protobuf.ByteString getIdBytes();
 
-  /**
-   * <code>string name = 3 [json_name = "name"];</code>
-   * @return The name.
-   */
-  java.lang.String getName();
-  /**
-   * <code>string name = 3 [json_name = "name"];</code>
-   * @return The bytes for name.
-   */
-  com.google.protobuf.ByteString
-      getNameBytes();
+	/**
+	 * <code>string code = 2 [json_name = "code"];</code>
+	 * @return The code.
+	 */
+	java.lang.String getCode();
 
-  /**
-   * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
-   * @return The enum numeric value on the wire for type.
-   */
-  int getTypeValue();
-  /**
-   * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
-   * @return The type.
-   */
-  org.v31bank.ledger.api.v1.LedgerAccountType getType();
+	/**
+	 * <code>string code = 2 [json_name = "code"];</code>
+	 * @return The bytes for code.
+	 */
+	com.google.protobuf.ByteString getCodeBytes();
 
-  /**
-   * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
-   * @return The enum numeric value on the wire for status.
-   */
-  int getStatusValue();
-  /**
-   * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
-   * @return The status.
-   */
-  org.v31bank.ledger.api.v1.LedgerAccountStatus getStatus();
+	/**
+	 * <code>string name = 3 [json_name = "name"];</code>
+	 * @return The name.
+	 */
+	java.lang.String getName();
 
-  /**
-   * <code>.google.protobuf.Timestamp created_date = 6 [json_name = "createdDate"];</code>
-   * @return Whether the createdDate field is set.
-   */
-  boolean hasCreatedDate();
-  /**
-   * <code>.google.protobuf.Timestamp created_date = 6 [json_name = "createdDate"];</code>
-   * @return The createdDate.
-   */
-  com.google.protobuf.Timestamp getCreatedDate();
-  /**
-   * <code>.google.protobuf.Timestamp created_date = 6 [json_name = "createdDate"];</code>
-   */
-  com.google.protobuf.TimestampOrBuilder getCreatedDateOrBuilder();
+	/**
+	 * <code>string name = 3 [json_name = "name"];</code>
+	 * @return The bytes for name.
+	 */
+	com.google.protobuf.ByteString getNameBytes();
 
-  /**
-   * <code>.google.protobuf.Timestamp last_modified_date = 7 [json_name = "lastModifiedDate"];</code>
-   * @return Whether the lastModifiedDate field is set.
-   */
-  boolean hasLastModifiedDate();
-  /**
-   * <code>.google.protobuf.Timestamp last_modified_date = 7 [json_name = "lastModifiedDate"];</code>
-   * @return The lastModifiedDate.
-   */
-  com.google.protobuf.Timestamp getLastModifiedDate();
-  /**
-   * <code>.google.protobuf.Timestamp last_modified_date = 7 [json_name = "lastModifiedDate"];</code>
-   */
-  com.google.protobuf.TimestampOrBuilder getLastModifiedDateOrBuilder();
+	/**
+	 * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
+	 * @return The enum numeric value on the wire for type.
+	 */
+	int getTypeValue();
+
+	/**
+	 * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
+	 * @return The type.
+	 */
+	org.v31bank.ledger.api.v1.LedgerAccountType getType();
+
+	/**
+	 * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
+	 * @return The enum numeric value on the wire for status.
+	 */
+	int getStatusValue();
+
+	/**
+	 * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
+	 * @return The status.
+	 */
+	org.v31bank.ledger.api.v1.LedgerAccountStatus getStatus();
+
+	/**
+	 * <code>.google.protobuf.Timestamp created_date = 6 [json_name = "createdDate"];</code>
+	 * @return Whether the createdDate field is set.
+	 */
+	boolean hasCreatedDate();
+
+	/**
+	 * <code>.google.protobuf.Timestamp created_date = 6 [json_name = "createdDate"];</code>
+	 * @return The createdDate.
+	 */
+	com.google.protobuf.Timestamp getCreatedDate();
+
+	/**
+	 * <code>.google.protobuf.Timestamp created_date = 6 [json_name = "createdDate"];</code>
+	 */
+	com.google.protobuf.TimestampOrBuilder getCreatedDateOrBuilder();
+
+	/**
+	 * <code>.google.protobuf.Timestamp last_modified_date = 7 [json_name = "lastModifiedDate"];</code>
+	 * @return Whether the lastModifiedDate field is set.
+	 */
+	boolean hasLastModifiedDate();
+
+	/**
+	 * <code>.google.protobuf.Timestamp last_modified_date = 7 [json_name = "lastModifiedDate"];</code>
+	 * @return The lastModifiedDate.
+	 */
+	com.google.protobuf.Timestamp getLastModifiedDate();
+
+	/**
+	 * <code>.google.protobuf.Timestamp last_modified_date = 7 [json_name = "lastModifiedDate"];</code>
+	 */
+	com.google.protobuf.TimestampOrBuilder getLastModifiedDateOrBuilder();
+
 }

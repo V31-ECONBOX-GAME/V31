@@ -25,18 +25,6 @@ import jakarta.validation.constraints.Size;
 import org.v31bank.compliance.domain.constant.ComplianceCaseStatus;
 import org.v31bank.compliance.domain.constant.ComplianceCaseType;
 
-/**
- * Request body for opening or updating a compliance case.
- *
- * @param caseNumber the reference the case is known by, unique
- * @param customerId the customer under investigation
- * @param type what is being investigated
- * @param status the status; ignored on create, where a case always starts {@code OPEN},
- * and left unchanged on update when {@code null}
- * @param summary why the case was opened
- * @author Xander Wang
- * @since 0.2.0
- */
 public record ComplianceCaseRequest(@NotBlank @Size(max = 32) String caseNumber, @NotNull UUID customerId,
 		@NotNull ComplianceCaseType type, ComplianceCaseStatus status, @Size(max = 500) String summary) {
 

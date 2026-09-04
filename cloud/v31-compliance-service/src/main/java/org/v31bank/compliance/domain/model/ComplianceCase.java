@@ -25,11 +25,6 @@ import org.v31bank.compliance.domain.constant.ComplianceCaseType;
 /**
  * An investigation opened against a customer — a failed identity check, a transfer that
  * matched a laundering pattern, a name that hit a sanctions list.
- * <p>
- * Unlike the JPA services, this model carries no persistence annotations and no mapped
- * superclass. jOOQ generates its own record per table, so the domain stays a plain object
- * and the adapter maps between the two. The audit fields are present but never set here:
- * they are filled in as the row is written, by the listener the jOOQ starter registers.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -38,10 +33,6 @@ public class ComplianceCase {
 
 	private UUID id;
 
-	/**
-	 * Reference the case is known by outside the system, unique and quoted in
-	 * correspondence with regulators.
-	 */
 	private String caseNumber;
 
 	private UUID customerId;

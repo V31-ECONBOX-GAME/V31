@@ -23,7 +23,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.v31bank.core.response.HttpResponse;
+import org.v31bank.core.HttpResponse;
 import org.v31bank.customer.application.dto.CustomerPageQuery;
 import org.v31bank.customer.application.port.in.CustomerUseCase;
 import org.v31bank.customer.application.port.out.CustomerPort;
@@ -71,9 +71,6 @@ public class CustomerService implements CustomerUseCase {
 		return this.customerRepository.findById(id).map((customer) -> {
 			customer.setEmail(email);
 			customer.setFullName(fullName);
-			// Left alone when absent, matching every other record in the platform: a
-			// caller correcting a spelling should not have to restate the status, and
-			// writing the null through reaches a column that does not accept one.
 			if (status != null) {
 				customer.setStatus(status);
 			}

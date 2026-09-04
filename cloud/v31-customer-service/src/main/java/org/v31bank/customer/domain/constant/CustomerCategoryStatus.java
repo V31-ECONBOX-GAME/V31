@@ -24,14 +24,8 @@ package org.v31bank.customer.domain.constant;
  */
 public enum CustomerCategoryStatus {
 
-	/**
-	 * Offered when a customer is being categorised.
-	 */
 	ENABLED,
 
-	/**
-	 * No longer offered, but still recorded against whoever is already in it.
-	 */
 	DISABLED
 
 }

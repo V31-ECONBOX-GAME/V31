@@ -24,20 +24,10 @@ package org.v31bank.cbs.domain.constant;
  */
 public enum BankProductStatus {
 
-	/**
-	 * Being prepared, and not offered to customers yet.
-	 */
 	DRAFT,
 
-	/**
-	 * On sale: new accounts can be opened against it.
-	 */
 	ACTIVE,
 
-	/**
-	 * Withdrawn from sale. Accounts already opened against it carry on, which is why a
-	 * withdrawn product is kept rather than deleted.
-	 */
 	WITHDRAWN
 
 }

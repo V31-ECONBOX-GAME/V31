@@ -25,7 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.server.ResponseStatusException;
 
-import org.v31bank.core.response.HttpResponse;
+import org.v31bank.core.HttpResponse;
 import org.v31bank.ledger.api.v1.CreateLedgerAccountRequest;
 import org.v31bank.ledger.api.v1.CreateLedgerAccountResponse;
 import org.v31bank.ledger.api.v1.DeleteLedgerAccountRequest;
@@ -44,19 +44,6 @@ import org.v31bank.ledger.infra.grpc.adapter.LedgerAccountProtos;
 
 /**
  * The chart of accounts, served over gRPC.
- * <p>
- * A second way in to the same use cases the REST controller calls — not a second
- * implementation of them. Nothing is decided here: the request is translated, the use
- * case is asked, and the outcome is translated back.
- *
- * <h2>How a refusal becomes a status</h2>
- *
- * The use cases report an outcome rather than throwing, because that is what suits an
- * HTTP response. gRPC has no envelope: a call either returns its message or fails with a
- * status. So a refused outcome is raised as an {@link ResponseStatusException} here, and
- * the handler the gRPC starter registers turns it into a status carrying the same code
- * the REST layer would have put in the envelope. A caller therefore sees the same
- * {@code CONFLICT} either way.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -107,8 +94,6 @@ public class LedgerAccountGrpcService extends LedgerAccountServiceGrpc.LedgerAcc
 		query.setType(LedgerAccountProtos.fromProto(request.getType()));
 		query.setStatus(LedgerAccountProtos.fromProto(request.getStatus()));
 		HttpResponse<List<LedgerAccount>> page = this.ledgerAccountInputPort.page(query);
-		// The response carries the page and the total; the rest is what the caller asked
-		// for, which only this side of the call still has.
 		int pageNumber = query.normalizedPageNumber();
 		int pageSize = query.normalizedPageSize();
 		int totalPages = (int) Math.ceilDiv(page.total(), pageSize);
@@ -145,11 +130,6 @@ public class LedgerAccountGrpcService extends LedgerAccountServiceGrpc.LedgerAcc
 					.build());
 	}
 
-	/**
-	 * Take the account out of a successful outcome, or raise the refusal.
-	 * @param result what the use case reported
-	 * @return the account
-	 */
 	private static LedgerAccount unwrap(HttpResponse<LedgerAccount> result) {
 		if (!result.succeeded()) {
 			throw new ResponseStatusException(HttpStatusCode.valueOf(result.code()), result.message());

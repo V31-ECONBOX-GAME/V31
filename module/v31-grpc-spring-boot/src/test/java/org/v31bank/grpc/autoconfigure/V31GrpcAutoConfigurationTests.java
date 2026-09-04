@@ -23,11 +23,11 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.grpc.client.interceptor.DefaultDeadlineSetupClientInterceptor;
 import org.springframework.grpc.server.exception.GrpcExceptionHandler;
 
-import org.v31bank.grpc.client.HeaderPropagationClientInterceptor;
-import org.v31bank.grpc.server.HeaderPropagationServerInterceptor;
-import org.v31bank.grpc.server.RefusalGrpcExceptionHandler;
-import org.v31bank.grpc.server.UnexpectedExceptionGrpcExceptionHandler;
-import org.v31bank.grpc.web.HeaderPropagationFilter;
+import org.v31bank.grpc.HeaderPropagationClientInterceptor;
+import org.v31bank.grpc.HeaderPropagationFilter;
+import org.v31bank.grpc.HeaderPropagationServerInterceptor;
+import org.v31bank.grpc.RefusalGrpcExceptionHandler;
+import org.v31bank.grpc.UnexpectedExceptionGrpcExceptionHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

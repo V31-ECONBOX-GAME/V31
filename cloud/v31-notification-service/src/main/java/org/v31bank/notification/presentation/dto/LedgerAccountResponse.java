@@ -21,19 +21,6 @@ import java.util.UUID;
 
 import org.v31bank.notification.application.dto.LedgerAccountSummary;
 
-/**
- * API representation of a ledger account as this service returns it.
- *
- * @param id the identifier it was issued when it was created
- * @param code the code it is known by, unique within the service
- * @param name what to call it
- * @param type which kind it is
- * @param status where it is in its lifecycle
- * @param createdDate when it was created
- * @param lastModifiedDate when it was last changed
- * @author Xander Wang
- * @since 0.2.0
- */
 public record LedgerAccountResponse(UUID id, String code, String name, String type, String status, Instant createdDate,
 		Instant lastModifiedDate) {
 

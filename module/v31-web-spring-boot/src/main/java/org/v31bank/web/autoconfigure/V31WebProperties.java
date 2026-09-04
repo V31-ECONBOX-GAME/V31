@@ -40,8 +40,6 @@ public class V31WebProperties {
 
 		/**
 		 * Whether every failure is answered with the platform's response envelope.
-		 * Turning it off restores Spring Boot's default error body, so failures no longer
-		 * match successes in shape.
 		 */
 		private boolean enabled = true;
 

@@ -24,7 +24,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 import org.v31bank.customer.domain.constant.CustomerStatus;
-import org.v31bank.data.jpa.domain.BaseEntity;
+import org.v31bank.data.jpa.Audited;
 
 /**
  * A customer of the bank.
@@ -34,7 +34,7 @@ import org.v31bank.data.jpa.domain.BaseEntity;
  */
 @Entity
 @Table(name = "customer", uniqueConstraints = @UniqueConstraint(name = "uk_customer_email", columnNames = "email"))
-public class Customer extends BaseEntity {
+public class Customer extends Audited {
 
 	@Column(name = "email", length = 320, nullable = false)
 	private String email;

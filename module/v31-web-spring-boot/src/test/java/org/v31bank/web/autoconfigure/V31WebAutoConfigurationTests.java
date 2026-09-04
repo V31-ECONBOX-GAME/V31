@@ -23,8 +23,8 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import org.v31bank.web.advice.DataAccessExceptionHandler;
-import org.v31bank.web.advice.HttpResponseExceptionHandler;
+import org.v31bank.web.DataAccessExceptionHandler;
+import org.v31bank.web.HttpResponseExceptionHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

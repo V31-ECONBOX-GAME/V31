@@ -16,7 +16,7 @@
 
 package org.v31bank.transfer.application.dto;
 
-import org.v31bank.core.request.PageQuery;
+import org.v31bank.core.PageQuery;
 import org.v31bank.transfer.domain.constant.TransferLimitStatus;
 
 /**
@@ -27,14 +27,8 @@ import org.v31bank.transfer.domain.constant.TransferLimitStatus;
  */
 public class TransferLimitPageQuery extends PageQuery {
 
-	/**
-	 * Code fragment to match, case-insensitive.
-	 */
 	private String code;
 
-	/**
-	 * Status to match.
-	 */
 	private TransferLimitStatus status;
 
 	public String getCode() {

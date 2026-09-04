@@ -25,7 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.v31bank.core.response.HttpResponse;
+import org.v31bank.core.HttpResponse;
 import org.v31bank.transfer.application.dto.TransferLimitPageQuery;
 import org.v31bank.transfer.application.port.in.TransferLimitUseCase;
 import org.v31bank.transfer.application.port.out.TransferLimitPort;

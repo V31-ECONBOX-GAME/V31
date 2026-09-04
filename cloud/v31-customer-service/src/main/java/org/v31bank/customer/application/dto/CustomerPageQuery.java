@@ -16,7 +16,7 @@
 
 package org.v31bank.customer.application.dto;
 
-import org.v31bank.core.request.PageQuery;
+import org.v31bank.core.PageQuery;
 import org.v31bank.customer.domain.constant.CustomerStatus;
 
 /**
@@ -27,14 +27,8 @@ import org.v31bank.customer.domain.constant.CustomerStatus;
  */
 public class CustomerPageQuery extends PageQuery {
 
-	/**
-	 * Email fragment to match, case-insensitive.
-	 */
 	private String email;
 
-	/**
-	 * Status to match.
-	 */
 	private CustomerStatus status;
 
 	public String getEmail() {

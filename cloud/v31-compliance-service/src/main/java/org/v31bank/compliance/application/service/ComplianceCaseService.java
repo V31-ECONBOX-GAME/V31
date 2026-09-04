@@ -30,7 +30,7 @@ import org.v31bank.compliance.application.port.out.ComplianceCasePort;
 import org.v31bank.compliance.domain.constant.ComplianceCaseStatus;
 import org.v31bank.compliance.domain.constant.ComplianceCaseType;
 import org.v31bank.compliance.domain.model.ComplianceCase;
-import org.v31bank.core.response.HttpResponse;
+import org.v31bank.core.HttpResponse;
 
 /**
  * Default {@link ComplianceCaseUseCase} implementation.
@@ -102,13 +102,6 @@ public class ComplianceCaseService implements ComplianceCaseUseCase {
 		return HttpResponse.ok(this.complianceCaseRepository.save(complianceCase));
 	}
 
-	/**
-	 * Delete a case that has not been concluded.
-	 * <p>
-	 * A closed case is kept: it records a decision that was reached and when, and a
-	 * regulator asking why an account was frozen expects to find it. Only a case still in
-	 * progress — raised in error, a duplicate of another — can be removed.
-	 */
 	@Override
 	public HttpResponse<ComplianceCase> delete(UUID id) {
 		Optional<ComplianceCase> found = this.complianceCaseRepository.findById(id);

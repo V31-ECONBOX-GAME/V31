@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.v31bank.core.response.HttpResponse;
+import org.v31bank.core.HttpResponse;
 import org.v31bank.customer.application.dto.CustomerPageQuery;
 import org.v31bank.customer.application.port.in.CustomerUseCase;
 import org.v31bank.customer.domain.model.Customer;
@@ -41,10 +41,6 @@ import org.v31bank.customer.presentation.dto.CustomerResponse;
 
 /**
  * REST endpoints for managing customers.
- * <p>
- * Every endpoint answers with an {@link HttpResponse}, so a caller parses one shape
- * whether the request succeeded or failed. The HTTP status keeps its usual meaning
- * alongside it.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -89,12 +85,6 @@ public class CustomerController {
 			.orElseGet(() -> notFound(id));
 	}
 
-	/**
-	 * Answer a delete with the envelope and no payload rather than a bare {@code 204}, so
-	 * that this endpoint is parsed like every other one.
-	 * @param id the customer to delete
-	 * @return the response to send
-	 */
 	@DeleteMapping("/{id}")
 	public ResponseEntity<HttpResponse<Void>> delete(@PathVariable UUID id) {
 		return this.customerInputPort.delete(id) ? ResponseEntity.ok(HttpResponse.ok()) : notFound(id);
@@ -104,13 +94,6 @@ public class CustomerController {
 		return error(HttpStatus.NOT_FOUND.value(), "No customer exists with id " + id);
 	}
 
-	/**
-	 * Report a failure, answering with the status the outcome carried.
-	 * @param code the status the request was refused with
-	 * @param message the message describing this occurrence
-	 * @param <T> the type this endpoint returns when it succeeds
-	 * @return the response to send
-	 */
 	private static <T> ResponseEntity<HttpResponse<T>> error(int code, String message) {
 		return ResponseEntity.status(code).body(HttpResponse.error(code, message));
 	}

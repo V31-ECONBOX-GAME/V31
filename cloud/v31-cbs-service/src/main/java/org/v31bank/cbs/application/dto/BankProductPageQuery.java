@@ -18,30 +18,18 @@ package org.v31bank.cbs.application.dto;
 
 import org.v31bank.cbs.domain.constant.BankProductCategory;
 import org.v31bank.cbs.domain.constant.BankProductStatus;
-import org.v31bank.core.request.PageQuery;
+import org.v31bank.core.PageQuery;
 
 /**
  * Paginated bank product query, using one-based page numbering.
- * <p>
- * The filters are limited to what the store can answer without reading everything. Valkey
- * has no query planner: a page comes from a sorted set kept up to date as products are
- * written, and the only filters offered are the ones that have such a set behind them. A
- * substring search over names would mean walking every key on the instance, which is why
- * it is not offered rather than offered slowly.
  *
  * @author Xander Wang
  * @since 0.2.0
  */
 public class BankProductPageQuery extends PageQuery {
 
-	/**
-	 * Category to match.
-	 */
 	private BankProductCategory category;
 
-	/**
-	 * Status to match.
-	 */
 	private BankProductStatus status;
 
 	public BankProductCategory getCategory() {

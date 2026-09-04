@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import org.v31bank.core.response.HttpResponse;
+import org.v31bank.core.HttpResponse;
 import org.v31bank.ledger.application.dto.LedgerAccountPageQuery;
 import org.v31bank.ledger.application.port.in.LedgerAccountUseCase;
 import org.v31bank.ledger.application.port.out.LedgerAccountPort;
@@ -101,20 +101,6 @@ public class LedgerAccountService implements LedgerAccountUseCase {
 		return HttpResponse.ok(this.ledgerAccountRepository.save(ledgerAccount));
 	}
 
-	/**
-	 * Check what an account may not be saved without.
-	 * <p>
-	 * Here rather than on the request record, because the REST layer is not the only way
-	 * in: a proto3 scalar has no presence, so a gRPC caller that omits a field sends an
-	 * empty string or an unspecified enum instead of nothing at all. Left to the mapping,
-	 * an empty code reaches a {@code not null} column that accepts it, and an unspecified
-	 * type reaches one that does not — the first stored, the second an INTERNAL the
-	 * caller cannot act on.
-	 * @param code the code to check
-	 * @param name the name to check
-	 * @param type the type to check
-	 * @return the refusal, or {@code null} when there is nothing to refuse
-	 */
 	private static HttpResponse<LedgerAccount> validate(String code, String name, LedgerAccountType type) {
 		if (!StringUtils.hasText(code)) {
 			return HttpResponse.error(HttpStatus.BAD_REQUEST.value(), "Code is required");

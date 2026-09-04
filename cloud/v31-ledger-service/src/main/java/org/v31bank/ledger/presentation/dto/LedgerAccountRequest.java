@@ -23,17 +23,6 @@ import jakarta.validation.constraints.Size;
 import org.v31bank.ledger.domain.constant.LedgerAccountStatus;
 import org.v31bank.ledger.domain.constant.LedgerAccountType;
 
-/**
- * Request body for creating or updating a ledger account.
- *
- * @param code the code, unique
- * @param name the display name
- * @param type the type
- * @param status the status; ignored on create, where a record always starts
- * {@code ACTIVE}, and left unchanged on update when {@code null}
- * @author Xander Wang
- * @since 0.2.0
- */
 public record LedgerAccountRequest(@NotBlank @Size(max = 32) String code, @NotBlank @Size(max = 100) String name,
 		@NotNull LedgerAccountType type, LedgerAccountStatus status) {
 

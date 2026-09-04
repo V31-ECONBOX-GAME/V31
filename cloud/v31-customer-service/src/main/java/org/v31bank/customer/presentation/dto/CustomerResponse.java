@@ -22,18 +22,6 @@ import java.util.UUID;
 import org.v31bank.customer.domain.constant.CustomerStatus;
 import org.v31bank.customer.domain.model.Customer;
 
-/**
- * API representation of a customer.
- *
- * @param id the identifier it was issued when it was created
- * @param email the address it is reached at
- * @param fullName what to call the customer
- * @param status where it is in its lifecycle
- * @param createdDate when it was created
- * @param lastModifiedDate when it was last changed
- * @author Xander Wang
- * @since 0.2.0
- */
 public record CustomerResponse(UUID id, String email, String fullName, CustomerStatus status, Instant createdDate,
 		Instant lastModifiedDate) {
 

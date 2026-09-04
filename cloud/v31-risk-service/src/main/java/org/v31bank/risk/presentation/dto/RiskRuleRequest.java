@@ -23,17 +23,6 @@ import jakarta.validation.constraints.Size;
 import org.v31bank.risk.domain.constant.RiskRuleStatus;
 import org.v31bank.risk.domain.constant.RiskSeverity;
 
-/**
- * Request body for creating or updating a risk rule.
- *
- * @param code the code, unique
- * @param name the display name
- * @param severity the severity
- * @param status the status; ignored on create, where a record always starts
- * {@code DRAFT}, and left unchanged on update when {@code null}
- * @author Xander Wang
- * @since 0.2.0
- */
 public record RiskRuleRequest(@NotBlank @Size(max = 32) String code, @NotBlank @Size(max = 100) String name,
 		@NotNull RiskSeverity severity, RiskRuleStatus status) {
 

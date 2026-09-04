@@ -40,9 +40,9 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.SerializationException;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import org.v31bank.data.valkey.cache.ValkeyCacheErrorHandler;
-import org.v31bank.data.valkey.lock.ValkeyLock;
-import org.v31bank.data.valkey.util.ValkeyKeys;
+import org.v31bank.data.valkey.ValkeyCacheErrorHandler;
+import org.v31bank.data.valkey.ValkeyKeys;
+import org.v31bank.data.valkey.ValkeyLock;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;

@@ -23,19 +23,6 @@ import org.v31bank.notification.domain.constant.NotificationChannel;
 import org.v31bank.notification.domain.constant.NotificationTemplateStatus;
 import org.v31bank.notification.domain.model.NotificationTemplate;
 
-/**
- * API representation of a notification template.
- *
- * @param id the identifier it was issued when it was created
- * @param code the code it is known by, unique within the service
- * @param name what to call it
- * @param channel how the notification is delivered
- * @param status where it is in its lifecycle
- * @param createdDate when it was created
- * @param lastModifiedDate when it was last changed
- * @author Xander Wang
- * @since 0.2.0
- */
 public record NotificationTemplateResponse(UUID id, String code, String name, NotificationChannel channel,
 		NotificationTemplateStatus status, Instant createdDate, Instant lastModifiedDate) {
 

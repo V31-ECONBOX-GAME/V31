@@ -23,50 +23,25 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
-import org.v31bank.data.jpa.domain.BaseEntity;
+import org.v31bank.data.jpa.Audited;
 import org.v31bank.ledger.domain.constant.LedgerAccountStatus;
 import org.v31bank.ledger.domain.constant.LedgerAccountType;
 
-/**
- * An account in the chart of accounts — the set of buckets every posting lands in.
- * <p>
- * The chart is what makes a balance sheet possible: each account has a side it normally
- * sits on, and the whole ledger balances only because every posting touches one of each.
- *
- * @author Xander Wang
- * @since 0.2.0
- */
 @Entity
 @Table(name = "ledger_account",
 		uniqueConstraints = @UniqueConstraint(name = "uk_ledger_account_code", columnNames = "code"))
-public class LedgerAccount extends BaseEntity {
+public class LedgerAccount extends Audited {
 
-	/**
-	 * The longest code the column holds. Declared here so the mapping, the use case and
-	 * the request record all read the same number.
-	 */
 	public static final int CODE_MAX_LENGTH = 32;
 
-	/**
-	 * The longest name the column holds.
-	 */
 	public static final int NAME_MAX_LENGTH = 100;
 
-	/**
-	 * The account code, unique and quoted in every posting.
-	 */
 	@Column(name = "code", length = CODE_MAX_LENGTH, nullable = false)
 	private String code;
 
-	/**
-	 * The display name.
-	 */
 	@Column(name = "name", length = NAME_MAX_LENGTH, nullable = false)
 	private String name;
 
-	/**
-	 * Which side of the balance sheet it belongs to.
-	 */
 	@Enumerated(EnumType.STRING)
 	@Column(name = "type", length = 20, nullable = false)
 	private LedgerAccountType type;

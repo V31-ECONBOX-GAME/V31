@@ -30,16 +30,10 @@ import org.springframework.grpc.client.GlobalClientInterceptor;
 import org.springframework.grpc.client.GrpcChannelFactory;
 import org.springframework.grpc.client.interceptor.DefaultDeadlineSetupClientInterceptor;
 
-import org.v31bank.grpc.client.HeaderPropagationClientInterceptor;
+import org.v31bank.grpc.HeaderPropagationClientInterceptor;
 
 /**
- * {@link AutoConfiguration Auto-configuration} for the calls a V31 service makes: every
- * one gets a deadline, and the headers listed for propagation are carried onward.
- * <p>
- * gRPC imposes no deadline, so a call to a service answering nothing waits until the
- * connection breaks — under load, how one unhealthy service exhausts the pools in front
- * of it while all of them look healthy. Spring gRPC ships the interceptor but does not
- * install it; here it is installed and removing it is the deliberate act.
+ * {@link AutoConfiguration Auto-configuration} for the calls a service makes.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -49,14 +43,6 @@ import org.v31bank.grpc.client.HeaderPropagationClientInterceptor;
 @EnableConfigurationProperties(V31GrpcProperties.class)
 public class V31GrpcClientAutoConfiguration {
 
-	/**
-	 * Applies the default deadline to any call that did not set one. Set
-	 * {@code v31.grpc.client.deadline.enabled} to {@code false} to leave calls unbounded.
-	 * @param properties the deadline to apply
-	 * @return the interceptor
-	 * @throws IllegalStateException if the configured duration is not positive, since a
-	 * deadline of zero expires every call the moment it leaves
-	 */
 	@Bean
 	@GlobalClientInterceptor
 	@ConditionalOnMissingBean
@@ -70,10 +56,6 @@ public class V31GrpcClientAutoConfiguration {
 		return new DefaultDeadlineSetupClientInterceptor(duration);
 	}
 
-	/**
-	 * Sends onward whatever the request being served arrived carrying.
-	 * @return the interceptor
-	 */
 	@Bean
 	@GlobalClientInterceptor
 	@ConditionalOnMissingBean

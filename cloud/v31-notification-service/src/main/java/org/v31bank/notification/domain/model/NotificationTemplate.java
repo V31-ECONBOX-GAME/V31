@@ -23,39 +23,21 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
-import org.v31bank.data.jpa.domain.BaseEntity;
+import org.v31bank.data.jpa.Audited;
 import org.v31bank.notification.domain.constant.NotificationChannel;
 import org.v31bank.notification.domain.constant.NotificationTemplateStatus;
 
-/**
- * The wording of a message the bank sends, held apart from the code that sends it.
- * <p>
- * Keeping it here means the text a customer reads can be corrected, translated or put
- * through legal review without touching the service that delivers it.
- *
- * @author Xander Wang
- * @since 0.2.0
- */
 @Entity
 @Table(name = "notification_template",
 		uniqueConstraints = @UniqueConstraint(name = "uk_notification_template_code", columnNames = "code"))
-public class NotificationTemplate extends BaseEntity {
+public class NotificationTemplate extends Audited {
 
-	/**
-	 * The code the template is known by, unique.
-	 */
 	@Column(name = "code", length = 32, nullable = false)
 	private String code;
 
-	/**
-	 * The display name.
-	 */
 	@Column(name = "name", length = 100, nullable = false)
 	private String name;
 
-	/**
-	 * How the message reaches the customer.
-	 */
 	@Enumerated(EnumType.STRING)
 	@Column(name = "channel", length = 20, nullable = false)
 	private NotificationChannel channel;

@@ -35,8 +35,8 @@ import org.springframework.orm.jpa.SharedEntityManagerCreator;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import org.v31bank.data.jpa.audit.FixedAuditorAware;
-import org.v31bank.data.jpa.domain.BaseEntity;
+import org.v31bank.data.jpa.Audited;
+import org.v31bank.data.jpa.FixedAuditorAware;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -138,7 +138,7 @@ class V31DataJpaAutoConfigurationTests {
 
 	@Entity
 	@Table(name = "audited_record")
-	static class AuditedRecord extends BaseEntity {
+	static class AuditedRecord extends Audited {
 
 	}
 

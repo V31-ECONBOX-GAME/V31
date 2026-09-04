@@ -16,7 +16,7 @@
 
 package org.v31bank.ledger.application.dto;
 
-import org.v31bank.core.request.PageQuery;
+import org.v31bank.core.PageQuery;
 import org.v31bank.ledger.domain.constant.LedgerAccountStatus;
 import org.v31bank.ledger.domain.constant.LedgerAccountType;
 
@@ -28,19 +28,10 @@ import org.v31bank.ledger.domain.constant.LedgerAccountType;
  */
 public class LedgerAccountPageQuery extends PageQuery {
 
-	/**
-	 * Code fragment to match, case-insensitive.
-	 */
 	private String code;
 
-	/**
-	 * Type to match.
-	 */
 	private LedgerAccountType type;
 
-	/**
-	 * Status to match.
-	 */
 	private LedgerAccountStatus status;
 
 	public String getCode() {

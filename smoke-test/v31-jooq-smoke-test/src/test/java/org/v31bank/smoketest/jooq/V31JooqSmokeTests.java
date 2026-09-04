@@ -21,8 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import org.v31bank.jooq.audit.AuditRecordListener;
-import org.v31bank.jooq.audit.AuditorSupplier;
+import org.v31bank.jooq.AuditRecordListener;
+import org.v31bank.jooq.AuditorSupplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

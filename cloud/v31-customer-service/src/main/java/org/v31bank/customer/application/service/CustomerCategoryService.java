@@ -24,14 +24,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.v31bank.core.response.HttpResponse;
+import org.v31bank.core.HttpResponse;
 import org.v31bank.customer.application.dto.CustomerCategoryPageQuery;
 import org.v31bank.customer.application.port.in.CustomerCategoryUseCase;
 import org.v31bank.customer.application.port.out.CustomerCategoryPort;
 import org.v31bank.customer.domain.constant.CustomerCategoryStatus;
 import org.v31bank.customer.domain.model.CustomerCategory;
 import org.v31bank.customer.domain.service.CustomerCategoryHierarchy;
-import org.v31bank.data.jpa.util.Trees;
+import org.v31bank.data.jpa.Trees;
 
 /**
  * Default {@link CustomerCategoryUseCase} implementation.
@@ -140,12 +140,6 @@ public class CustomerCategoryService implements CustomerCategoryUseCase {
 		return HttpResponse.ok(category);
 	}
 
-	/**
-	 * Locate a node by identifier in an already assembled tree.
-	 * @param nodes the nodes to search, along with their descendants
-	 * @param id the identifier to look for
-	 * @return the matching node, with its subtree attached
-	 */
 	private static Optional<CustomerCategory> findNode(List<CustomerCategory> nodes, UUID id) {
 		for (CustomerCategory node : nodes) {
 			if (id.equals(node.getId())) {

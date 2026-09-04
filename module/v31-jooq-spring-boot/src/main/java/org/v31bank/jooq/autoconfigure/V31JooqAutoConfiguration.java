@@ -19,7 +19,6 @@ package org.v31bank.jooq.autoconfigure;
 import java.time.Clock;
 
 import org.jooq.DSLContext;
-import org.jooq.RecordListener;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -29,16 +28,12 @@ import org.springframework.boot.jooq.autoconfigure.DefaultConfigurationCustomize
 import org.springframework.boot.jooq.autoconfigure.JooqAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
-import org.v31bank.jooq.audit.AuditRecordListener;
-import org.v31bank.jooq.audit.AuditorSupplier;
-import org.v31bank.jooq.audit.FixedAuditorSupplier;
+import org.v31bank.jooq.AuditRecordListener;
+import org.v31bank.jooq.AuditorSupplier;
+import org.v31bank.jooq.FixedAuditorSupplier;
 
 /**
- * {@link AutoConfiguration Auto-configuration} for V31 jOOQ: a {@link RecordListener}
- * that stamps the identifier and audit columns, and a fallback {@link AuditorSupplier}.
- * <p>
- * The listener is appended through a {@link DefaultConfigurationCustomizer} rather than
- * set, so one registered by the application survives.
+ * {@link AutoConfiguration Auto-configuration} for V31 jOOQ.
  *
  * @author Xander Wang
  * @since 0.2.0

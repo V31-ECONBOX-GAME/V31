@@ -37,14 +37,10 @@ import org.v31bank.cbs.application.port.in.BankProductUseCase;
 import org.v31bank.cbs.domain.model.BankProduct;
 import org.v31bank.cbs.presentation.dto.BankProductRequest;
 import org.v31bank.cbs.presentation.dto.BankProductResponse;
-import org.v31bank.core.response.HttpResponse;
+import org.v31bank.core.HttpResponse;
 
 /**
  * REST endpoints for managing the bank product catalogue.
- * <p>
- * Commands come back from the use case as an {@link HttpResponse} already carrying the
- * verdict, so this layer converts the payload from the domain model to the wire record
- * and puts the matching status on the response.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -79,12 +75,6 @@ public class BankProductController {
 			.orElseGet(() -> error(HttpStatus.NOT_FOUND.value(), "No bank product exists with id " + id));
 	}
 
-	/**
-	 * Return a page of products, newest first. Pass {@code category} or {@code status} to
-	 * narrow it.
-	 * @param query the filters and the pagination request
-	 * @return the page of matching products
-	 */
 	@GetMapping
 	public HttpResponse<List<BankProductResponse>> page(BankProductPageQuery query) {
 		return this.bankProductInputPort.page(query)
@@ -98,12 +88,6 @@ public class BankProductController {
 				request.status(), request.interestRate()));
 	}
 
-	/**
-	 * Answer a delete with the envelope carrying the product that was removed, rather
-	 * than a bare {@code 204}, so that this endpoint is parsed like every other one.
-	 * @param id the product to delete
-	 * @return the response to send
-	 */
 	@DeleteMapping("/{id}")
 	public ResponseEntity<HttpResponse<BankProductResponse>> delete(@PathVariable UUID id) {
 		return toResponseEntity(this.bankProductInputPort.delete(id));
@@ -114,11 +98,6 @@ public class BankProductController {
 		return ResponseEntity.status(statusOf(result)).body(result.map(BankProductResponse::from));
 	}
 
-	/**
-	 * Recover the HTTP status belonging to an outcome.
-	 * @param result the outcome to place
-	 * @return the status to answer with
-	 */
 	private static int statusOf(HttpResponse<?> result) {
 		return result.code();
 	}

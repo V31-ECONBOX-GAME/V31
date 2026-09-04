@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.v31bank.core.response.HttpResponse;
+import org.v31bank.core.HttpResponse;
 import org.v31bank.ledger.application.dto.LedgerAccountPageQuery;
 import org.v31bank.ledger.domain.model.LedgerAccount;
 
@@ -37,18 +37,8 @@ public interface LedgerAccountPort {
 
 	Optional<LedgerAccount> findById(UUID id);
 
-	/**
-	 * Find a page of records matching the filters carried by the query.
-	 * @param query the filters and the pagination request
-	 * @return the page of matching records
-	 */
 	HttpResponse<List<LedgerAccount>> findPage(LedgerAccountPageQuery query);
 
-	/**
-	 * Whether any record already uses the given code.
-	 * @param code the value to check
-	 * @return {@code true} if it is taken
-	 */
 	boolean existsByCode(String code);
 
 	void delete(LedgerAccount ledgerAccount);

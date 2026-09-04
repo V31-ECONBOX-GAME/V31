@@ -24,20 +24,6 @@ import org.v31bank.cbs.domain.constant.BankProductCategory;
 import org.v31bank.cbs.domain.constant.BankProductStatus;
 import org.v31bank.cbs.domain.model.BankProduct;
 
-/**
- * API representation of a bank product.
- *
- * @param id the identifier it was issued when it was created
- * @param code the code it is known by, unique within the service
- * @param name what to call it
- * @param category which kind it is
- * @param status where it is in its lifecycle
- * @param interestRate the annual rate, as a fraction rather than a percentage
- * @param createdDate when it was created
- * @param lastModifiedDate when it was last changed
- * @author Xander Wang
- * @since 0.2.0
- */
 public record BankProductResponse(UUID id, String code, String name, BankProductCategory category,
 		BankProductStatus status, BigDecimal interestRate, Instant createdDate, Instant lastModifiedDate) {
 

@@ -34,20 +34,11 @@ import org.v31bank.compliance.domain.constant.ComplianceCaseType;
 import org.v31bank.compliance.domain.model.ComplianceCase;
 import org.v31bank.compliance.infra.persistence.jooq.ComplianceCaseRecord;
 import org.v31bank.compliance.infra.persistence.jooq.ComplianceCaseTable;
-import org.v31bank.core.response.HttpResponse;
-import org.v31bank.jooq.util.JooqPages;
+import org.v31bank.core.HttpResponse;
+import org.v31bank.jooq.JooqPages;
 
 /**
  * {@link ComplianceCasePort} adapter backed by jOOQ.
- * <p>
- * Writes go through the record API — {@code insert()} and {@code update()} on an
- * updatable record — rather than through {@code dsl.insertInto(...)}, because only the
- * record API passes through the audit listener the jOOQ starter registers. A statement
- * written the other way would save the row and leave no trace of who wrote it.
- * <p>
- * This is also where the domain model and the generated-style record meet. Neither knows
- * about the other: the domain has no jOOQ types on it, and the record has no idea what a
- * {@link ComplianceCaseStatus} is — it holds the text the column stores.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -100,15 +91,6 @@ public class ComplianceCasePersistenceAdapter implements ComplianceCasePort {
 		return toDomain(record);
 	}
 
-	/**
-	 * Update the named row.
-	 * <p>
-	 * The record is built rather than fetched, and its key is marked unchanged so that it
-	 * identifies the row in the {@code where} clause instead of being written into the
-	 * {@code set} clause.
-	 * @param complianceCase the case to write, carrying the identifier of the row
-	 * @return the case as it now stands
-	 */
 	private ComplianceCase update(ComplianceCase complianceCase) {
 		ComplianceCaseRecord record = this.dsl.newRecord(CASE);
 		record.set(CASE.ID, complianceCase.getId());
@@ -118,15 +100,6 @@ public class ComplianceCasePersistenceAdapter implements ComplianceCasePort {
 		return toDomain(record);
 	}
 
-	/**
-	 * Filters carried by the query, each applied only when it was supplied.
-	 * <p>
-	 * The case number is matched with {@code containsIgnoreCase} rather than a hand-built
-	 * {@code like}, so that a {@code %} typed into the search box is matched literally
-	 * instead of turning into a wildcard that scans the table.
-	 * @param query the query to read the filters from
-	 * @return the conditions to apply, empty when nothing was filtered on
-	 */
 	private static List<Condition> conditions(ComplianceCasePageQuery query) {
 		List<Condition> conditions = new ArrayList<>();
 		if (StringUtils.hasText(query.getCaseNumber())) {

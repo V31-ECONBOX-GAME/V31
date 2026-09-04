@@ -37,14 +37,10 @@ import org.v31bank.compliance.application.port.in.ComplianceCaseUseCase;
 import org.v31bank.compliance.domain.model.ComplianceCase;
 import org.v31bank.compliance.presentation.dto.ComplianceCaseRequest;
 import org.v31bank.compliance.presentation.dto.ComplianceCaseResponse;
-import org.v31bank.core.response.HttpResponse;
+import org.v31bank.core.HttpResponse;
 
 /**
  * REST endpoints for managing compliance cases.
- * <p>
- * Commands come back from the use case as an {@link HttpResponse} already carrying the
- * verdict, so this layer converts the payload from the domain model to the wire record
- * and puts the matching status on the response.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -80,12 +76,6 @@ public class ComplianceCaseController {
 			.orElseGet(() -> error(HttpStatus.NOT_FOUND.value(), "No compliance case exists with id " + id));
 	}
 
-	/**
-	 * Return a page of cases, newest first. Pass {@code customerId}, {@code status},
-	 * {@code type} or {@code caseNumber} to narrow it.
-	 * @param query the filters and the pagination request
-	 * @return the page of matching cases
-	 */
 	@GetMapping
 	public HttpResponse<List<ComplianceCaseResponse>> page(ComplianceCasePageQuery query) {
 		return this.complianceCaseInputPort.page(query)
@@ -99,12 +89,6 @@ public class ComplianceCaseController {
 				request.type(), request.status(), request.summary()));
 	}
 
-	/**
-	 * Answer a delete with the envelope carrying the case that was removed, rather than a
-	 * bare {@code 204}, so that this endpoint is parsed like every other one.
-	 * @param id the case to delete
-	 * @return the response to send
-	 */
 	@DeleteMapping("/{id}")
 	public ResponseEntity<HttpResponse<ComplianceCaseResponse>> delete(@PathVariable UUID id) {
 		return toResponseEntity(this.complianceCaseInputPort.delete(id));
@@ -115,11 +99,6 @@ public class ComplianceCaseController {
 		return ResponseEntity.status(statusOf(result)).body(result.map(ComplianceCaseResponse::from));
 	}
 
-	/**
-	 * Recover the HTTP status belonging to an outcome.
-	 * @param result the outcome to place
-	 * @return the status to answer with
-	 */
 	private static int statusOf(HttpResponse<?> result) {
 		return result.code();
 	}

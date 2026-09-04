@@ -28,9 +28,9 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import org.v31bank.jooq.audit.AuditRecordListener;
-import org.v31bank.jooq.audit.AuditorSupplier;
-import org.v31bank.jooq.audit.FixedAuditorSupplier;
+import org.v31bank.jooq.AuditRecordListener;
+import org.v31bank.jooq.AuditorSupplier;
+import org.v31bank.jooq.FixedAuditorSupplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

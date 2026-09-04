@@ -22,16 +22,6 @@ import jakarta.validation.constraints.Size;
 
 import org.v31bank.customer.domain.constant.CustomerStatus;
 
-/**
- * Request body for creating or updating a customer.
- *
- * @param email the customer email
- * @param fullName the customer full name
- * @param status the status; ignored on create, where a customer always starts
- * {@code ACTIVE}, and left unchanged on update when {@code null}
- * @author Xander Wang
- * @since 0.2.0
- */
 public record CustomerRequest(@NotBlank @Email @Size(max = 320) String email,
 		@NotBlank @Size(max = 100) String fullName, CustomerStatus status) {
 

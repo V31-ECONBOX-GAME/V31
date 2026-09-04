@@ -31,22 +31,11 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import tools.jackson.databind.jsontype.PolymorphicTypeValidator;
 
-import org.v31bank.data.valkey.lock.ValkeyLock;
-import org.v31bank.data.valkey.util.ValkeyKeys;
+import org.v31bank.data.valkey.ValkeyKeys;
+import org.v31bank.data.valkey.ValkeyLock;
 
 /**
- * {@link AutoConfiguration Auto-configuration} for V31 Data Valkey: a template storing
- * JSON under readable keys, plus the key builder and the lock built on it.
- * <p>
- * It <em>takes the name</em> of Spring Boot's {@code redisTemplate} rather than adding a
- * second bean. Boot's serialises with JDK serialization, which turns a Valkey entry an
- * attacker could write into remote code execution on read; leaving it as the obvious bean
- * to inject would be leaving a trap.
- * <p>
- * JSON cannot say which class an entry comes back as, so the serializer records the type
- * — and honouring an unchecked type is the same problem one format removed, which is why
- * Spring Data calls its switch {@code enableUnsafeDefaultTyping}. An entry may only name
- * a type under {@code v31.data.valkey.serialization.trusted-packages}.
+ * {@link AutoConfiguration Auto-configuration} for V31 Data Valkey.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -56,12 +45,6 @@ import org.v31bank.data.valkey.util.ValkeyKeys;
 @EnableConfigurationProperties(V31ValkeyProperties.class)
 public class V31ValkeyAutoConfiguration {
 
-	/**
-	 * The serializer used for values everywhere — by the template below and by the cache
-	 * configuration — so an entry written through one is readable through the other.
-	 * @param properties the types an entry is allowed to name
-	 * @return the serializer
-	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "valkeyValueSerializer")
 	public RedisSerializer<Object> valkeyValueSerializer(V31ValkeyProperties properties) {
@@ -71,14 +54,6 @@ public class V31ValkeyAutoConfiguration {
 			.build();
 	}
 
-	/**
-	 * Takes the name Spring Boot's template would have used, so code injecting
-	 * {@code RedisTemplate} gets the safe one. Boot's backs off because this registers
-	 * first, which {@code before = DataRedisAutoConfiguration.class} arranges.
-	 * @param connectionFactory the connection to Valkey
-	 * @param valkeyValueSerializer the serializer for values
-	 * @return the template
-	 */
 	@Bean
 	@ConditionalOnMissingBean(name = "redisTemplate")
 	public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory,
@@ -104,12 +79,6 @@ public class V31ValkeyAutoConfiguration {
 		return new ValkeyLock(stringRedisTemplate);
 	}
 
-	/**
-	 * Build the check applied to the type an entry names on read. Matching is by package
-	 * prefix, so listing {@code java} would undo the point of checking at all.
-	 * @param properties the trusted package prefixes
-	 * @return the validator
-	 */
 	private static PolymorphicTypeValidator trustedTypes(V31ValkeyProperties properties) {
 		BasicPolymorphicTypeValidator.Builder validator = BasicPolymorphicTypeValidator.builder();
 		for (String trustedPackage : properties.getSerialization().getTrustedPackages()) {

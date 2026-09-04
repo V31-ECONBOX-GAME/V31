@@ -24,15 +24,8 @@ package org.v31bank.ledger.domain.constant;
  */
 public enum LedgerAccountStatus {
 
-	/**
-	 * Open for posting.
-	 */
 	ACTIVE,
 
-	/**
-	 * No longer posted to. Kept, because the postings that already reference it do not go
-	 * away.
-	 */
 	CLOSED
 
 }

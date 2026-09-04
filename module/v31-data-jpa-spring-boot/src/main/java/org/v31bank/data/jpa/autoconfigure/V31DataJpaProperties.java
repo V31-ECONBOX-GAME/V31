@@ -44,7 +44,7 @@ public class V31DataJpaProperties {
 		private boolean enabled = true;
 
 		/**
-		 * Auditor recorded when no application-provided AuditorAware bean exists.
+		 * Auditor recorded when the application provides none.
 		 */
 		private String defaultAuditor = "system";
 

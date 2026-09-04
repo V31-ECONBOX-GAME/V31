@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.v31bank.core.response.HttpResponse;
+import org.v31bank.core.HttpResponse;
 import org.v31bank.risk.application.dto.RiskRulePageQuery;
 import org.v31bank.risk.application.port.in.RiskRuleUseCase;
 import org.v31bank.risk.domain.model.RiskRule;
@@ -41,10 +41,6 @@ import org.v31bank.risk.presentation.dto.RiskRuleResponse;
 
 /**
  * REST endpoints for managing risk rules.
- * <p>
- * Commands come back from the use case as an {@link HttpResponse} already carrying the
- * verdict, so this layer converts the payload to the wire record and puts the matching
- * status on the response.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -79,11 +75,6 @@ public class RiskRuleController {
 			.orElseGet(() -> error(HttpStatus.NOT_FOUND.value(), "No risk rule exists with id " + id));
 	}
 
-	/**
-	 * Return a page of records, newest first.
-	 * @param query the filters and the pagination request
-	 * @return the page of matching records
-	 */
 	@GetMapping
 	public HttpResponse<List<RiskRuleResponse>> page(RiskRulePageQuery query) {
 		return this.riskRuleInputPort.page(query)
@@ -97,12 +88,6 @@ public class RiskRuleController {
 				request.status()));
 	}
 
-	/**
-	 * Answer a delete with the envelope carrying the record that was removed, rather than
-	 * a bare {@code 204}, so that this endpoint is parsed like every other one.
-	 * @param id the record to delete
-	 * @return the response to send
-	 */
 	@DeleteMapping("/{id}")
 	public ResponseEntity<HttpResponse<RiskRuleResponse>> delete(@PathVariable UUID id) {
 		return toResponseEntity(this.riskRuleInputPort.delete(id));
@@ -112,11 +97,6 @@ public class RiskRuleController {
 		return ResponseEntity.status(statusOf(result)).body(result.map(RiskRuleResponse::from));
 	}
 
-	/**
-	 * Recover the HTTP status belonging to an outcome.
-	 * @param result the outcome to place
-	 * @return the status to answer with
-	 */
 	private static int statusOf(HttpResponse<?> result) {
 		return result.code();
 	}

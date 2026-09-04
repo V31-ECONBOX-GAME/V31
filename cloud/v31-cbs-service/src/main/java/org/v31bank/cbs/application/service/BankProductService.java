@@ -32,22 +32,11 @@ import org.v31bank.cbs.application.port.out.BankProductPort;
 import org.v31bank.cbs.domain.constant.BankProductCategory;
 import org.v31bank.cbs.domain.constant.BankProductStatus;
 import org.v31bank.cbs.domain.model.BankProduct;
-import org.v31bank.core.response.HttpResponse;
-import org.v31bank.core.util.Uuids;
+import org.v31bank.core.HttpResponse;
+import org.v31bank.core.Uuids;
 
 /**
  * Default {@link BankProductUseCase} implementation.
- * <p>
- * There is no {@code @Transactional} here, unlike the services backed by PostgreSQL.
- * Valkey has no rollback: once a command has run it has happened, and a second command
- * failing does not undo the first. What the adapter can promise is that the writes making
- * up one change are sent as a unit and not interleaved with anyone else's, and that the
- * code claim is a single atomic step. Annotating this class would suggest a guarantee
- * that does not exist.
- * <p>
- * The identifier is issued here rather than by the store, because the code has to be
- * claimed for a product before that product is written, and a claim needs something to
- * point at.
  *
  * @author Xander Wang
  * @since 0.2.0
@@ -55,10 +44,6 @@ import org.v31bank.core.util.Uuids;
 @Service
 public class BankProductService implements BankProductUseCase {
 
-	/**
-	 * What a product code may look like. Constrained because the code becomes part of a
-	 * Valkey key, and a key whose segments are not bounded is a key a caller can shape.
-	 */
 	private static final Pattern CODE_PATTERN = Pattern.compile("[A-Z0-9][A-Z0-9_-]{1,31}");
 
 	private final BankProductPort bankProductRepository;
@@ -133,14 +118,6 @@ public class BankProductService implements BankProductUseCase {
 		return HttpResponse.ok(saved);
 	}
 
-	/**
-	 * Remove a product, provided nothing was ever sold against it.
-	 * <p>
-	 * Only a draft can go. A product that has been active may have accounts opened
-	 * against it, and those accounts refer to it for their terms — the rate they earn,
-	 * the notice they need. Withdrawing it stops new accounts; deleting it would leave
-	 * the existing ones describing terms nobody can produce.
-	 */
 	@Override
 	public HttpResponse<BankProduct> delete(UUID id) {
 		Optional<BankProduct> found = this.bankProductRepository.findById(id);
@@ -157,12 +134,6 @@ public class BankProductService implements BankProductUseCase {
 		return HttpResponse.ok(product);
 	}
 
-	/**
-	 * Check what the store cannot check for itself.
-	 * @param code the code to check the shape of
-	 * @param category the category, which a product cannot be without
-	 * @return the refusal to report, or {@code null} when there is nothing wrong
-	 */
 	private static HttpResponse<BankProduct> validate(String code, BankProductCategory category) {
 		if (code == null || !CODE_PATTERN.matcher(code).matches()) {
 			return HttpResponse.error(HttpStatus.BAD_REQUEST.value(),

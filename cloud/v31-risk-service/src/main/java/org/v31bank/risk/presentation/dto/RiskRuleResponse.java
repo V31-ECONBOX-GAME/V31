@@ -23,19 +23,6 @@ import org.v31bank.risk.domain.constant.RiskRuleStatus;
 import org.v31bank.risk.domain.constant.RiskSeverity;
 import org.v31bank.risk.domain.model.RiskRule;
 
-/**
- * API representation of a risk rule.
- *
- * @param id the identifier it was issued when it was created
- * @param code the code it is known by, unique within the service
- * @param name what to call it
- * @param severity how much a match matters
- * @param status where it is in its lifecycle
- * @param createdDate when it was created
- * @param lastModifiedDate when it was last changed
- * @author Xander Wang
- * @since 0.2.0
- */
 public record RiskRuleResponse(UUID id, String code, String name, RiskSeverity severity, RiskRuleStatus status,
 		Instant createdDate, Instant lastModifiedDate) {
 
