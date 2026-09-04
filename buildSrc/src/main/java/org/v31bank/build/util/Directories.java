@@ -28,8 +28,7 @@ import org.gradle.api.Project;
 import org.gradle.api.file.Directory;
 
 /**
- * Directory operations {@link Files} leaves to the caller, and the one directory a
- * project cannot ask another project for.
+ * Directory work {@link Files} leaves out.
  *
  * @author Xander Wang
  */
@@ -38,24 +37,10 @@ public final class Directories {
 	private Directories() {
 	}
 
-	/**
-	 * The directory the build is rooted at.
-	 * @param project the project asking
-	 * @return the directory the build is rooted at
-	 */
 	public static Directory rootDirOf(Project project) {
 		return IsolatedProjects.rootOf(project).getProjectDirectory();
 	}
 
-	/**
-	 * Delete a directory and everything under it.
-	 * <p>
-	 * {@link Files#delete} takes only an empty directory, so the tree goes deepest first.
-	 * A path that is not there is already in the wanted state. A symbolic link is removed
-	 * rather than followed, so it does not take its target with it.
-	 * @param root the directory to remove, which need not exist
-	 * @throws UncheckedIOException if any part of the tree cannot be read or removed
-	 */
 	public static void deleteRecursively(Path root) {
 		if (root == null || !Files.exists(root, LinkOption.NOFOLLOW_LINKS)) {
 			return;

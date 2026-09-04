@@ -20,7 +20,7 @@ import org.gradle.api.Project;
 import org.gradle.api.project.IsolatedProject;
 
 /**
- * The one project a project cannot ask another project for.
+ * The root project, as an isolated view.
  *
  * @author Xander Wang
  */
@@ -29,13 +29,6 @@ public final class IsolatedProjects {
 	private IsolatedProjects() {
 	}
 
-	/**
-	 * The project the build is rooted at, as an isolated view rather than the project
-	 * itself: an isolated project may not reach the root project. What is wanted of it —
-	 * its directory, its name — is read from the view.
-	 * @param project the project asking
-	 * @return the isolated view of the project the build is rooted at
-	 */
 	public static IsolatedProject rootOf(Project project) {
 		return project.getIsolated().getRootProject();
 	}

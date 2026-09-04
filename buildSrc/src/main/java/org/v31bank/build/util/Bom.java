@@ -32,16 +32,7 @@ import org.gradle.api.artifacts.result.ResolvedDependencyResult;
 import org.gradle.api.plugins.JavaBasePlugin;
 
 /**
- * The version a BOM settles a module at:
- *
- * <pre class="code">
- * Bom.of(project, SpringBootPlugin.BOM_COORDINATES).version("com.google.protobuf:protobuf-java")
- * Bom.of(project, project.getDependencies().project(":platform:v31-dependencies"))
- *     .version("io.grpc:grpc-protobuf")
- * </pre>
- *
- * The BOM is asked rather than read: the module carries no version of its own, so the one
- * it comes back with is the one it would have on a consumer's classpath.
+ * The version a BOM settles a module at.
  *
  * @author Xander Wang
  */
@@ -59,17 +50,6 @@ public final class Bom {
 		this.name = name;
 	}
 
-	/**
-	 * The versions a BOM settles.
-	 * @param project the project to resolve with, which needs {@code java-base}: without
-	 * the attributes it brings, a pom answers with its default variant, which carries no
-	 * constraints
-	 * @param notation what names the BOM, in any notation
-	 * {@link org.gradle.api.artifacts.dsl.DependencyHandler#platform(Object) platform}
-	 * takes
-	 * @return the versions it settles
-	 * @throws GradleException if the project resolves no Java libraries
-	 */
 	public static Bom of(Project project, Object notation) {
 		if (!project.getPlugins().hasPlugin(JavaBasePlugin.class)) {
 			throw new GradleException(
@@ -79,14 +59,6 @@ public final class Bom {
 		return new Bom(project, notation, nameOf(project.getDependencies().create(notation)));
 	}
 
-	/**
-	 * The version this BOM settles a module at, answered on the spot because a provider
-	 * handed to a task is queried as the configuration cache is written, where a
-	 * configuration cannot be resolved.
-	 * @param module the module, as {@code group:name}
-	 * @return its version
-	 * @throws GradleException if the BOM settles no version for the module
-	 */
 	public String version(String module) {
 		try {
 			return settled(resolve(module), module);
@@ -96,11 +68,6 @@ public final class Bom {
 		}
 	}
 
-	/**
-	 * The module asked for without a version, so only the BOM beside it can supply one.
-	 * @param module the module, as {@code group:name}
-	 * @return what the pair resolves to
-	 */
 	private ResolutionResult resolve(String module) {
 		DependencyHandler dependencies = this.project.getDependencies();
 		Configuration against = this.project.getConfigurations()
@@ -124,11 +91,6 @@ public final class Bom {
 		return new GradleException("%s settles no version for %s.".formatted(this.name, module), cause);
 	}
 
-	/**
-	 * What to call the BOM in a failure, since a notation can arrive as anything.
-	 * @param bom the dependency the notation was read as
-	 * @return the coordinate it stands for
-	 */
 	private static String nameOf(Dependency bom) {
 		return Stream.of(bom.getGroup(), bom.getName(), bom.getVersion())
 			.filter(Objects::nonNull)

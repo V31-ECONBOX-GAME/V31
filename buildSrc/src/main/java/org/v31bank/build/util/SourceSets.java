@@ -34,18 +34,7 @@ import org.gradle.api.tasks.SourceSetContainer;
 import org.v31bank.build.constant.Locations;
 
 /**
- * A project's source sets, which hang off the java extension rather than off the project.
- * <p>
- * Walked a step at a time, each step narrowing what is being asked about:
- *
- * <pre class="code">
- * SourceSets.of(project).main().java().directory()
- * SourceSets.of(project).named("intTest").resources().srcDirs()
- * SourceSets.of(sourceSet).resources().relativeTo(Directories.rootDirOf(project))
- * </pre>
- *
- * Every step answers {@code unwrap()} with the Gradle type it stands for, so anything not
- * covered here is one call away rather than walled off.
+ * A project's source sets.
  *
  * @author Xander Wang
  */
@@ -57,21 +46,10 @@ public final class SourceSets {
 		this.project = project;
 	}
 
-	/**
-	 * Starts from a project.
-	 * @param project the project to look at
-	 * @return its source sets
-	 */
 	public static SourceSets of(Project project) {
 		return new SourceSets(project);
 	}
 
-	/**
-	 * Starts from a source set already in hand, which a project-wide lookup would only
-	 * find again.
-	 * @param sourceSet the source set to look at
-	 * @return the kinds of source it is made of
-	 */
 	public static Sources of(SourceSet sourceSet) {
 		return new Sources(sourceSet);
 	}
@@ -92,9 +70,6 @@ public final class SourceSets {
 		return new Sources(unwrap().getByName(name));
 	}
 
-	/**
-	 * One source set, and the kinds of source it is made of.
-	 */
 	public static final class Sources {
 
 		private final SourceSet sourceSet;
@@ -115,29 +90,16 @@ public final class SourceSets {
 			return new Directories(this.sourceSet.getResources());
 		}
 
-		/**
-		 * Every Java that gets compiled: {@link #java()} plus whatever a plugin
-		 * contributed.
-		 * @return main's {@code allJava}
-		 */
 		public Directories allJava() {
 			return new Directories(this.sourceSet.getAllJava());
 		}
 
-		/**
-		 * Everything the source set is made of, {@link #allJava()} and
-		 * {@link #resources()} together.
-		 * @return main's {@code allSource}
-		 */
 		public Directories allSource() {
 			return new Directories(this.sourceSet.getAllSource());
 		}
 
 	}
 
-	/**
-	 * One kind of source, and where it is rooted.
-	 */
 	public static final class Directories {
 
 		private final SourceDirectorySet sources;
@@ -150,50 +112,23 @@ public final class SourceSets {
 			return this.sources;
 		}
 
-		/**
-		 * Where this kind of source is rooted.
-		 * @return the directories
-		 */
 		public Set<File> srcDirs() {
 			return this.sources.getSrcDirs();
 		}
 
-		/**
-		 * Where this kind of source is rooted, carrying whatever task builds it.
-		 * @return the directories as a file collection, for whoever has to wait on that
-		 * task
-		 */
 		public FileCollection sourceDirectories() {
 			return this.sources.getSourceDirectories();
 		}
 
-		/**
-		 * Where this kind of source is rooted, as paths rather than as files.
-		 * @param base what the paths are relative to, usually the root of the build
-		 * @return the directories in the order they were declared
-		 */
 		public List<String> relativeTo(Directory base) {
 			Path root = base.getAsFile().toPath();
 			return srcDirs().stream().map((directory) -> root.relativize(directory.toPath()).toString()).toList();
 		}
 
-		/**
-		 * The only directory this kind of source is rooted at.
-		 * @return that directory
-		 * @throws GradleException if it is rooted at none or at several, since a source
-		 * set rooted at several — generated code beside handwritten, say — has to be told
-		 * which
-		 */
 		public File directory() {
 			return directory((_) -> true);
 		}
 
-		/**
-		 * The one directory the filter picks out, for a source set rooted at several.
-		 * @param filter which of its directories is wanted
-		 * @return the one directory the filter leaves
-		 * @throws GradleException if the filter leaves none or several
-		 */
 		public File directory(Predicate<File> filter) {
 			List<File> matches = srcDirs().stream().filter(filter).toList();
 			if (matches.size() != 1) {

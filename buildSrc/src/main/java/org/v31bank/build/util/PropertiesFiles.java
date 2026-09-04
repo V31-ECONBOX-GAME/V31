@@ -23,7 +23,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Properties rendered as a file that only changes when the properties do.
+ * Properties rendered as a stable file.
  *
  * @author Xander Wang
  */
@@ -32,16 +32,6 @@ public final class PropertiesFiles {
 	private PropertiesFiles() {
 	}
 
-	/**
-	 * {@link Properties#store} writes the current time as a comment and the platform's
-	 * line separator, either of which would make unchanged input produce a different
-	 * file, and {@link Properties} itself keeps no order. The stream overload is used
-	 * because it escapes anything outside Latin-1, so what comes back is ASCII and can be
-	 * decoded to drop the comment and sort what is left.
-	 * @param properties the properties to render
-	 * @return the file's contents
-	 * @throws IOException if rendering fails
-	 */
 	public static byte[] render(Properties properties) throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		properties.store(buffer, null);

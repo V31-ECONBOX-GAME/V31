@@ -25,11 +25,7 @@ import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * A JSON file read as the object it is, with every value left as written.
- * <p>
- * Nothing beyond "the top level is an object" is asked of the file, so a section this
- * build does not read is a section it cannot fail on. Narrowing a value it does read is
- * the caller's business.
+ * A JSON file read as a plain object.
  *
  * @author Xander Wang
  */
@@ -45,11 +41,6 @@ public final class JsonFiles {
 	private JsonFiles() {
 	}
 
-	/**
-	 * Reads the file's top-level object, keeping the order it was written in.
-	 * @param file the file to read
-	 * @return what it holds
-	 */
 	public static Map<String, Object> readObject(File file) {
 		try {
 			return MAPPER.readValue(file, OBJECT);
