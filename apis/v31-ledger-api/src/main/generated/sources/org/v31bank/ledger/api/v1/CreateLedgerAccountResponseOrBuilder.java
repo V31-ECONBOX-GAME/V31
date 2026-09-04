@@ -7,24 +7,21 @@ package org.v31bank.ledger.api.v1;
 
 @com.google.protobuf.Generated
 public interface CreateLedgerAccountResponseOrBuilder extends
-		// @@protoc_insertion_point(interface_extends:v31.ledger.v1.CreateLedgerAccountResponse)
-		com.google.protobuf.MessageOrBuilder {
+    // @@protoc_insertion_point(interface_extends:v31.ledger.v1.CreateLedgerAccountResponse)
+    com.google.protobuf.MessageOrBuilder {
 
-	/**
-	 * <code>.v31.ledger.v1.LedgerAccount ledger_account = 1 [json_name = "ledgerAccount"];</code>
-	 * @return Whether the ledgerAccount field is set.
-	 */
-	boolean hasLedgerAccount();
-
-	/**
-	 * <code>.v31.ledger.v1.LedgerAccount ledger_account = 1 [json_name = "ledgerAccount"];</code>
-	 * @return The ledgerAccount.
-	 */
-	org.v31bank.ledger.api.v1.LedgerAccount getLedgerAccount();
-
-	/**
-	 * <code>.v31.ledger.v1.LedgerAccount ledger_account = 1 [json_name = "ledgerAccount"];</code>
-	 */
-	org.v31bank.ledger.api.v1.LedgerAccountOrBuilder getLedgerAccountOrBuilder();
-
+  /**
+   * <code>.v31.ledger.v1.LedgerAccount ledger_account = 1 [json_name = "ledgerAccount"];</code>
+   * @return Whether the ledgerAccount field is set.
+   */
+  boolean hasLedgerAccount();
+  /**
+   * <code>.v31.ledger.v1.LedgerAccount ledger_account = 1 [json_name = "ledgerAccount"];</code>
+   * @return The ledgerAccount.
+   */
+  org.v31bank.ledger.api.v1.LedgerAccount getLedgerAccount();
+  /**
+   * <code>.v31.ledger.v1.LedgerAccount ledger_account = 1 [json_name = "ledgerAccount"];</code>
+   */
+  org.v31bank.ledger.api.v1.LedgerAccountOrBuilder getLedgerAccountOrBuilder();
 }

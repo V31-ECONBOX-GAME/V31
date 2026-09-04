@@ -7,55 +7,52 @@ package org.v31bank.ledger.api.v1;
 
 @com.google.protobuf.Generated
 public interface ListLedgerAccountsRequestOrBuilder extends
-		// @@protoc_insertion_point(interface_extends:v31.ledger.v1.ListLedgerAccountsRequest)
-		com.google.protobuf.MessageOrBuilder {
+    // @@protoc_insertion_point(interface_extends:v31.ledger.v1.ListLedgerAccountsRequest)
+    com.google.protobuf.MessageOrBuilder {
 
-	/**
-	 * <code>int32 page_number = 1 [json_name = "pageNumber"];</code>
-	 * @return The pageNumber.
-	 */
-	int getPageNumber();
+  /**
+   * <code>int32 page_number = 1 [json_name = "pageNumber"];</code>
+   * @return The pageNumber.
+   */
+  int getPageNumber();
 
-	/**
-	 * <code>int32 page_size = 2 [json_name = "pageSize"];</code>
-	 * @return The pageSize.
-	 */
-	int getPageSize();
+  /**
+   * <code>int32 page_size = 2 [json_name = "pageSize"];</code>
+   * @return The pageSize.
+   */
+  int getPageSize();
 
-	/**
-	 * <code>string code = 3 [json_name = "code"];</code>
-	 * @return The code.
-	 */
-	java.lang.String getCode();
+  /**
+   * <code>string code = 3 [json_name = "code"];</code>
+   * @return The code.
+   */
+  java.lang.String getCode();
+  /**
+   * <code>string code = 3 [json_name = "code"];</code>
+   * @return The bytes for code.
+   */
+  com.google.protobuf.ByteString
+      getCodeBytes();
 
-	/**
-	 * <code>string code = 3 [json_name = "code"];</code>
-	 * @return The bytes for code.
-	 */
-	com.google.protobuf.ByteString getCodeBytes();
+  /**
+   * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
+   * @return The enum numeric value on the wire for type.
+   */
+  int getTypeValue();
+  /**
+   * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
+   * @return The type.
+   */
+  org.v31bank.ledger.api.v1.LedgerAccountType getType();
 
-	/**
-	 * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
-	 * @return The enum numeric value on the wire for type.
-	 */
-	int getTypeValue();
-
-	/**
-	 * <code>.v31.ledger.v1.LedgerAccountType type = 4 [json_name = "type"];</code>
-	 * @return The type.
-	 */
-	org.v31bank.ledger.api.v1.LedgerAccountType getType();
-
-	/**
-	 * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
-	 * @return The enum numeric value on the wire for status.
-	 */
-	int getStatusValue();
-
-	/**
-	 * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
-	 * @return The status.
-	 */
-	org.v31bank.ledger.api.v1.LedgerAccountStatus getStatus();
-
+  /**
+   * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
+   * @return The enum numeric value on the wire for status.
+   */
+  int getStatusValue();
+  /**
+   * <code>.v31.ledger.v1.LedgerAccountStatus status = 5 [json_name = "status"];</code>
+   * @return The status.
+   */
+  org.v31bank.ledger.api.v1.LedgerAccountStatus getStatus();
 }

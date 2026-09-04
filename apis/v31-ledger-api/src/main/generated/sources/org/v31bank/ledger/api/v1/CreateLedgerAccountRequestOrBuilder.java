@@ -7,43 +7,41 @@ package org.v31bank.ledger.api.v1;
 
 @com.google.protobuf.Generated
 public interface CreateLedgerAccountRequestOrBuilder extends
-		// @@protoc_insertion_point(interface_extends:v31.ledger.v1.CreateLedgerAccountRequest)
-		com.google.protobuf.MessageOrBuilder {
+    // @@protoc_insertion_point(interface_extends:v31.ledger.v1.CreateLedgerAccountRequest)
+    com.google.protobuf.MessageOrBuilder {
 
-	/**
-	 * <code>string code = 1 [json_name = "code"];</code>
-	 * @return The code.
-	 */
-	java.lang.String getCode();
+  /**
+   * <code>string code = 1 [json_name = "code"];</code>
+   * @return The code.
+   */
+  java.lang.String getCode();
+  /**
+   * <code>string code = 1 [json_name = "code"];</code>
+   * @return The bytes for code.
+   */
+  com.google.protobuf.ByteString
+      getCodeBytes();
 
-	/**
-	 * <code>string code = 1 [json_name = "code"];</code>
-	 * @return The bytes for code.
-	 */
-	com.google.protobuf.ByteString getCodeBytes();
+  /**
+   * <code>string name = 2 [json_name = "name"];</code>
+   * @return The name.
+   */
+  java.lang.String getName();
+  /**
+   * <code>string name = 2 [json_name = "name"];</code>
+   * @return The bytes for name.
+   */
+  com.google.protobuf.ByteString
+      getNameBytes();
 
-	/**
-	 * <code>string name = 2 [json_name = "name"];</code>
-	 * @return The name.
-	 */
-	java.lang.String getName();
-
-	/**
-	 * <code>string name = 2 [json_name = "name"];</code>
-	 * @return The bytes for name.
-	 */
-	com.google.protobuf.ByteString getNameBytes();
-
-	/**
-	 * <code>.v31.ledger.v1.LedgerAccountType type = 3 [json_name = "type"];</code>
-	 * @return The enum numeric value on the wire for type.
-	 */
-	int getTypeValue();
-
-	/**
-	 * <code>.v31.ledger.v1.LedgerAccountType type = 3 [json_name = "type"];</code>
-	 * @return The type.
-	 */
-	org.v31bank.ledger.api.v1.LedgerAccountType getType();
-
+  /**
+   * <code>.v31.ledger.v1.LedgerAccountType type = 3 [json_name = "type"];</code>
+   * @return The enum numeric value on the wire for type.
+   */
+  int getTypeValue();
+  /**
+   * <code>.v31.ledger.v1.LedgerAccountType type = 3 [json_name = "type"];</code>
+   * @return The type.
+   */
+  org.v31bank.ledger.api.v1.LedgerAccountType getType();
 }
