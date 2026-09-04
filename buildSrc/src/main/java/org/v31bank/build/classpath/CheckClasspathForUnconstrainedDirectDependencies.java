@@ -37,7 +37,6 @@ import org.gradle.api.tasks.TaskAction;
  * Fails when a starter declares a dependency nothing constrains.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public abstract class CheckClasspathForUnconstrainedDirectDependencies extends ClasspathCheck {
 

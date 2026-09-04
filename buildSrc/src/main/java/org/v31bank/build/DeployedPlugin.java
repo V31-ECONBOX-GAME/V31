@@ -42,7 +42,6 @@ import org.v31bank.build.util.IsolatedProjects;
  * or what they are called.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public class DeployedPlugin implements Plugin<Project> {
 

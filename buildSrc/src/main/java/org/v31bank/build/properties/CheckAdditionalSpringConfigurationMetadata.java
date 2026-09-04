@@ -36,7 +36,6 @@ import org.v31bank.build.properties.ConfigurationPropertiesAnalyzer.Report;
  * duplicated, or deprecated without a {@code since}.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public abstract class CheckAdditionalSpringConfigurationMetadata extends SourceTask {
 

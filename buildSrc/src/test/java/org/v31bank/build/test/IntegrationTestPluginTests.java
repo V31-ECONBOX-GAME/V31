@@ -42,7 +42,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * rather than requiring it to be there already.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class IntegrationTestPluginTests {
 

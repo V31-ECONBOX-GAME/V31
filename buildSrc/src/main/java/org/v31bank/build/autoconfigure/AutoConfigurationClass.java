@@ -44,7 +44,6 @@ import org.v31bank.build.constant.FileSuffixes;
  * @param name binary name of the class
  * @param references the classes it orders itself against
  * @author Xander Wang
- * @since 0.2.0
  */
 public record AutoConfigurationClass(String name, List<Reference> references) {
 

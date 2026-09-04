@@ -51,7 +51,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * built inside a root that has one, the way the real build does.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class AutoConfigurationPluginTests {
 

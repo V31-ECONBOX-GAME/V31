@@ -77,7 +77,6 @@ import org.v31bank.build.util.SourceSets;
  * {@link ProtoToolchainPlugin} provides buf and the generators.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public class ProtobufPlugin implements Plugin<Project> {
 

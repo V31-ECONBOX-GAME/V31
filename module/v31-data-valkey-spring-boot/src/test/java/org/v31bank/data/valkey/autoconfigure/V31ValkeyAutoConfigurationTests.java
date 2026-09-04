@@ -54,7 +54,6 @@ import static org.mockito.Mockito.mock;
  * {@link V31ValkeyCacheAutoConfiguration}.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class V31ValkeyAutoConfigurationTests {
 

@@ -45,7 +45,6 @@ import org.v31bank.build.constant.Projects;
  * Fails when a dependency excludes something it never brings in.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public abstract class CheckClasspathForUnnecessaryExclusions extends ClasspathCheck {
 

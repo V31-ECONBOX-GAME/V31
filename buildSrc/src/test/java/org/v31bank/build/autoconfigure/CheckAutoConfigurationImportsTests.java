@@ -41,7 +41,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * asserted: a check that threw without writing down why would pass half of these.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class CheckAutoConfigurationImportsTests {
 

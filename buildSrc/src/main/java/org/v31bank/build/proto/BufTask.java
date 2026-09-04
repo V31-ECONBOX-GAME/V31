@@ -30,14 +30,9 @@ import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.process.ExecOperations;
 
 /**
- * One run of buf against one API.
- * <p>
- * buf reads {@code buf.yaml} from the directory it is invoked in and names an API by its
- * path relative to there, so the working directory is part of how an API is addressed. A
- * subclass supplies only the command and that command's own arguments.
+ * Runs a subclass's buf command from the proto directory.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public abstract class BufTask extends DefaultTask {
 

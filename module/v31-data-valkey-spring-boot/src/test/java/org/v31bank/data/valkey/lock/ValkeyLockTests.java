@@ -46,7 +46,6 @@ import static org.mockito.Mockito.never;
  * {@code ValueOperations}, which is unavoidable with Mockito and confined to this class.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 class ValkeyLockTests {

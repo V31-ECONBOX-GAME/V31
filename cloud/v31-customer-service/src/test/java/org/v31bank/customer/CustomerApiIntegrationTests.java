@@ -43,7 +43,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * column widths, the unique constraints or the audit columns were right.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CustomerApiIntegrationTests {

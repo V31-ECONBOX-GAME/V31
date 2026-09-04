@@ -48,7 +48,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tests for {@link HttpResponseExceptionHandler}.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class HttpResponseExceptionHandlerTests {
 

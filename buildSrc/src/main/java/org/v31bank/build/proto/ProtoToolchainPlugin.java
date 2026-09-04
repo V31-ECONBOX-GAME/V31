@@ -49,8 +49,6 @@ import org.v31bank.build.util.Bom;
 
 /**
  * Installs buf and the generators it runs, once for the whole build.
- * <p>
- * Declared by the root project:
  *
  * <pre class="code">
  * plugins {
@@ -58,20 +56,12 @@ import org.v31bank.build.util.Bom;
  * }
  * </pre>
  *
- * The three executables weigh more than everything else the build downloads put together,
- * so there is one install and every API project shares it. A project cannot register a
- * task in another one, so the install belongs to the project that holds it and is handed
- * out through {@link Configurations#PROTO_TOOLCHAIN} the way a jar is.
- *
  * @author Xander Wang
- * @since 0.2.0
  */
 public class ProtoToolchainPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		// A BOM answers only a project that resolves Java libraries, and the generator
-		// versions are read from one.
 		project.getPluginManager().apply(JavaBasePlugin.class);
 		Bom platform = Bom.of(project, project.getDependencies().project(Projects.INTERNAL_DEPENDENCIES));
 		TaskProvider<Install> install = project.getTasks()
@@ -92,15 +82,7 @@ public class ProtoToolchainPlugin implements Plugin<Project> {
 		project.getArtifacts().add(Configurations.PROTO_TOOLCHAIN, install.flatMap(Install::getDestination));
 	}
 
-	/**
-	 * Resolves one executable from Maven.
-	 * @param project the project the install belongs to
-	 * @param coordinate the module the executable is published as
-	 * @param version the version to fetch
-	 * @return the file Maven serves
-	 */
 	private Provider<RegularFile> fromMaven(Project project, String coordinate, String version) {
-		// buf's own registry answered resource_exhausted once every build called it.
 		String full = coordinate + ":" + version + ":" + platform() + "@exe";
 		return project.getLayout()
 			.file(project.provider(() -> project.getConfigurations()
@@ -121,10 +103,6 @@ public class ProtoToolchainPlugin implements Plugin<Project> {
 		return arm ? "linux-aarch_64" : "linux-x86_64";
 	}
 
-	/**
-	 * Copies the three executables into one directory. Maven serves each of them as an
-	 * ordinary file, so the copy is also where they are made executable.
-	 */
 	public abstract static class Install extends DefaultTask {
 
 		@InputFile

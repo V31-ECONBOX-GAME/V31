@@ -19,12 +19,6 @@ package org.v31bank.smoketest.grpc;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/**
- * An application that takes the gRPC starter and nothing else.
- *
- * @author Xander Wang
- * @since 0.2.0
- */
 @SpringBootApplication
 public class V31GrpcSmokeTestApplication {
 

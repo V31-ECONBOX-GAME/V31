@@ -39,7 +39,6 @@ import org.v31bank.build.properties.ConfigurationPropertiesAnalyzer.Report;
  * duplicated, undescribed, or deprecated without a {@code since}.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public abstract class CheckManualSpringConfigurationMetadata extends DefaultTask {
 

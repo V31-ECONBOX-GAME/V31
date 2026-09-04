@@ -26,7 +26,6 @@ import java.util.List;
  * The file a module registers its auto-configurations in.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public final class AutoConfigurationImports {
 

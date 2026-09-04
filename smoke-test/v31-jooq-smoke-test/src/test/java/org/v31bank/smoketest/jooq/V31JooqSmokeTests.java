@@ -40,10 +40,6 @@ class V31JooqSmokeTests {
 		assertThat(this.auditorSupplier.currentAuditor()).contains("smoke-test");
 	}
 
-	/**
-	 * The customizer only reaches jOOQ if this auto-configuration really runs before
-	 * Spring Boot's, which only the real ordering mechanism decides.
-	 */
 	@Test
 	void theAuditListenerIsAttachedToTheRealDslContext() {
 		assertThat(this.dslContext.configuration().recordListenerProviders()).isNotEmpty();

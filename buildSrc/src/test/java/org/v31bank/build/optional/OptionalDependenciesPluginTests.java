@@ -42,7 +42,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * how it works today, the dependency arriving is what the plugin promises.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class OptionalDependenciesPluginTests {
 

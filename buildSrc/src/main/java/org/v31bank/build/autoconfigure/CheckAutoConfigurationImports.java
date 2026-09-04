@@ -32,7 +32,6 @@ import org.v31bank.build.constant.Locations;
  * Fails an imports file that names a missing or unannotated class, or is not sorted.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public abstract class CheckAutoConfigurationImports extends AutoConfigurationImportsTask {
 

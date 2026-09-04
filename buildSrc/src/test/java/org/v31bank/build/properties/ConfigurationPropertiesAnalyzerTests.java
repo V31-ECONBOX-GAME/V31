@@ -37,7 +37,6 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * not, because a rule that never passes and a rule that never fails are equally useless.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class ConfigurationPropertiesAnalyzerTests {
 

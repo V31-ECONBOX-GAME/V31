@@ -50,7 +50,6 @@ import org.v31bank.build.util.SourceSets;
  * repair of {@code flyway_schema_history} in every affected environment.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public class FlywayPlugin implements Plugin<Project> {
 

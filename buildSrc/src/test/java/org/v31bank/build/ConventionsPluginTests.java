@@ -41,7 +41,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * uses: the root applies the conventions before a subproject's own build file has run.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class ConventionsPluginTests {
 

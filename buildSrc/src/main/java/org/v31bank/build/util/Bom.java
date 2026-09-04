@@ -44,7 +44,6 @@ import org.gradle.api.plugins.JavaBasePlugin;
  * it comes back with is the one it would have on a consumer's classpath.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public final class Bom {
 

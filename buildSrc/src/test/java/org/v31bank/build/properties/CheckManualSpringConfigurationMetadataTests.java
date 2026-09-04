@@ -38,7 +38,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * held to all four rules — the descriptions included.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class CheckManualSpringConfigurationMetadataTests {
 

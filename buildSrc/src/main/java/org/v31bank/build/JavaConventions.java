@@ -56,7 +56,6 @@ import org.v31bank.build.util.Directories;
  * touches a project other than the one it is handed.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class JavaConventions {
 

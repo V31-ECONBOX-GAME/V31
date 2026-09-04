@@ -38,7 +38,6 @@ import org.v31bank.build.properties.ConfigurationPropertiesAnalyzer.Report;
  * property.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public abstract class CheckSpringConfigurationMetadata extends DefaultTask {
 

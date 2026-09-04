@@ -45,7 +45,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * {@link DSLContext} would exercise.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ComplianceCaseApiIntegrationTests {

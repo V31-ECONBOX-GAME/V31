@@ -51,7 +51,6 @@ import org.v31bank.build.util.Directories;
  * anywhere real and without touching the developer's {@code ~/.m2}.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public class MavenRepositoryPlugin implements Plugin<Project> {
 

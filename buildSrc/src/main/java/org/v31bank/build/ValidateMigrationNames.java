@@ -44,7 +44,6 @@ import org.v31bank.build.constant.Locations;
  * that reuses a version another migration already took.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public abstract class ValidateMigrationNames extends DefaultTask {
 

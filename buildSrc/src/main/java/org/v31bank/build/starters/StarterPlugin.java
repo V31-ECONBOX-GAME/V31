@@ -33,10 +33,7 @@ import org.v31bank.build.constant.Configurations;
 import org.v31bank.build.constant.Locations;
 
 /**
- * Configures a project as a V31 starter: published, exporting its dependencies rather
- * than hiding them, with its versions settled.
- * <p>
- * Declared by the project itself:
+ * Publishes a starter and checks the dependency graph it hands a consumer.
  *
  * <pre class="code">
  * plugins {
@@ -44,12 +41,7 @@ import org.v31bank.build.constant.Locations;
  * }
  * </pre>
  *
- * A starter's build file is then left saying only what it is called and what it pulls in.
- * A starter has nothing to unit test, so the classpath checks registered here take the
- * place of the review its dependency graph would otherwise need by eye.
- *
  * @author Xander Wang
- * @since 0.2.0
  */
 public class StarterPlugin implements Plugin<Project> {
 
@@ -67,13 +59,6 @@ public class StarterPlugin implements Plugin<Project> {
 				CheckClasspathForUnnecessaryExclusions.class);
 	}
 
-	/**
-	 * The file is published through a configuration of its own rather than the starter's
-	 * jar, so a consumer asks for {@code starterMetadata} by name and Gradle builds it on
-	 * demand.
-	 * @param project the project
-	 * @param runtimeClasspath what the starter resolves to
-	 */
 	private void registerMetadata(Project project, Configuration runtimeClasspath) {
 		TaskProvider<StarterMetadata> metadata = project.getTasks()
 			.register(Configurations.STARTER_METADATA, StarterMetadata.class, (task) -> {
@@ -86,15 +71,6 @@ public class StarterPlugin implements Plugin<Project> {
 		project.getArtifacts().add(Configurations.STARTER_METADATA, metadata.map(StarterMetadata::getDestination));
 	}
 
-	/**
-	 * The task is named after the configuration it looks at, so a failure says which
-	 * classpath it was talking about.
-	 * @param <T> the type of check
-	 * @param project the project
-	 * @param classpath the configuration to check
-	 * @param suffix what the check is looking for
-	 * @param type the type of check
-	 */
 	private <T extends ClasspathCheck> void registerClasspathCheck(Project project, Configuration classpath,
 			String suffix, Class<T> type) {
 		TaskProvider<T> check = project.getTasks()

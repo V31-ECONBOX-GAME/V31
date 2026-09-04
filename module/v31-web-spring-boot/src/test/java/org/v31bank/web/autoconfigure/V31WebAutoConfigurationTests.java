@@ -32,7 +32,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link V31WebAutoConfiguration}.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class V31WebAutoConfigurationTests {
 

@@ -44,7 +44,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * {@code SET NX} being atomic. A fake would answer all three without proving any of them.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class BankProductApiIntegrationTests {

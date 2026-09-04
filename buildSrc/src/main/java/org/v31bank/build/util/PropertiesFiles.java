@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
  * Properties rendered as a file that only changes when the properties do.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public final class PropertiesFiles {
 

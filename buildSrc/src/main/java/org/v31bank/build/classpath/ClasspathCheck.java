@@ -28,7 +28,6 @@ import org.gradle.api.tasks.Internal;
  * Shared by the classpath checks.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public abstract class ClasspathCheck extends DefaultTask {
 

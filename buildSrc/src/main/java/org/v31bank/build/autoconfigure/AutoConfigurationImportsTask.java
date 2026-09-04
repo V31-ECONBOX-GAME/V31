@@ -41,7 +41,6 @@ import org.v31bank.build.constant.Locations;
  * Shared by the checks on a module's auto-configuration imports.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public abstract class AutoConfigurationImportsTask extends DefaultTask {
 

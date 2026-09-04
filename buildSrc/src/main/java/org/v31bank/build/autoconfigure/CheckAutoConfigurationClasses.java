@@ -51,7 +51,6 @@ import org.v31bank.build.constant.Locations;
  * against another in the wrong form.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public abstract class CheckAutoConfigurationClasses extends AutoConfigurationImportsTask {
 

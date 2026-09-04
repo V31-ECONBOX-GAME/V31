@@ -32,7 +32,6 @@ import org.gradle.api.file.Directory;
  * project cannot ask another project for.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public final class Directories {
 

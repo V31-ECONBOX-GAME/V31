@@ -32,7 +32,6 @@ import tools.jackson.databind.json.JsonMapper;
  * the caller's business.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public final class JsonFiles {
 

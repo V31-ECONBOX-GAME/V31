@@ -34,7 +34,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * bytecode a compiler would have produced rather than a stand-in for it.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class AutoConfigurationClassTests {
 

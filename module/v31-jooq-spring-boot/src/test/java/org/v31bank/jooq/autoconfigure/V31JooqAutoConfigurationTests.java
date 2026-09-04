@@ -38,7 +38,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link V31JooqAutoConfiguration}.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class V31JooqAutoConfigurationTests {
 

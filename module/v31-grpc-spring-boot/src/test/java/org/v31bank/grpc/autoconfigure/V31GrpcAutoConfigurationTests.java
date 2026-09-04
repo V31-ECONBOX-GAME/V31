@@ -35,7 +35,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for the gRPC auto-configurations.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class V31GrpcAutoConfigurationTests {
 

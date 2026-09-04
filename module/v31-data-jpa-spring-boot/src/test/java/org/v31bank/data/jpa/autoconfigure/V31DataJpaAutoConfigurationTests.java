@@ -48,7 +48,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * {@code @EnableJpaAuditing} cannot start without a metamodel to work against.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class V31DataJpaAutoConfigurationTests {
 

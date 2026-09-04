@@ -42,7 +42,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * the response envelope.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LedgerAccountApiIntegrationTests {

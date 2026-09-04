@@ -37,21 +37,11 @@ import org.gradle.api.tasks.TaskAction;
 
 /**
  * Generates one API's sources into the project.
- * <p>
- * buf writes into a staging directory first, so the files it produced can be recorded
- * before they are copied. The next run deletes exactly what that record names, so a
- * message dropped from the {@code .proto} takes its class with it instead of leaving one
- * behind that still compiles.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public abstract class GenerateProtoSources extends BufTask {
 
-	/**
-	 * The generator paths are single-quoted because they are absolute: quoting survives a
-	 * space, and single quotes take no escapes, which a Windows path needs.
-	 */
 	private static final String TEMPLATE = """
 			version: v2
 
@@ -79,12 +69,6 @@ public abstract class GenerateProtoSources extends BufTask {
 	@PathSensitive(PathSensitivity.NONE)
 	public abstract RegularFileProperty getGrpcJavaGenerator();
 
-	/**
-	 * Not declared as an output: {@code compileJava} reads this directory, and declaring
-	 * it would make every generated file something one task produces and another
-	 * consumes.
-	 * @return the directory the generated sources are copied into
-	 */
 	@Internal
 	public abstract DirectoryProperty getDestination();
 
@@ -98,7 +82,6 @@ public abstract class GenerateProtoSources extends BufTask {
 	void generate() throws IOException {
 		deletePreviousGeneratedSources();
 		Path staging = getTemporaryDir().toPath().resolve("generated");
-		// Staging holds only the last run's output, so it is safe to take whole.
 		getFileSystemOperations().delete((spec) -> spec.delete(staging));
 		Files.createDirectories(staging);
 		buf("generate", "--path", getApi().get(), "--output", staging.toString(), "--template", template());
@@ -110,11 +93,6 @@ public abstract class GenerateProtoSources extends BufTask {
 		getLogger().lifecycle("Generated {} source(s) from the {} API", written.size(), getApi().get());
 	}
 
-	/**
-	 * The destination is a source directory, so deleting all of it would take whatever
-	 * else lives there; only the files the manifest names go.
-	 * @throws IOException if the manifest cannot be read
-	 */
 	private void deletePreviousGeneratedSources() throws IOException {
 		Path manifest = getManifest().get().getAsFile().toPath();
 		if (!Files.exists(manifest)) {
@@ -125,12 +103,6 @@ public abstract class GenerateProtoSources extends BufTask {
 		getFileSystemOperations().delete((spec) -> spec.delete(written));
 	}
 
-	/**
-	 * buf takes its instructions as a file and nothing else, so {@link #TEMPLATE} is
-	 * written out on every run, into the temporary directory where nobody will maintain
-	 * it by hand.
-	 * @return the path to hand buf
-	 */
 	private String template() {
 		Path template = getTemporaryDir().toPath().resolve("buf.gen.yaml");
 		try {

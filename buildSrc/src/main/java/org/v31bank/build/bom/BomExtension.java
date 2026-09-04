@@ -28,7 +28,6 @@ import org.v31bank.build.constant.Configurations;
  * DSL extensions for {@link BomPlugin}.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public class BomExtension {
 

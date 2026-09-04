@@ -32,16 +32,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
-/**
- * Class files assembled for a test to read.
- * <p>
- * What these checks read is bytecode, so what a test hands them has to be bytecode.
- * Assembling it here rather than compiling a fixture keeps Spring Boot off the test
- * classpath and lets a test say what the class declares instead of how a class file is
- * laid out.
- *
- * @author Xander Wang
- */
 final class ClassFiles {
 
 	private static final String AUTO_CONFIGURATION = "org.springframework.boot.autoconfigure.AutoConfiguration";
@@ -49,11 +39,6 @@ final class ClassFiles {
 	private ClassFiles() {
 	}
 
-	/**
-	 * A class carrying {@code @AutoConfiguration}.
-	 * @param className binary name of the class to write
-	 * @return a builder for it
-	 */
 	static Builder autoConfiguration(String className) {
 		return new Builder(className, AUTO_CONFIGURATION);
 	}

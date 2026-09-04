@@ -24,22 +24,12 @@ import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
 /**
- * Checks one API against the rules {@code buf.yaml} names.
- * <p>
- * The rules catch what the compiler cannot: a package that does not match its directory,
- * a response reused across RPCs so that neither can grow a field, a name that reads
- * unlike every other name in the API. One API per task, so a failure says which one.
+ * Lints one API against the rules in {@code buf.yaml}.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public abstract class LintProto extends BufTask {
 
-	/**
-	 * A marker written when the API lints clean, declared only so the task can be up to
-	 * date: Gradle re-runs a task that has no output on every build.
-	 * @return the marker file
-	 */
 	@OutputFile
 	public abstract RegularFileProperty getReport();
 

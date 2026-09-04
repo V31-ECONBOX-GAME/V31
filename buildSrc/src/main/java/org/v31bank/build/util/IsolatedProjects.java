@@ -23,7 +23,6 @@ import org.gradle.api.project.IsolatedProject;
  * The one project a project cannot ask another project for.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public final class IsolatedProjects {
 

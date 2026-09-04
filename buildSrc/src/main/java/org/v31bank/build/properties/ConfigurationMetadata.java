@@ -27,7 +27,6 @@ import org.v31bank.build.util.JsonFiles;
  * One configuration metadata file, read in the order it was written.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 final class ConfigurationMetadata {
 

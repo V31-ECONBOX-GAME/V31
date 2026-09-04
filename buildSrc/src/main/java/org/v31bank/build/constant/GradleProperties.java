@@ -20,7 +20,6 @@ package org.v31bank.build.constant;
  * Gradle property names.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public final class GradleProperties {
 

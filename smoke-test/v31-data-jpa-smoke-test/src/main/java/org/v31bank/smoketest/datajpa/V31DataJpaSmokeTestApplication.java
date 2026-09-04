@@ -19,12 +19,6 @@ package org.v31bank.smoketest.datajpa;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/**
- * An application that takes the Data JPA starter and nothing else.
- *
- * @author Xander Wang
- * @since 0.2.0
- */
 @SpringBootApplication
 public class V31DataJpaSmokeTestApplication {
 

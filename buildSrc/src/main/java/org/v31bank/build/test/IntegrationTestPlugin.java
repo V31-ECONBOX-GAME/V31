@@ -33,10 +33,7 @@ import org.v31bank.build.constant.Tasks;
 import org.v31bank.build.util.SourceSets;
 
 /**
- * Adds an {@code intTest} source set and task for tests that need more than the project
- * they are in.
- * <p>
- * Declared by the project itself:
+ * Adds an {@code intTest} source set and task.
  *
  * <pre class="code">
  * plugins {
@@ -44,12 +41,7 @@ import org.v31bank.build.util.SourceSets;
  * }
  * </pre>
  *
- * Kept apart from {@code test} because these tests are slow and depend on the
- * environment, and a failure here points at how the build assembles or publishes rather
- * than at the code.
- *
  * @author Xander Wang
- * @since 0.2.0
  */
 public class IntegrationTestPlugin implements Plugin<Project> {
 
@@ -67,12 +59,6 @@ public class IntegrationTestPlugin implements Plugin<Project> {
 		declareAsTestSources(project, intTestSourceSet);
 	}
 
-	/**
-	 * Gradle marks only {@code test} as testing source, so without this an IDE and its
-	 * analysers read these tests as production code.
-	 * @param project the project
-	 * @param intTestSourceSet the source set
-	 */
 	private void declareAsTestSources(Project project, SourceSet intTestSourceSet) {
 		project.getPluginManager().apply(IdeaPlugin.class);
 		IdeaModule module = project.getExtensions().getByType(IdeaModel.class).getModule();
@@ -96,10 +82,7 @@ public class IntegrationTestPlugin implements Plugin<Project> {
 			task.setTestClassesDirs(intTestSourceSet.getOutput().getClassesDirs());
 			task.setClasspath(intTestSourceSet.getRuntimeClasspath());
 			task.shouldRunAfter(JavaPlugin.TEST_TASK_NAME);
-			// An integration test drives a build of its own, and Gradle's native-platform
-			// loads a library from an unnamed module. Granting the access up front keeps
-			// JEP 472's warning out of the output, and keeps the test running when a
-			// later JDK turns that warning into a failure.
+			// Gradle's native-platform loads native code, which a later JDK will refuse.
 			task.jvmArgs("--enable-native-access=ALL-UNNAMED");
 		});
 	}

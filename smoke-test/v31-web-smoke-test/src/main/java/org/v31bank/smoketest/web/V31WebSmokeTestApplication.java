@@ -19,12 +19,6 @@ package org.v31bank.smoketest.web;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/**
- * An application that takes the web starter and nothing else.
- *
- * @author Xander Wang
- * @since 0.2.0
- */
 @SpringBootApplication
 public class V31WebSmokeTestApplication {
 

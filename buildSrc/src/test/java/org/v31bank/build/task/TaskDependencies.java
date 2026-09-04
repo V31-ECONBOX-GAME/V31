@@ -29,7 +29,6 @@ import org.gradle.api.provider.Provider;
  * as a provider of one, or as a bare name.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public final class TaskDependencies {
 

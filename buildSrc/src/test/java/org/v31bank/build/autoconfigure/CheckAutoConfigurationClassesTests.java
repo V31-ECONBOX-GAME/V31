@@ -42,7 +42,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * asserted on the report the check leaves behind, because that is where it says it.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class CheckAutoConfigurationClassesTests {
 

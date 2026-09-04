@@ -46,7 +46,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link MavenRepositoryPlugin}.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class MavenRepositoryPluginTests {
 

@@ -37,7 +37,6 @@ import org.gradle.api.Project;
  * needs to know which kind of project it is looking at.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public class ConventionsPlugin implements Plugin<Project> {
 

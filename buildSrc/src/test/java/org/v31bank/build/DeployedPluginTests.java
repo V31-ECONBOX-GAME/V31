@@ -32,7 +32,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * platform, because the plugin has to cope with a component that does not exist yet.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class DeployedPluginTests {
 

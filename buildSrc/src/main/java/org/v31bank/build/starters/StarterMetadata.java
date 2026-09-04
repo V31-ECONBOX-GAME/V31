@@ -42,15 +42,9 @@ import org.gradle.api.tasks.TaskAction;
 import org.v31bank.build.util.PropertiesFiles;
 
 /**
- * Writes a properties file naming a starter and every artifact it resolves to.
- * <p>
- * The dependency graph is only visible by resolving it, so this puts the answer on disk
- * where it can be read without running a build. The output is sorted and carries no
- * timestamp, so an unchanged starter produces a byte-identical file and a diff between
- * two versions shows only what moved.
+ * Writes a starter's resolved artifacts to a sorted properties file.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public abstract class StarterMetadata extends DefaultTask {
 
@@ -69,12 +63,6 @@ public abstract class StarterMetadata extends DefaultTask {
 	@Classpath
 	public abstract ConfigurableFileCollection getDependencyFiles();
 
-	/**
-	 * The same artifacts as {@link #getDependencyFiles()}, named. Held as plain strings
-	 * because the configuration cache cannot serialise a {@link Configuration} into a
-	 * task's execution.
-	 * @return the name of each artifact the starter resolves to
-	 */
 	@Input
 	public abstract SetProperty<String> getDependencyNames();
 

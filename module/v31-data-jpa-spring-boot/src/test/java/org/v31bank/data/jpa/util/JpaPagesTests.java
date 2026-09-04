@@ -33,7 +33,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link JpaPages}.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class JpaPagesTests {
 

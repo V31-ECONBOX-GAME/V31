@@ -24,7 +24,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link PageQuery}.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class PageQueryTests {
 

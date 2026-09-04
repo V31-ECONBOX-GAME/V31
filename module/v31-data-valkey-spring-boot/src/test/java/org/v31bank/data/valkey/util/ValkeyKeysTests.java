@@ -25,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * Tests for {@link ValkeyKeys}.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class ValkeyKeysTests {
 

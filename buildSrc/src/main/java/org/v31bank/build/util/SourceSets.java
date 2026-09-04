@@ -48,7 +48,6 @@ import org.v31bank.build.constant.Locations;
  * covered here is one call away rather than walled off.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public final class SourceSets {
 

@@ -38,7 +38,6 @@ import java.util.function.Function;
  * Analyses metadata files, one rule at a time, into a report.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 final class ConfigurationPropertiesAnalyzer {
 

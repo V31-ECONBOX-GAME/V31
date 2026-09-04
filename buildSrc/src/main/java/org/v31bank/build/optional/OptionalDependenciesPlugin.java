@@ -35,7 +35,6 @@ import org.v31bank.build.util.SourceSets;
  * </pre>
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public class OptionalDependenciesPlugin implements Plugin<Project> {
 

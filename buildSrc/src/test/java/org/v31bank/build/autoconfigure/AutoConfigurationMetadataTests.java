@@ -38,7 +38,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * Tests for {@link AutoConfigurationMetadata}.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class AutoConfigurationMetadataTests {
 

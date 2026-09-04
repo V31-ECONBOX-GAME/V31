@@ -35,7 +35,6 @@ import static org.assertj.core.api.Assertions.catchThrowableOfType;
  * Tests for {@link ValidateMigrationNames}.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class ValidateMigrationNamesTests {
 

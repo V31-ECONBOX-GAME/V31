@@ -35,7 +35,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * Tests for {@link CheckAdditionalSpringConfigurationMetadata}.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class CheckAdditionalSpringConfigurationMetadataTests {
 

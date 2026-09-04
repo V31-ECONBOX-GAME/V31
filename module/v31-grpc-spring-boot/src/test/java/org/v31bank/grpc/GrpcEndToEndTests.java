@@ -68,7 +68,6 @@ import static org.assertj.core.api.Assertions.catchThrowableOfType;
  * behaviour this module adds.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class GrpcEndToEndTests {
 

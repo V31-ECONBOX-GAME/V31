@@ -28,7 +28,6 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
  * Tests for {@link ValkeyCacheErrorHandler}.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 class ValkeyCacheErrorHandlerTests {
 

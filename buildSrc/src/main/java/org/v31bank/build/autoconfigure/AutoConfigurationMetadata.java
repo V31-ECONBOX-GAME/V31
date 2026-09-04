@@ -44,7 +44,6 @@ import org.v31bank.build.util.PropertiesFiles;
  * What one module offers, written where the build can gather it across modules.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public abstract class AutoConfigurationMetadata extends DefaultTask {
 

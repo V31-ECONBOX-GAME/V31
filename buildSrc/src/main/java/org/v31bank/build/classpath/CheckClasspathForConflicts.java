@@ -43,7 +43,6 @@ import org.gradle.api.tasks.TaskAction;
  * Fails when two jars on the classpath contain the same entry.
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public abstract class CheckClasspathForConflicts extends ClasspathCheck {
 

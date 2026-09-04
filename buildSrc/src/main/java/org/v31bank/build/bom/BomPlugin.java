@@ -35,7 +35,6 @@ import org.v31bank.build.constant.Configurations;
  * </pre>
  *
  * @author Xander Wang
- * @since 0.2.0
  */
 public class BomPlugin implements Plugin<Project> {
 

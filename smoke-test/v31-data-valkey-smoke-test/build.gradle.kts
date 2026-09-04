@@ -21,8 +21,6 @@ plugins {
 description = "V31 Data Valkey smoke test"
 
 dependencies {
-    // Only the starter, the way an application would take it: what the smoke test
-    // proves is that this one line is enough.
     implementation(project(":starter:v31-data-valkey-spring-boot-starter"))
 
     testImplementation("org.springframework.boot:spring-boot-test")
