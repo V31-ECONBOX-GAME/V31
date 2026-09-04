@@ -102,8 +102,6 @@ class StarterPluginTests {
 	@Test
 	void checksWhatTheConsumerActuallyEndsUpWith() {
 		Project starter = starter();
-		// Held as the source, because asking for the files would resolve the
-		// configuration.
 		Object runtimeClasspath = starter.getConfigurations()
 			.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
 		assertThat(CHECK_TASK_NAMES).allSatisfy((name) -> {
@@ -137,14 +135,11 @@ class StarterPluginTests {
 	}
 
 	private Project starter() {
-		// Both platform projects are reached by path, so they have to exist first.
 		Project root = ProjectBuilder.builder().withName("v31").withProjectDir(this.directory).build();
 		Project platform = ProjectBuilder.builder().withName("platform").withParent(root).build();
 		ProjectBuilder.builder().withName("v31-internal-dependencies").withParent(platform).build();
 		ProjectBuilder.builder().withName("v31-dependencies").withParent(platform).build();
 		Project starter = ProjectBuilder.builder().withName("v31-web-spring-boot-starter").withParent(root).build();
-		// Supplied by gradle.properties in the real build; the conventions read them,
-		// never default.
 		starter.getExtensions().getExtraProperties().set("buildJavaVersion", "25");
 		starter.getExtensions().getExtraProperties().set("runtimeJavaVersion", "25");
 		starter.getExtensions().getExtraProperties().set("checkstyleToolVersion", "12.3.1");

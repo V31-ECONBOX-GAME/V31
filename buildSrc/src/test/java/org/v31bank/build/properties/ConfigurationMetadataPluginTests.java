@@ -52,10 +52,6 @@ class ConfigurationMetadataPluginTests {
 		assertThat(project.getTasks().findByName(Tasks.CHECK_MANUAL_CONFIGURATION_METADATA)).isNull();
 	}
 
-	/**
-	 * Nothing is generated here, so no processor is added. That is the whole difference
-	 * from {@link ConfigurationPropertiesPlugin}.
-	 */
 	@Test
 	void addsNoAnnotationProcessor() {
 		Configuration annotationProcessor = project().getConfigurations()
@@ -78,10 +74,6 @@ class ConfigurationMetadataPluginTests {
 		assertThat(TaskDependencies.namesOf(check.getDependsOn())).contains(Tasks.CHECK_MANUAL_CONFIGURATION_METADATA);
 	}
 
-	/**
-	 * The file ships as it was written, so what is checked is the copy a consumer gets
-	 * rather than the source it was copied from.
-	 */
 	@Test
 	void checksTheMetadataWhereItShips() {
 		Project project = project();
@@ -91,10 +83,6 @@ class ConfigurationMetadataPluginTests {
 			.hasParent(new File(project.getLayout().getBuildDirectory().get().getAsFile(), "resources/main/META-INF"));
 	}
 
-	/**
-	 * The file does not exist until processResources has copied it, so a check that does
-	 * not wait for the copy fails validation on a clean build rather than running.
-	 */
 	@Test
 	void waitsForTheCopyThatShipsTheMetadata() {
 		CheckManualSpringConfigurationMetadata check = check(project());

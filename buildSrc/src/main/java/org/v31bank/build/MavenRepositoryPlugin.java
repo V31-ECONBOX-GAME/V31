@@ -36,28 +36,14 @@ import org.v31bank.build.constant.Configurations;
 import org.v31bank.build.util.Directories;
 
 /**
- * Publishes a project into a Maven repository inside its own build directory.
- * <p>
- * Declared by the project itself, and applied by {@link DeployedPlugin} for the projects
- * that publish:
- *
- * <pre class="code">
- * plugins {
- *     id("org.v31bank.maven-repository")
- * }
- * </pre>
- *
- * It lets the build resolve V31 by coordinate the way a consumer does, without publishing
- * anywhere real and without touching the developer's {@code ~/.m2}.
+ * Publishes into a Maven repository inside the build directory.
  *
  * @author Xander Wang
  */
 public class MavenRepositoryPlugin implements Plugin<Project> {
 
-	/** What Gradle calls the task that publishes this build's own publication. */
 	private static final String PUBLISH_TASK_NAME = "publishV31PublicationToProjectRepository";
 
-	/** What it calls the one {@code java-gradle-plugin} creates on a project's behalf. */
 	private static final String PLUGIN_PUBLISH_TASK_NAME = "publishPluginMavenPublicationToProjectRepository";
 
 	private static final String REPOSITORY_NAME = "project";
@@ -80,10 +66,8 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 	}
 
 	private void setUpProjectRepository(Project project, Task publishTask, File location) {
-		// Emptied first, so a rename or a removal leaves no stale artifact to resolve
 		publishTask.doFirst(new CleanAction(location));
 		Configuration repository = project.getConfigurations().create(Configurations.MAVEN_REPOSITORY);
-		// Taken from the task, not the layout, so the artifact carries what builds it
 		TaskProvider<Task> publish = project.getTasks().named(publishTask.getName());
 		project.getArtifacts().add(repository.getName(), publish.map((_) -> location));
 		DependencySet contents = repository.getDependencies();
@@ -100,8 +84,6 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 
 	private void addMavenRepositoryProjectDependencies(Project project, String configurationName,
 			DependencySet contents) {
-		// Each is asked for its repository rather than its jar, so resolving this one
-		// gathers the whole chain a consumer has to resolve against.
 		project.getConfigurations()
 			.getByName(configurationName)
 			.getDependencies()
@@ -117,15 +99,11 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 
 	private record CleanAction(File location) implements Action<Task> {
 
-		/**
-		 * Deletes with plain file operations because the project is not reachable from a
-		 * task at execution time under the configuration cache.
-		 * @param task the publish task about to run
-		 */
 		@Override
 		public void execute(Task task) {
 			Directories.deleteRecursively(this.location.toPath());
 		}
+
 	}
 
 }

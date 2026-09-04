@@ -49,11 +49,7 @@ import org.v31bank.build.constant.Projects;
 import org.v31bank.build.util.Directories;
 
 /**
- * Conventions applied to every project that builds Java.
- * <p>
- * Not a registered Gradle plugin: {@code ConventionsPlugin} instantiates it directly, so
- * these rules are ordinary code that can be read, compiled and tested. Nothing here
- * touches a project other than the one it is handed.
+ * Conventions for every project that builds Java.
  *
  * @author Xander Wang
  */
@@ -68,12 +64,6 @@ class JavaConventions {
 		});
 	}
 
-	/**
-	 * The formatter rewrites the file, so its shape is never discussed; checkstyle limits
-	 * what the code may do. Its rules ship with the formatter, so the two cannot
-	 * disagree.
-	 * @param project the project to configure
-	 */
 	private void configureSpringJavaFormat(Project project) {
 		project.getPluginManager().apply(SpringJavaFormatPlugin.class);
 		project.getTasks().withType(Format.class).configureEach((format) -> format.setEncoding("UTF-8"));
@@ -101,14 +91,6 @@ class JavaConventions {
 		});
 	}
 
-	/**
-	 * The platform goes into a configuration of its own rather than into
-	 * {@code implementation}, so that it reaches every classpath including source sets
-	 * added later, stays out of the published metadata where a consumer would have to
-	 * resolve a platform internal to this build, and being enforced cannot be overridden
-	 * by a transitive dependency.
-	 * @param project the project to configure
-	 */
 	private void configureDependencyManagement(Project project) {
 		ConfigurationContainer configurations = project.getConfigurations();
 		Configuration dependencyManagement = configurations.dependencyScope(Configurations.DEPENDENCY_MANAGEMENT).get();
@@ -125,12 +107,6 @@ class JavaConventions {
 		return name.endsWith("Classpath") || JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME.equals(name);
 	}
 
-	/**
-	 * The toolchain settles which compiler runs; {@code release} settles what that
-	 * compiler may see, so a call to an API added after the runtime version fails here
-	 * rather than on the JVM the artifact claims to support.
-	 * @param project the project to configure
-	 */
 	private void configureJavaCompilation(Project project) {
 		int buildVersion = version(project, GradleProperties.BUILD_JAVA_VERSION);
 		int runtimeVersion = version(project, GradleProperties.RUNTIME_JAVA_VERSION);
@@ -140,8 +116,6 @@ class JavaConventions {
 		project.getTasks().withType(JavaCompile.class).configureEach((compile) -> {
 			compile.getOptions().getRelease().set(runtimeVersion);
 			Set<String> args = new LinkedHashSet<>(compile.getOptions().getCompilerArgs());
-			// -Werror is what makes the rest of the list mean anything: a warning nobody
-			// has to act on is scrolled past.
 			args.addAll(List.of("-parameters", "-Werror", "-Xlint:unchecked", "-Xlint:deprecation", "-Xlint:rawtypes",
 					"-Xlint:varargs"));
 			compile.getOptions().setCompilerArgs(new ArrayList<>(args));

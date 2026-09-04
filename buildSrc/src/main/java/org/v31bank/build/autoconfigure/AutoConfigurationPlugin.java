@@ -39,13 +39,6 @@ import org.v31bank.build.util.SourceSets;
  * Generates configuration metadata with {@code spring-boot-autoconfigure-processor},
  * checks it and offers it onward.
  *
- * <pre class="code">
- * plugins {
- *     `java-library`
- *     id("org.v31bank.auto-configuration")
- * }
- * </pre>
- *
  * @author Xander Wang
  */
 public class AutoConfigurationPlugin implements Plugin<Project> {

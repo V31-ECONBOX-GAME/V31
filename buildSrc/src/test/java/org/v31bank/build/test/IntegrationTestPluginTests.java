@@ -37,9 +37,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link IntegrationTestPlugin}.
- * <p>
- * Each test applies this plugin before {@code java}, because it reacts to the java plugin
- * rather than requiring it to be there already.
  *
  * @author Xander Wang
  */
@@ -117,11 +114,6 @@ class IntegrationTestPluginTests {
 		assertThat(TaskDependencies.namesOf(task.getDependsOn())).doesNotContain(JavaPlugin.TEST_TASK_NAME);
 	}
 
-	/**
-	 * These tests drive a build of their own, and Gradle's native-platform loads a
-	 * library from an unnamed module. Without the grant, JEP 472 prints a warning today
-	 * and fails the call on some later JDK.
-	 */
 	@org.junit.jupiter.api.Test
 	void grantsTheNativeAccessTheBuildItDrivesNeeds() {
 		assertThat(intTestTask(javaProject()).getJvmArgs()).contains("--enable-native-access=ALL-UNNAMED");

@@ -66,10 +66,6 @@ class CheckSpringConfigurationMetadataTests {
 		assertThatCode(task::check).doesNotThrowAnyException();
 	}
 
-	/**
-	 * Order and duplicates are the processor's business here, not a person's, so this
-	 * check does not ask about them.
-	 */
 	@Test
 	void saysNothingAboutOrderOrDuplicates() {
 		MetadataFiles.metadata()
@@ -80,10 +76,6 @@ class CheckSpringConfigurationMetadataTests {
 		assertThatCode(task()::check).doesNotThrowAnyException();
 	}
 
-	/**
-	 * The processor writes an {@code ignored} section, which is an object where every
-	 * other section is an array. Nothing reads it, so nothing trips over it.
-	 */
 	@Test
 	void passesOnAModulesGeneratedMetadata() {
 		MetadataFiles.realMetadata(metadataFile());

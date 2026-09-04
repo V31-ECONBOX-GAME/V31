@@ -50,12 +50,6 @@ import org.v31bank.build.util.Bom;
 /**
  * Installs buf and the generators it runs, once for the whole build.
  *
- * <pre class="code">
- * plugins {
- *     id("org.v31bank.proto-toolchain")
- * }
- * </pre>
- *
  * @author Xander Wang
  */
 public class ProtoToolchainPlugin implements Plugin<Project> {

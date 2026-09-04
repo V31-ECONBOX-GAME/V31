@@ -38,13 +38,6 @@ import org.v31bank.build.util.SourceSets;
 /**
  * Checks hand-written configuration metadata and offers it onward.
  *
- * <pre class="code">
- * plugins {
- *     `java-library`
- *     id("org.v31bank.configuration-metadata")
- * }
- * </pre>
- *
  * @author Xander Wang
  */
 public class ConfigurationMetadataPlugin implements Plugin<Project> {

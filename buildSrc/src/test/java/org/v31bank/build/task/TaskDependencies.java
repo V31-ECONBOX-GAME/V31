@@ -22,14 +22,6 @@ import java.util.stream.StreamSupport;
 import org.gradle.api.Task;
 import org.gradle.api.provider.Provider;
 
-/**
- * Reads the names out of a task's declared dependencies.
- * <p>
- * {@code dependsOn} hands back whatever it was given, so a dependency arrives as a task,
- * as a provider of one, or as a bare name.
- *
- * @author Xander Wang
- */
 public final class TaskDependencies {
 
 	private TaskDependencies() {

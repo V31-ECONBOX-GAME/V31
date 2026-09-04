@@ -20,21 +20,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
 /**
- * Applies the conventions every V31 project is held to.
- * <p>
- * Not declared by a project. {@code settings.gradle.kts} applies it to all of them:
- *
- * <pre class="code">
- * gradle.lifecycle.beforeProject {
- *     pluginManager.apply("org.v31bank.conventions")
- * }
- * </pre>
- *
- * From settings rather than from a {@code subprojects} block in the root build file,
- * because under isolated projects no project may configure another.
- *
- * Each set of conventions reacts to the plugins a project actually has, so nothing here
- * needs to know which kind of project it is looking at.
+ * Applies conventions to every project.
  *
  * @author Xander Wang
  */

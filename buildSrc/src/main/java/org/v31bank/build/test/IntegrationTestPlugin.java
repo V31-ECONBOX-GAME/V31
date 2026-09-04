@@ -35,12 +35,6 @@ import org.v31bank.build.util.SourceSets;
 /**
  * Adds an {@code intTest} source set and task.
  *
- * <pre class="code">
- * plugins {
- *     id("org.v31bank.integration-test")
- * }
- * </pre>
- *
  * @author Xander Wang
  */
 public class IntegrationTestPlugin implements Plugin<Project> {

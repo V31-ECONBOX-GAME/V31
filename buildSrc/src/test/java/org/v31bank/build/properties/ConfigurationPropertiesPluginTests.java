@@ -69,10 +69,6 @@ class ConfigurationPropertiesPluginTests {
 			.doesNotContain("spring-boot-autoconfigure-processor");
 	}
 
-	/**
-	 * The reason the whole source set is compiled every time: an incremental run drops
-	 * every description belonging to a class that did not change.
-	 */
 	@Test
 	void compilesTheWholeSourceSetSoThatNoDescriptionIsLost() {
 		JavaCompile compileJava = (JavaCompile) project().getTasks().getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME);
@@ -135,10 +131,6 @@ class ConfigurationPropertiesPluginTests {
 					new File(project.getLayout().getBuildDirectory().get().getAsFile(), "classes/java/main/META-INF"));
 	}
 
-	/**
-	 * The file does not exist until the compiler has written it, so a check that does not
-	 * wait for the compiler fails validation on a clean build rather than running.
-	 */
 	@Test
 	void waitsForTheCompilerThatWritesTheMetadata() {
 		Project project = project();
@@ -148,10 +140,6 @@ class ConfigurationPropertiesPluginTests {
 			.contains(JavaPlugin.COMPILE_JAVA_TASK_NAME);
 	}
 
-	/**
-	 * The resources hold whatever the project ships; only the hand-written metadata is
-	 * this check's business.
-	 */
 	@Test
 	void checksOnlyTheHandWrittenMetadataAmongTheResources() throws IOException {
 		write("src/main/resources/" + Locations.ADDITIONAL_CONFIGURATION_METADATA_FILE, "{}");

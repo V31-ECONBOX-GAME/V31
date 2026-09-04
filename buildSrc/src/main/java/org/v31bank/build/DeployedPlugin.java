@@ -27,19 +27,7 @@ import org.gradle.api.publish.tasks.GenerateModuleMetadata;
 import org.v31bank.build.util.IsolatedProjects;
 
 /**
- * Marks a project as one that is published, and applies everything that follows from
- * that.
- * <p>
- * Declared by the project itself:
- *
- * <pre class="code">
- * plugins {
- *     id("org.v31bank.deployed")
- * }
- * </pre>
- *
- * Applying it is the decision: nothing infers which projects publish from where they sit
- * or what they are called.
+ * Plugin for projects that need deploying.
  *
  * @author Xander Wang
  */
@@ -51,18 +39,11 @@ public class DeployedPlugin implements Plugin<Project> {
 		PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
 		MavenPublication publication = publishing.getPublications()
 			.create(IsolatedProjects.rootOf(project).getName(), MavenPublication.class);
-		// Matched, not looked up: the subproject's build file runs after this.
 		publishComponent(project, publication, JavaPlugin.class, "java");
 		publishComponent(project, publication, JavaPlatformPlugin.class, "javaPlatform");
 		allowDependenciesWithoutVersions(project);
 	}
 
-	/**
-	 * Gradle rejects module metadata whose dependencies carry no version. Here that shape
-	 * is intended: the versions live in {@code v31-dependencies}, and importing that BOM
-	 * is how a consumer depends on V31.
-	 * @param project the project to configure
-	 */
 	private void allowDependenciesWithoutVersions(Project project) {
 		project.getTasks()
 			.withType(GenerateModuleMetadata.class)

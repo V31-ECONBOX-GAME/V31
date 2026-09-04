@@ -32,9 +32,6 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 
 /**
  * Tests for {@link ConfigurationPropertiesAnalyzer}.
- * <p>
- * Every rule is asked once about a file that breaks it and once about a file that does
- * not, because a rule that never passes and a rule that never fails are equally useless.
  *
  * @author Xander Wang
  */

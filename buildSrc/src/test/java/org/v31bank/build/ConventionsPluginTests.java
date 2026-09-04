@@ -36,9 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConventionsPlugin}.
- * <p>
- * Each test applies the conventions first and the plugin second, the order the real build
- * uses: the root applies the conventions before a subproject's own build file has run.
  *
  * @author Xander Wang
  */
@@ -181,14 +178,10 @@ class ConventionsPluginTests {
 	}
 
 	private Project conventions() {
-		// The conventions depend on the platform project by path, so it has to exist
-		// first.
 		Project root = ProjectBuilder.builder().withName("v31").withProjectDir(this.directory).build();
 		Project platform = ProjectBuilder.builder().withName("platform").withParent(root).build();
 		ProjectBuilder.builder().withName("v31-internal-dependencies").withParent(platform).build();
 		Project project = ProjectBuilder.builder().withName("under-test").withParent(root).build();
-		// Supplied by gradle.properties in the real build; the conventions read them,
-		// never default.
 		project.getExtensions().getExtraProperties().set("buildJavaVersion", "25");
 		project.getExtensions().getExtraProperties().set("runtimeJavaVersion", "21");
 		project.getExtensions().getExtraProperties().set("checkstyleToolVersion", "12.3.1");

@@ -28,12 +28,6 @@ import org.v31bank.build.constant.Configurations;
 /**
  * Turns a project into a bom, applying {@code java-platform} itself.
  *
- * <pre class="code">
- * plugins {
- *     id("org.v31bank.bom")
- * }
- * </pre>
- *
  * @author Xander Wang
  */
 public class BomPlugin implements Plugin<Project> {

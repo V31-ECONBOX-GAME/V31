@@ -27,9 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DeployedPlugin}.
- * <p>
- * Each test applies the plugin before saying whether the project is a library or a
- * platform, because the plugin has to cope with a component that does not exist yet.
  *
  * @author Xander Wang
  */

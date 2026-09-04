@@ -33,9 +33,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link CheckManualSpringConfigurationMetadata}.
- * <p>
- * There is no processor behind this file, so unlike the hand-written supplement it is
- * held to all four rules — the descriptions included.
  *
  * @author Xander Wang
  */
@@ -77,9 +74,6 @@ class CheckManualSpringConfigurationMetadataTests {
 			.contains("deprecated without a 'since' version");
 	}
 
-	/**
-	 * Every rule at once against a real file, {@code ignored} section and all.
-	 */
 	@Test
 	void passesOnAModulesMetadata() {
 		MetadataFiles.realMetadata(metadataFile());

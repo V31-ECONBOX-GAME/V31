@@ -65,10 +65,6 @@ class AutoConfigurationMetadataTests {
 		assertThat(task().getModuleName().get()).isEqualTo("v31-example-spring-boot");
 	}
 
-	/**
-	 * A collected list is read by something outside the module, and a package-private
-	 * class is not a thing anything out there can name.
-	 */
 	@Test
 	void listsOnlyTheClassesSomethingElseCouldName() throws IOException {
 		ClassFiles.autoConfiguration(FIRST).writeTo(classes());
@@ -94,11 +90,6 @@ class AutoConfigurationMetadataTests {
 		assertThat(metadata()).containsEntry("autoConfigurationClassNames", "");
 	}
 
-	/**
-	 * The file is compared build to build, so anything in it that changes on its own — a
-	 * timestamp, a platform line separator, an unordered map — would make an unchanged
-	 * module look changed.
-	 */
 	@Test
 	void writesTheSameBytesForTheSameModule() throws IOException {
 		ClassFiles.autoConfiguration(FIRST).writeTo(classes());

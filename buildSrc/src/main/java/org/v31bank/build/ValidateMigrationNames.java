@@ -40,18 +40,15 @@ import org.gradle.api.tasks.TaskAction;
 import org.v31bank.build.constant.Locations;
 
 /**
- * Fails the build on a migration whose name does not follow the naming convention, or
- * that reuses a version another migration already took.
+ * Fails a migration that is misnamed or reuses a version.
  *
  * @author Xander Wang
  */
 public abstract class ValidateMigrationNames extends DefaultTask {
 
-	/** Applied once, in version order. */
 	private static final Pattern VERSIONED = Pattern.compile("^V\\d{14}__[a-z][a-z0-9_]*"
 			+ "_(create|drop|add|alter|rename|index|constraint|seed|backfill)(_[a-z0-9_]+)?\\.sql$");
 
-	/** Re-applied whenever its checksum changes. */
 	private static final Pattern REPEATABLE = Pattern
 		.compile("^R__[a-z][a-z0-9_]*_(view|function|procedure|trigger)\\.sql$");
 
@@ -61,11 +58,6 @@ public abstract class ValidateMigrationNames extends DefaultTask {
 	@PathSensitive(PathSensitivity.RELATIVE)
 	public abstract ConfigurableFileCollection getMigrations();
 
-	/**
-	 * A marker written when every name checks out, declared only so the task can be up to
-	 * date: Gradle re-runs a task that has no output on every build.
-	 * @return the marker file
-	 */
 	@OutputFile
 	public abstract RegularFileProperty getReport();
 
@@ -96,15 +88,11 @@ public abstract class ValidateMigrationNames extends DefaultTask {
 			String year = version.substring(0, 4);
 			String directory = migration.getParentFile().getName();
 			if (!year.equals(directory)) {
-				// Flyway orders by version alone, so this only breaks reading: the year
-				// directory is how the history gets browsed.
 				problems.add(name + " — a versioned migration lives in " + Locations.MIGRATIONS_DIRECTORY + "/" + year
 						+ ", not " + directory);
 			}
 			String taken = byVersion.putIfAbsent(version, name);
 			if (taken != null) {
-				// Flyway applies one and records the version; the other is silently
-				// skipped for the lifetime of the schema.
 				problems.add(name + " — version " + version + " is already taken by " + taken);
 			}
 		}

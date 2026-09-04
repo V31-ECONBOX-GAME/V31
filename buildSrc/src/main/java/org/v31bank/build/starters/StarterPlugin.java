@@ -35,12 +35,6 @@ import org.v31bank.build.constant.Locations;
 /**
  * Publishes a starter and checks the dependency graph it hands a consumer.
  *
- * <pre class="code">
- * plugins {
- *     id("org.v31bank.starter")
- * }
- * </pre>
- *
  * @author Xander Wang
  */
 public class StarterPlugin implements Plugin<Project> {

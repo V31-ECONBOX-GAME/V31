@@ -36,9 +36,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link CheckAutoConfigurationImports}.
- * <p>
- * The failure tells you where to look and the report tells you what is wrong, so both are
- * asserted: a check that threw without writing down why would pass half of these.
  *
  * @author Xander Wang
  */
@@ -81,10 +78,6 @@ class CheckAutoConfigurationImportsTests {
 		assertThat(report(task)).contains("'%s' is not annotated with @AutoConfiguration".formatted(A));
 	}
 
-	/**
-	 * The order to use is written out rather than described, so that fixing the file is a
-	 * copy rather than a sort by hand.
-	 */
 	@Test
 	void failsWhenTheEntriesAreOutOfOrderAndWritesOutTheOrderToUse() {
 		ClassFiles.autoConfiguration(A).writeTo(classes());
@@ -104,11 +97,6 @@ class CheckAutoConfigurationImportsTests {
 		assertThatCode(task()::check).doesNotThrowAnyException();
 	}
 
-	/**
-	 * A module with no imports file registers nothing, and a check with nothing to read
-	 * is skipped by Gradle rather than run: {@code getSource()} is what carries
-	 * {@code @SkipWhenEmpty}.
-	 */
 	@Test
 	void hasNothingToReadWhenTheModuleHasNoImportsFile() {
 		ClassFiles.autoConfiguration(A).writeTo(classes());

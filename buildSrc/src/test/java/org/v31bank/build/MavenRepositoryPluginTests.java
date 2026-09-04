@@ -137,7 +137,6 @@ class MavenRepositoryPluginTests {
 
 	@SuppressWarnings("unchecked")
 	private static void runFirstActionOf(Task task) {
-		// The publish action itself would need a real repository behind it.
 		((Action<Task>) task.getActions().get(0)).execute(task);
 	}
 
@@ -162,7 +161,6 @@ class MavenRepositoryPluginTests {
 
 	private Project deployedProject() {
 		Project root = ProjectBuilder.builder().withName("v31").withProjectDir(this.directory).build();
-		// A test depends on this project by path, so it has to exist first.
 		ProjectBuilder.builder().withName("v31-core").withParent(root).build();
 		Project project = ProjectBuilder.builder().withName("v31-web").withParent(root).build();
 		project.getPlugins().apply("java-library");

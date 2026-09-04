@@ -71,11 +71,6 @@ class CheckAdditionalSpringConfigurationMetadataTests {
 		assertThat(report()).content().contains("deprecated without a 'since' version").contains("- v31.gone");
 	}
 
-	/**
-	 * The hand-written file exists to add what the processor could not work out, so
-	 * demanding a description of every line of it would make the escape hatch harder to
-	 * use than the thing it escapes.
-	 */
 	@Test
 	void letsAHandWrittenPropertySayNothing() {
 		MetadataFiles.metadata().undescribed("v31.a").writeTo(metadataFile());

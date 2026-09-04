@@ -43,28 +43,14 @@ final class ClassFiles {
 		return new Builder(className, AUTO_CONFIGURATION);
 	}
 
-	/**
-	 * A class carrying some other annotation, which the reader has to pass over.
-	 * @param className binary name of the class to write
-	 * @param annotationClassName binary name of the annotation it carries
-	 * @return a builder for it
-	 */
 	static Builder annotatedWith(String className, String annotationClassName) {
 		return new Builder(className, annotationClassName);
 	}
 
-	/**
-	 * A class carrying no annotation at all.
-	 * @param className binary name of the class to write
-	 * @return a builder for it
-	 */
 	static Builder plainClass(String className) {
 		return new Builder(className, null);
 	}
 
-	/**
-	 * A class file waiting to be told what it declares.
-	 */
 	static final class Builder {
 
 		private final String className;
@@ -96,21 +82,11 @@ final class ClassFiles {
 			return withElement("afterName", classNames, AnnotationValue::ofString);
 		}
 
-		/**
-		 * A class nothing outside its own package can name.
-		 * @return this builder
-		 */
 		Builder notPublic() {
 			this.isPublic = false;
 			return this;
 		}
 
-		/**
-		 * An attribute holding one value rather than the array both real forms hold.
-		 * @param name the attribute to add
-		 * @param value its value
-		 * @return this builder
-		 */
 		Builder withSingleValued(String name, String value) {
 			this.elements.add(AnnotationElement.of(name, AnnotationValue.ofString(value)));
 			return this;
@@ -122,12 +98,6 @@ final class ClassFiles {
 			return this;
 		}
 
-		/**
-		 * Write the class file where a classpath rooted at the given directory would
-		 * expect to find it.
-		 * @param classesDirectory the root to write under
-		 * @return the file written
-		 */
 		Path writeTo(Path classesDirectory) {
 			byte[] bytes = ClassFile.of().build(ClassDesc.of(this.className), (builder) -> {
 				builder.withFlags(this.isPublic ? new AccessFlag[] { AccessFlag.PUBLIC } : new AccessFlag[0]);

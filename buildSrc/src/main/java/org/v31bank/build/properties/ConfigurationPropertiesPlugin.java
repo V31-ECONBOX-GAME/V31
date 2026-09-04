@@ -41,13 +41,6 @@ import org.v31bank.build.util.SourceSets;
  * Generates configuration metadata with {@code spring-boot-configuration-processor},
  * checks it and offers it onward.
  *
- * <pre class="code">
- * plugins {
- *     `java-library`
- *     id("org.v31bank.configuration-properties")
- * }
- * </pre>
- *
  * @author Xander Wang
  */
 public class ConfigurationPropertiesPlugin implements Plugin<Project> {

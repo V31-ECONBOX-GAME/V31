@@ -36,10 +36,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link CheckAutoConfigurationClasses}.
- * <p>
- * A dependency is a directory of class files here rather than a jar, which is one of the
- * two shapes a resolved classpath comes in and the one a test can write. What is wrong is
- * asserted on the report the check leaves behind, because that is where it says it.
  *
  * @author Xander Wang
  */
@@ -103,10 +99,6 @@ class CheckAutoConfigurationClassesTests {
 		assertThat(report(task)).contains("should not be registered in");
 	}
 
-	/**
-	 * A test slice is asked for by name rather than registered, so leaving it out of the
-	 * file is right and no module has to say so.
-	 */
 	@Test
 	void expectsATestSliceToBeLeftUnregistered() {
 		ClassFiles.autoConfiguration(TEST_SLICE).writeTo(classes());
@@ -155,10 +147,6 @@ class CheckAutoConfigurationClassesTests {
 		assertThat(report(task)).contains("beforeName 'com.example.GoneAutoConfiguration' not found");
 	}
 
-	/**
-	 * All four attributes, each used the wrong way round, so that the message for every
-	 * one of them is produced rather than the two that happen to be tested elsewhere.
-	 */
 	@Test
 	void namesEveryAttributeItRejects() {
 		ClassFiles.autoConfiguration(EXAMPLE)
@@ -205,10 +193,6 @@ class CheckAutoConfigurationClassesTests {
 		assertThatCode(task()::check).doesNotThrowAnyException();
 	}
 
-	/**
-	 * A dependency that is optional here but required there is required: a consumer that
-	 * resolves it at all gets the class.
-	 */
 	@Test
 	void treatsAClassOnBothClasspathsAsAlwaysThere() {
 		ClassFiles.autoConfiguration(EXAMPLE).before(ALWAYS_THERE).writeTo(classes());
@@ -238,11 +222,6 @@ class CheckAutoConfigurationClassesTests {
 		assertThatCode(task::check).doesNotThrowAnyException();
 	}
 
-	/**
-	 * The other half of {@link #readsNoDependencyWhenNothingDeclaresAnOrder()}: the jar
-	 * it is handed really is one nothing can read, so passing there was the order being
-	 * absent and not the jar being fine.
-	 */
 	@Test
 	void readsTheDependenciesWhenSomethingDeclaresAnOrder() {
 		ClassFiles.autoConfiguration(EXAMPLE).before(ALWAYS_THERE).writeTo(classes());
@@ -252,10 +231,6 @@ class CheckAutoConfigurationClassesTests {
 		assertThatExceptionOfType(UncheckedIOException.class).isThrownBy(task::check);
 	}
 
-	/**
-	 * A module with no imports file has nothing for this to read, so Gradle skips it:
-	 * {@code getSource()} is what carries {@code @SkipWhenEmpty}.
-	 */
 	@Test
 	void hasNothingToReadWhenTheModuleHasNoImportsFile() {
 		ClassFiles.autoConfiguration(EXAMPLE).writeTo(classes());

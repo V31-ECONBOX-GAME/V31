@@ -46,9 +46,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link AutoConfigurationPlugin}.
- * <p>
- * The conventions reach for the platform project by path, so a project under test is
- * built inside a root that has one, the way the real build does.
  *
  * @author Xander Wang
  */
@@ -64,11 +61,6 @@ class AutoConfigurationPluginTests {
 		assertThat(project().getPlugins().hasPlugin(DeployedPlugin.class)).isTrue();
 	}
 
-	/**
-	 * Whether a module is a library or a plain jar is the module's decision. Publication
-	 * is not conditional on it, but everything that needs a source set waits for the java
-	 * plugin the module chose rather than choosing one for it.
-	 */
 	@Test
 	void decidesNothingAboutHowTheModuleIsBuilt() {
 		Project project = module();
@@ -97,13 +89,6 @@ class AutoConfigurationPluginTests {
 		assertThat(project.getTasks().findByName(Tasks.CHECK_AUTO_CONFIGURATION_CLASSES)).isNotNull();
 	}
 
-	/**
-	 * The processor that writes configuration property metadata belongs to
-	 * {@code org.v31bank.configuration-properties}. A module registering
-	 * auto-configurations does not necessarily declare any properties, and one declaring
-	 * properties does not necessarily register any auto-configuration, so neither plugin
-	 * brings the other's processor along.
-	 */
 	@Test
 	void compilesWithTheProcessorAnAutoConfigurationModuleNeedsAndNoOther() {
 		Configuration annotationProcessor = project().getConfigurations()
@@ -139,11 +124,6 @@ class AutoConfigurationPluginTests {
 		}
 	}
 
-	/**
-	 * Waiting on the compiler and not on the whole {@code classes} task is the point of
-	 * reading the imports file where it is written: a check of what the module registers
-	 * does not need its resources copied first.
-	 */
 	@Test
 	void readsTheMainSourceSetOfTheProject() {
 		Project project = project();
@@ -158,10 +138,6 @@ class AutoConfigurationPluginTests {
 		}
 	}
 
-	/**
-	 * Nothing is declared on it directly, so what the check counts as always there is
-	 * exactly what the module resolves.
-	 */
 	@Test
 	void takesTheRequiredClasspathFromEverythingTheModuleAlwaysResolves() {
 		Project project = project();
@@ -176,11 +152,6 @@ class AutoConfigurationPluginTests {
 				main.getRuntimeOnlyConfigurationName());
 	}
 
-	/**
-	 * {@code api} is not named directly because {@code implementation} extends it, which
-	 * is the one thing that would quietly leave a module's exported dependencies out of
-	 * the check.
-	 */
 	@Test
 	void reachesTheExportedDependenciesThroughImplementation() {
 		Project project = project();
@@ -189,11 +160,6 @@ class AutoConfigurationPluginTests {
 		assertThat(parentNames(implementation)).contains(JavaPlugin.API_CONFIGURATION_NAME);
 	}
 
-	/**
-	 * Both derived classpaths are resolved, and everything they hold was declared without
-	 * a version. The conventions put the platform on a configuration whose name ends in
-	 * {@code Classpath} and on no other, so the names are load-bearing.
-	 */
 	@Test
 	void namesTheDerivedClasspathsSoThatTheyCarryThePlatform() {
 		Project project = project();
@@ -253,10 +219,6 @@ class AutoConfigurationPluginTests {
 			.hasParent(project.getLayout().getBuildDirectory().get().getAsFile());
 	}
 
-	/**
-	 * The checks read the file where it is written so they need not wait on the resources
-	 * being processed; the metadata describes what ships, so it reads the built ones.
-	 */
 	@Test
 	void describesTheModuleThatShipsRatherThanTheOneThatIsWritten() {
 		Project project = project();
@@ -270,10 +232,6 @@ class AutoConfigurationPluginTests {
 		assertThat(check.getResources().getFrom()).containsExactly(main.getResources());
 	}
 
-	/**
-	 * The metadata is collected from many modules at once, so it says what it is rather
-	 * than leaving a consumer to select a jar by accident.
-	 */
 	@Test
 	void saysWhatTheMetadataIsSoThatItCanBeCollected() {
 		Configuration metadata = project().getConfigurations().getByName(Configurations.AUTO_CONFIGURATION_METADATA);
@@ -300,19 +258,11 @@ class AutoConfigurationPluginTests {
 		return project;
 	}
 
-	/**
-	 * A subproject as the root build hands it over: the platform project it reaches by
-	 * path, the properties the conventions read, and the conventions themselves. No java
-	 * plugin — that is the module's own decision and the point of several tests here.
-	 * @return the project under test
-	 */
 	private Project module() {
 		Project root = ProjectBuilder.builder().withName("v31").withProjectDir(this.directory).build();
 		Project platform = ProjectBuilder.builder().withName("platform").withParent(root).build();
 		ProjectBuilder.builder().withName("v31-internal-dependencies").withParent(platform).build();
 		Project project = ProjectBuilder.builder().withName("v31-example-spring-boot").withParent(root).build();
-		// Supplied by gradle.properties in the real build; the conventions read them,
-		// never default.
 		project.getExtensions().getExtraProperties().set("buildJavaVersion", "25");
 		project.getExtensions().getExtraProperties().set("runtimeJavaVersion", "25");
 		project.getExtensions().getExtraProperties().set("checkstyleToolVersion", "12.3.1");

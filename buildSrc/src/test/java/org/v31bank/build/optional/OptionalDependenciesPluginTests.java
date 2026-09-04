@@ -36,10 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link OptionalDependenciesPlugin}.
- * <p>
- * A dependency is declared and then looked for by name on the classpaths that should
- * carry it, rather than the wiring between configurations being asserted: the wiring is
- * how it works today, the dependency arriving is what the plugin promises.
  *
  * @author Xander Wang
  */
@@ -49,10 +45,6 @@ class OptionalDependenciesPluginTests {
 
 	private static final String DEPENDENCY = "widget";
 
-	/**
-	 * Declared as {@code api} beside the optional one, so that a test looking for the
-	 * optional dependency's absence is looking somewhere a dependency does show up.
-	 */
 	private static final String EXPORTED = "core";
 
 	@TempDir
@@ -68,11 +60,6 @@ class OptionalDependenciesPluginTests {
 		assertThat(optional(javaProject()).isCanBeResolved()).isFalse();
 	}
 
-	/**
-	 * A bucket and nothing else: dependencies go in, this project's classpaths take them
-	 * out by extending it. It resolves nothing and offers nothing to another project,
-	 * because an optional dependency is this module's business alone.
-	 */
 	@Test
 	void declaresDependenciesAndNothingElse() {
 		Configuration optional = optional(javaProject());
@@ -106,10 +93,6 @@ class OptionalDependenciesPluginTests {
 		assertThat(dependencyNames(project, "compileClasspath")).contains(DEPENDENCY);
 	}
 
-	/**
-	 * The half {@code compileOnly} cannot say. These are the configurations a consumer of
-	 * this project selects, so what they carry is what publication puts in front of it.
-	 */
 	@Test
 	void keepsOptionalDependenciesOutOfWhatAConsumerResolves() {
 		Project project = javaProjectDeclaring(DEPENDENCY);
@@ -124,13 +107,6 @@ class OptionalDependenciesPluginTests {
 		return project.getConfigurations().getByName(OPTIONAL);
 	}
 
-	/**
-	 * Everything a configuration would resolve, its own declarations and the ones it
-	 * inherits from whatever it extends.
-	 * @param project the project to look at
-	 * @param configuration the name of the configuration
-	 * @return the names of the dependencies it carries
-	 */
 	private static Set<String> dependencyNames(Project project, String configuration) {
 		return project.getConfigurations()
 			.getByName(configuration)

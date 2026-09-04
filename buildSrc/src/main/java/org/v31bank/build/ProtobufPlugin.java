@@ -54,27 +54,12 @@ import org.v31bank.build.constant.Tasks;
 import org.v31bank.build.proto.BufTask;
 import org.v31bank.build.proto.GenerateProtoSources;
 import org.v31bank.build.proto.LintProto;
-import org.v31bank.build.proto.ProtoToolchainPlugin;
 import org.v31bank.build.util.Directories;
 import org.v31bank.build.util.IsolatedProjects;
 import org.v31bank.build.util.SourceSets;
 
 /**
  * Generates a project's Java sources from the {@code .proto} it is named after.
- * <p>
- * Declared by the project itself:
- *
- * <pre class="code">
- * plugins {
- *     id("org.v31bank.protobuf")
- * }
- * </pre>
- *
- * Projects are matched to an API under the root {@code proto} directory by name alone, so
- * there is no list of who gets what. Generated sources are committed, so a clone compiles
- * without running buf, and the build regenerates them when the {@code .proto} changes.
- * <p>
- * {@link ProtoToolchainPlugin} provides buf and the generators.
  *
  * @author Xander Wang
  */
@@ -82,10 +67,6 @@ public class ProtobufPlugin implements Plugin<Project> {
 
 	private static final String PROTO = "proto";
 
-	/**
-	 * Added to {@code api} rather than {@code implementation}: the generated types are
-	 * the API, so anything depending on this project names them.
-	 */
 	private static final List<String> API = List.of(Coordinates.PROTOBUF_JAVA, Coordinates.GRPC_PROTOBUF,
 			Coordinates.GRPC_STUB);
 
@@ -120,7 +101,6 @@ public class ProtobufPlugin implements Plugin<Project> {
 	}
 
 	private Stream<Api> apisIn(File root, String namespace) {
-		// null covers both a missing path and a non-directory one.
 		File[] directories = new File(root, namespace).listFiles();
 		return (directories != null) ? Stream.of(directories)
 			.filter((file) -> file.isDirectory() && !file.getName().startsWith("."))
@@ -169,13 +149,6 @@ public class ProtobufPlugin implements Plugin<Project> {
 		});
 	}
 
-	/**
-	 * Returns the directory containing buf and its generators.
-	 * <p>
-	 * Resolving the directory establishes the dependency on the toolchain installation.
-	 * @param project the project the generated sources are for
-	 * @return the directory holding buf and the generators
-	 */
 	private Provider<Directory> toolchain(Project project) {
 		ConfigurationContainer configurations = project.getConfigurations();
 		Configuration declared = configurations.dependencyScope(Configurations.PROTO_TOOLCHAIN).get();
@@ -196,24 +169,8 @@ public class ProtobufPlugin implements Plugin<Project> {
 		return resolved.iterator().next().getAsFile();
 	}
 
-	/**
-	 * One API: the directory holding its {@code .proto} and the path buf addresses it by.
-	 * <p>
-	 * Both are derived from the name the build is rooted at rather than spelled out at
-	 * each use, so they cannot drift apart when the layout moves.
-	 *
-	 * @param root where buf runs, holding {@code buf.yaml} and every API
-	 * @param namespace the directory every API sits beneath, the name the build is rooted
-	 * at
-	 * @param name what the API is called, and so what a project's name is matched against
-	 */
 	private record Api(File root, String namespace, String name) {
 
-		/**
-		 * Written with {@code /} on every platform: buf reads this path, and so does an
-		 * importing {@code .proto}.
-		 * @return this API's path beneath the proto root
-		 */
 		String path() {
 			return this.namespace + "/" + this.name;
 		}
@@ -222,11 +179,6 @@ public class ProtobufPlugin implements Plugin<Project> {
 			return new File(this.root, path());
 		}
 
-		/**
-		 * buf fails on an empty directory, and a directory can be added before the
-		 * {@code .proto} that goes in it is written.
-		 * @return whether this API holds a {@code .proto}
-		 */
 		boolean holdsProtos() {
 			try (Stream<Path> files = Files.walk(directory().toPath())) {
 				return files.anyMatch((file) -> file.toString().endsWith(".proto"));

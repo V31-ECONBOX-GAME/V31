@@ -29,9 +29,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link AutoConfigurationClass}.
- * <p>
- * Each test assembles a real class file and reads it back, so what is exercised is the
- * bytecode a compiler would have produced rather than a stand-in for it.
  *
  * @author Xander Wang
  */

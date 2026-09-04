@@ -35,19 +35,7 @@ import org.v31bank.build.constant.Tasks;
 import org.v31bank.build.util.SourceSets;
 
 /**
- * Plugin for services whose schema is owned by Flyway.
- * <p>
- * Applied by the service itself:
- *
- * <pre class="code">
- * plugins {
- *     id("org.v31bank.flyway")
- * }
- * </pre>
- *
- * Migration names are checked at build time because Flyway records a version when it
- * first applies a migration. Once a bad name has been applied, fixing it requires manual
- * repair of {@code flyway_schema_history} in every affected environment.
+ * Checks a service's Flyway migration names.
  *
  * @author Xander Wang
  */
@@ -67,12 +55,6 @@ public class FlywayPlugin implements Plugin<Project> {
 		});
 	}
 
-	/**
-	 * Uses a provider so that whether the project has migrations is answered when the
-	 * classpath resolves rather than during configuration, where a directory added later
-	 * would be missed until the next sync.
-	 * @param project the project to configure
-	 */
 	private void addRuntimeDependencies(Project project) {
 		Provider<List<Dependency>> dependencies = project.provider(() -> migrations(project).isEmpty()
 				? Collections.emptyList() : RUNTIME.stream().map(project.getDependencies()::create).toList());
@@ -95,12 +77,6 @@ public class FlywayPlugin implements Plugin<Project> {
 		return SourceSets.of(project).main().resources().unwrap().matching((sql) -> sql.include(MIGRATIONS));
 	}
 
-	/**
-	 * Runs before {@code processResources} to keep a broken name out of the jar, and
-	 * under {@code check} so the failure reads as verification rather than packaging.
-	 * @param project the project to configure
-	 * @param check the check to attach
-	 */
 	private void runAsPartOfCheck(Project project, TaskProvider<ValidateMigrationNames> check) {
 		project.getTasks()
 			.named(JavaPlugin.PROCESS_RESOURCES_TASK_NAME)

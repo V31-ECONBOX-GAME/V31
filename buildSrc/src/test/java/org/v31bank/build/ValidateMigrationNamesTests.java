@@ -103,7 +103,6 @@ class ValidateMigrationNamesTests {
 	@Test
 	void rejectsAnImpossibleMonthDayHourOrMinute() {
 		for (String version : new String[] { "20261330093000", "20260732093000", "20260730253000", "20260730096100" }) {
-			// A fresh task per version: the migrations collection only ever grows.
 			setUp();
 			givenMigrations("V" + version + "__customer_create.sql");
 			assertThat(failure()).as(version).contains("is not a real yyyyMMddHHmmss timestamp");
@@ -165,11 +164,6 @@ class ValidateMigrationNamesTests {
 		assertThat(failure()).contains("a versioned migration lives in db/migration/2026, not 2027");
 	}
 
-	/**
-	 * Files a versioned migration under the directory named for its year, because where a
-	 * migration sits is part of what is checked. Anything else goes at the top.
-	 * @param names the migrations to create
-	 */
 	private void givenMigrations(String... names) {
 		for (String name : names) {
 			Path parent = (name.startsWith("V") && name.length() > 5) ? this.directory.resolve(name.substring(1, 5))

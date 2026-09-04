@@ -29,14 +29,6 @@ import java.util.Map;
 
 import groovy.json.JsonOutput;
 
-/**
- * Configuration metadata files written for a test to read.
- * <p>
- * The entries keep the order they were added in, because two of the checks are about
- * exactly that.
- *
- * @author Xander Wang
- */
 final class MetadataFiles {
 
 	private final List<Map<String, Object>> groups = new ArrayList<>();
@@ -52,12 +44,6 @@ final class MetadataFiles {
 		return new MetadataFiles();
 	}
 
-	/**
-	 * A module's metadata as the processor really writes it, {@code ignored} section and
-	 * all.
-	 * @param file where to write it
-	 * @return the file
-	 */
 	static Path realMetadata(Path file) {
 		String name = "v31-grpc-spring-configuration-metadata.json";
 		try (InputStream input = MetadataFiles.class.getResourceAsStream(name)) {
@@ -80,11 +66,6 @@ final class MetadataFiles {
 		return this;
 	}
 
-	/**
-	 * A property with nothing said about it.
-	 * @param name the property's name
-	 * @return this
-	 */
 	MetadataFiles undescribed(String name) {
 		this.properties.add(entry("name", name, "type", "java.lang.String"));
 		return this;
@@ -102,13 +83,6 @@ final class MetadataFiles {
 		return this;
 	}
 
-	/**
-	 * A deprecated property, whose deprecation may be missing the version it began in.
-	 * @param name the property's name
-	 * @param replacement what to use instead, or {@code null}
-	 * @param since the version it was deprecated in, or {@code null}
-	 * @return this
-	 */
 	MetadataFiles deprecated(String name, String replacement, String since) {
 		Map<String, Object> deprecation = new LinkedHashMap<>();
 		if (replacement != null) {
